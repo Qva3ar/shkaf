@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>656609494072-tah19tn57egb655q2sj3tqq594d9gode.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.656609494072-tah19tn57egb655q2sj3tqq594d9gode</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDOfBOxfNdBt2_pPSdCwfuQ5y0_fsbeN1s</string>
+	<key>GCM_SENDER_ID</key>
+	<string>656609494072</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>se.pixolity.mynotes</string>
+	<key>PROJECT_ID</key>
+	<string>moka-2344b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>moka-2344b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:656609494072:ios:89971c9993b066cb9b92cd</string>
+</dict>
+</plist>
