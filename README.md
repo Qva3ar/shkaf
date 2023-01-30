@@ -14,3 +14,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+If an error occurs when starting the project: Member not found: 'FirebaseAppPlatform.verifyExtends', 
+then you should run the command: $ flutter pub upgrade --major-versions.
+
+When cloning a repository, the firebase_options.dart file may be lost, if necessary, 
+request it from the author of the repository.
