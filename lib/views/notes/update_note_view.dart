@@ -20,7 +20,6 @@ import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/validators/validators.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../services/cloud/cloud_storage_constants.dart';
 
 class UpdateNoteView extends StatefulWidget {

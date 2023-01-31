@@ -14,7 +14,6 @@ import 'package:mynotes/utilities/generics/get_arguments.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../services/cloud/cloud_storage_constants.dart';
 
@@ -188,7 +187,7 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
               if (_note == null || text.isEmpty) {
                 await showCannotShareEmptyNoteDialog(context);
               } else {
-                Share.share(text);
+                // Share.share(text);
               }
             },
             icon: const Icon(Icons.share),

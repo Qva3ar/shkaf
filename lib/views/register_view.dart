@@ -20,11 +20,13 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  late final TextEditingController _passwordCheck;
 
   @override
   void initState() {
     _email = TextEditingController();
     _password = TextEditingController();
+    _passwordCheck = TextEditingController();
     super.initState();
   }
 
@@ -87,6 +89,7 @@ class _RegisterViewState extends State<RegisterView> {
                     hintText: "Введите email",
                   ),
                 ),
+                SizedBox(height: 15),
                 TextField(
                   controller: _password,
                   obscureText: true,
@@ -94,6 +97,15 @@ class _RegisterViewState extends State<RegisterView> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     hintText: "Придумайте пароль",
+                  ),
+                ),
+                TextField(
+                  controller: _passwordCheck,
+                  obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: "Повторите пароль",
                   ),
                 ),
                 SizedBox(height: 15),
@@ -104,6 +116,15 @@ class _RegisterViewState extends State<RegisterView> {
                         onPressed: () async {
                           final email = _email.text;
                           final password = _password.text;
+                          final passwordCheck = _passwordCheck.text;
+                          if (password != passwordCheck) {
+                            await showErrorDialog(
+                              context,
+                              "Пароли не совпадают",
+                            );
+                            return;
+                          }
+
                           context.read<AuthBloc>().add(
                                 AuthEventRegister(
                                   email,

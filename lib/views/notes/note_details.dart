@@ -19,7 +19,6 @@ import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/shared/gallery.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/cloud/cloud_storage_constants.dart';
@@ -231,32 +230,40 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontWeight: FontWeight.w700,
                                 )),
                             const SizedBox(height: 25),
-                            Column(
-                              children: [
-                                InkWell(
-                                  onTap: () => openUrl(note.url ?? ""),
-                                  child: Text(
-                                    note.url ?? "",
-                                    style: const TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color: Colors.blue),
-                                  ),
-                                ),
-                                RichText(
-                                  text: const TextSpan(
+                            note.url != ''
+                                ? Column(
                                     children: [
-                                      WidgetSpan(
-                                        child: Icon(Icons.error, size: 14),
+                                      InkWell(
+                                        onTap: () => openUrl(note.url ?? ""),
+                                        child: Text(
+                                          note.url ?? "",
+                                          style: const TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              color: Colors.blue),
+                                        ),
                                       ),
-                                      TextSpan(
-                                        text:
-                                            "Перейдя по ссылке вы найдете оригинал объявления (Facebook)",
-                                      ),
+                                      RichText(
+                                        text: const TextSpan(
+                                          children: [
+                                            WidgetSpan(
+                                              child:
+                                                  Icon(Icons.error, size: 12),
+                                            ),
+                                            TextSpan(
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color.fromARGB(
+                                                      255, 95, 95, 95)),
+                                              text:
+                                                  "Перейдя по ссылке вы найдете оригинал объявления",
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     ],
-                                  ),
-                                )
-                              ],
-                            )
+                                  )
+                                : Container()
 
                             // ElevatedButton(
                             //     onPressed: () {
