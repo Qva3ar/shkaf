@@ -99,12 +99,13 @@ class _NotesListViewState extends State<NotesListView> {
                                 ),
                                 Container(
                                     child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(height: 3),
+                                      const SizedBox(height: 3),
                                       Text(
                                         notes[i].text,
                                         overflow: TextOverflow.ellipsis,

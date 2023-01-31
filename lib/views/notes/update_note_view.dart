@@ -385,7 +385,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 24),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
               child: Column(
                 children: [
                   imagesUrls.isEmpty
@@ -518,7 +518,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                           padding: const EdgeInsets.all(8.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(100, 40),
+                              minimumSize: const Size(100, 40),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
@@ -569,8 +569,8 @@ InputDecoration getInputDecoration(String title) {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(
-          color: const Color(0xFFC72C41),
+        borderSide: const BorderSide(
+          color: Color(0xFFC72C41),
           width: 2.0,
         ),
       ),

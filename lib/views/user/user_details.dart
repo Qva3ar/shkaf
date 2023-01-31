@@ -12,7 +12,7 @@ class UserDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Мой профиль"),
+        title: const Text("Мой профиль"),
       ),
       body: Column(children: [
         // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
@@ -20,7 +20,7 @@ class UserDetails extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).pushNamed(userNotes);
             },
-            child: Text('Мои объявления'))
+            child: const Text('Мои объявления'))
       ]),
     );
   }

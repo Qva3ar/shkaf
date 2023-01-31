@@ -30,7 +30,7 @@ class GalleryWidget extends StatelessWidget {
             child: Container(
               width: 20.0,
               height: 20.0,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             ),
           ),
           // backgroundDecoration: widget.backgroundDecoration,
@@ -46,7 +46,7 @@ class GalleryWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               textStyle:
                   const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-          child: Text(
+          child: const Text(
             "Закрыть",
             style: TextStyle(color: Colors.grey),
           ),
