@@ -34,7 +34,7 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
   bool isNewImages = false;
 
   final imagePlaceholderPath =
-      Image(image: AssetImage('images/img_placeholder.png'));
+      const Image(image: AssetImage('images/img_placeholder.png'));
 
   final ImagePicker imgpicker = ImagePicker();
   List<XFile>? imagefiles = [];
@@ -202,7 +202,7 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
             case ConnectionState.done:
               _setupTextControllerListener();
               return Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
                     CarouselSlider.builder(

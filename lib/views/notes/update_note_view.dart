@@ -421,7 +421,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                         openImages();
                       },
                       child: const Text("Open Images")),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     maxLength: 35,
                     onChanged: (text) => setState(() {}),
@@ -432,7 +432,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     maxLines: null,
                     decoration: getInputDecoration("Заголовок"),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                       maxLength: 350,
                       onChanged: (text) => setState(() {}),
@@ -441,18 +441,18 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                       keyboardType: TextInputType.multiline,
                       maxLines: 5,
                       decoration: getInputDecoration("Oписание")),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                       maxLength: 10,
                       controller: _priceController,
                       keyboardType: TextInputType.number,
                       decoration: getInputDecoration("Цена")),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                       controller: _urlController,
                       keyboardType: TextInputType.number,
                       decoration: getInputDecoration("Url")),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   TextFormField(
                     controller: _phoneController,
@@ -460,7 +460,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     inputFormatters: [maskFormatter],
                     decoration: getInputDecoration("Номер телефона"),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   // getCategoryName(_note?.categoryId ?? 0)
                   // TextFormField(
                   //     // focusNode: focusNode,
@@ -486,12 +486,12 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                           padding: const EdgeInsets.all(8.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(100, 40),
+                              minimumSize: const Size(100, 40),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            child: Text("Выбрать"),
+                            child: const Text("Выбрать"),
                             onPressed: () {
                               showModal();
                             },
@@ -500,7 +500,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                       )
                     ],
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Stack(
                     children: [
                       TextFormField(
@@ -523,7 +523,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            child: Text("Выбрать"),
+                            child: const Text("Выбрать"),
                             onPressed: () {
                               showCitiesModal();
                             },
@@ -538,7 +538,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                   //       showModal();
                   //     },
                   //     child: Text("Изменить"))
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   ButtonTheme(
                     minWidth: 200.0,
@@ -570,13 +570,13 @@ InputDecoration getInputDecoration(String title) {
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
         borderSide: BorderSide(
-          color: Color(0xFFC72C41),
+          color: const Color(0xFFC72C41),
           width: 2.0,
         ),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.grey, width: 2.0),
+        borderSide: const BorderSide(color: Colors.grey, width: 2.0),
       )
       // hintText: context.loc.start_typing_your_note,
       );
@@ -600,7 +600,7 @@ getSelectDecorations(String title, String btnText, Function f) {
     ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10.0),
-      borderSide: BorderSide(color: Colors.grey, width: 2.0),
+      borderSide: const BorderSide(color: Colors.grey, width: 2.0),
     ),
   );
 }

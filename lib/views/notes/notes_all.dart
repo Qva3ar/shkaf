@@ -213,7 +213,8 @@ class _NotesViewState extends State<NotesAll> {
                           child: Stack(
                             children: [
                               Padding(
-                                  padding: EdgeInsets.only(left: 20, top: 5),
+                                  padding:
+                                      const EdgeInsets.only(left: 20, top: 5),
                                   child: DropdownButton(
                                       value: _notesService
                                           .selectedCityStream.value,
@@ -270,7 +271,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         // color: Color.fromARGB(255, 82, 99, 255),
-        color: Color.fromARGB(248, 210, 206, 206),
+        color: const Color.fromARGB(248, 210, 206, 206),
         child: Container(
           decoration: const BoxDecoration(
               color: Color.fromARGB(248, 210, 206, 206),
@@ -286,7 +287,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                   child: Container(
                     height: 4,
                     width: 60,
-                    color: Color.fromARGB(255, 210, 210, 210),
+                    color: const Color.fromARGB(255, 210, 210, 210),
                   ),
                 ),
               ),
@@ -308,7 +309,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
               ),
               ...CATEGORIES.map((u) => Column(children: [
                     Padding(
-                      padding: EdgeInsets.only(bottom: 5),
+                      padding: const EdgeInsets.only(bottom: 5),
                       child: Center(
                         child: GestureDetector(
                           onTap: () => isMainSelectable
@@ -326,7 +327,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                                       backgroundColor: Colors.transparent,
                                       color: Color.fromARGB(255, 69, 69, 69)),
                                 ),
-                                Padding(
+                                const Padding(
                                   padding: EdgeInsets.only(top: 4),
                                   child: Icon(
                                     Icons.arrow_right,
@@ -369,7 +370,7 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
           children: [
             const Center(
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(10.0),
                 child: Card(
                   child: Text(
                     "Выберите город",

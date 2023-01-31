@@ -136,7 +136,7 @@ final TURKEY = [
 ];
 
 class CategoryList extends StatelessWidget {
-  CategoryList({Key? key}) : super(key: key);
+  const CategoryList({Key? key}) : super(key: key);
 
   // final tagObjsJson = jsonDecode(CATEGORIES) as List;
 
@@ -145,7 +145,7 @@ class CategoryList extends StatelessWidget {
     CATEGORIES.map((u) => log(u.toString()));
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categories'),
+        title: const Text('Categories'),
       ),
       body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -174,7 +174,7 @@ class CategoryList extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushNamed(allNotes);
                 },
-                child: Text('go to'))
+                child: const Text('go to'))
           ])),
     );
   }

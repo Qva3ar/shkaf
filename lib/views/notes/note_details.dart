@@ -99,13 +99,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   case ConnectionState.active:
                     return SingleChildScrollView(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                                 decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 228, 228, 228),
+                                  color:
+                                      const Color.fromARGB(255, 228, 228, 228),
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 child: note.imagesUrls != null &&
@@ -154,7 +155,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             ))
                                     : Image.asset(
                                         'assets/images/img_placeholder.jpeg')),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             Text(
                               getFormattedDate(note.createdAt),
                               overflow: TextOverflow.ellipsis,
@@ -164,42 +165,44 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                 color: Colors.grey,
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
                                 Card(
                                     elevation: 0,
-                                    color: Color.fromARGB(255, 144, 113, 229),
+                                    color: const Color.fromARGB(
+                                        255, 144, 113, 229),
                                     child: Padding(
                                         padding: EdgeInsets.all(3),
                                         child: Text(
                                           getMainCategoryName(
                                               note.mainCategoryId ?? 0),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w500),
                                         ))),
                                 Card(
                                     elevation: 0,
-                                    color: Color.fromARGB(243, 77, 128, 147),
+                                    color:
+                                        const Color.fromARGB(243, 77, 128, 147),
                                     child: Padding(
-                                        padding: EdgeInsets.all(3),
+                                        padding: const EdgeInsets.all(3),
                                         child: Text(
                                             getCategoryName(
                                                 note.categoryId ?? 0),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w500)))),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(note.text,
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w400,
                                 )),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
                                 note.price != 0
                                     ? note.price.toString() + " TL"
@@ -209,10 +212,10 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
                                 )),
-                            SizedBox(height: 25),
-                            Text("Описание",
+                            const SizedBox(height: 25),
+                            const Text("Описание",
                                 textAlign: TextAlign.left,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w700,
                                 )),
@@ -221,20 +224,20 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontSize: 15,
                                   fontWeight: FontWeight.w400,
                                 )),
-                            SizedBox(height: 25),
+                            const SizedBox(height: 25),
                             Text(note.phone ?? "",
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
                                 )),
-                            SizedBox(height: 25),
+                            const SizedBox(height: 25),
                             Column(
                               children: [
                                 InkWell(
                                   onTap: () => openUrl(note.url ?? ""),
                                   child: Text(
                                     note.url ?? "",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         decoration: TextDecoration.underline,
                                         color: Colors.blue),
                                   ),
@@ -309,7 +312,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                         child: const Text("Удалить")))
                               ],
                             )
-                          : Text(""),
+                          : const Text(""),
                     );
                   default:
                     return const CircularProgressIndicator();

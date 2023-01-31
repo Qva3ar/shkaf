@@ -56,14 +56,14 @@ class _NotesListViewState extends State<NotesListView> {
     List<CloudNote> notes = widget.notes.toList();
     return Container(
       child: Padding(
-        padding: EdgeInsets.only(bottom: 60, top: 60),
+        padding: const EdgeInsets.only(bottom: 60, top: 60),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           controller: controller,
           children: [
             notes.length > 0
                 ? ListView.builder(
-                    physics: ScrollPhysics(),
+                    physics: const ScrollPhysics(),
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     itemCount: notes.length,
@@ -76,7 +76,7 @@ class _NotesListViewState extends State<NotesListView> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10)),
                           // margin: EdgeInsets.all(5),
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           child: Card(
                             semanticContainer: true,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -113,7 +113,7 @@ class _NotesListViewState extends State<NotesListView> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                      SizedBox(height: 2),
+                                      const SizedBox(height: 2),
                                       Text(
                                         notes[i].price.toString() + "TL",
                                         style: const TextStyle(
@@ -122,7 +122,7 @@ class _NotesListViewState extends State<NotesListView> {
                                           color: Colors.black54,
                                         ),
                                       ),
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -161,7 +161,7 @@ class _NotesListViewState extends State<NotesListView> {
                       );
                     },
                   )
-                : Center(
+                : const Center(
                     child: Text("Нет записей"),
                   )
           ],
