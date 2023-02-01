@@ -54,44 +54,42 @@ class _NotesListViewState extends State<NotesListView> {
     BuildContext context,
   ) {
     List<CloudNote> notes = widget.notes.toList();
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 60, top: 60),
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: controller,
-          children: [
-            notes.length > 0
-                ? GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            childAspectRatio: 1.2,
-                            crossAxisSpacing: 1,
-                            mainAxisSpacing: 1),
-                    physics: const ScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    itemCount: notes.length,
-                    itemBuilder: (ctx, i) {
-                      return GestureDetector(
-                        onTap: () {
-                          widget.onTap(notes[i]);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10)),
-                          // margin: EdgeInsets.all(5),
-                          padding: const EdgeInsets.all(5),
-                          child: Card(
-                            semanticContainer: true,
-                            elevation: 0,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 100,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 60, top: 60),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: controller,
+        children: [
+          notes.isNotEmpty
+              ? GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 200,
+                      childAspectRatio: 1.2,
+                      crossAxisSpacing: 1,
+                      mainAxisSpacing: 1),
+                  physics: const ScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  itemCount: notes.length,
+                  itemBuilder: (ctx, i) {
+                    return GestureDetector(
+                      onTap: () {
+                        widget.onTap(notes[i]);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10)),
+                        // margin: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
+                        child: Card(
+                          semanticContainer: true,
+                          elevation: 0,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: SizedBox(
                                   child: notes[i].imagesUrls != null &&
                                           notes[i].imagesUrls!.isNotEmpty
                                       ? Image.network(notes[i].imagesUrls![0],
@@ -104,76 +102,73 @@ class _NotesListViewState extends State<NotesListView> {
                                           width: double.infinity,
                                           fit: BoxFit.fill),
                                 ),
-                                Container(
-                                    child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        notes[i].text,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                        ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      notes[i].text,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                      const SizedBox(height: 2),
-                                      // Text(
-                                      //   notes[i].price.toString() + "TL",
-                                      //   style: const TextStyle(
-                                      //     fontWeight: FontWeight.bold,
-                                      //     fontSize: 16,
-                                      //     color: Colors.black54,
-                                      //   ),
-                                      // ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              getCityName(notes[i].cityId ?? 0),
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Color.fromARGB(
-                                                    177, 158, 158, 158),
-                                              ),
-                                            ),
-                                          ),
-                                          Text(
-                                            getFormattedDate(
-                                                notes[i].createdAt),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    // Text(
+                                    //   notes[i].price.toString() + "TL",
+                                    //   style: const TextStyle(
+                                    //     fontWeight: FontWeight.bold,
+                                    //     fontSize: 16,
+                                    //     color: Colors.black54,
+                                    //   ),
+                                    // ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            getCityName(notes[i].cityId ?? 0),
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               // fontWeight: FontWeight.bold,
                                               fontSize: 12,
-                                              color: Colors.grey,
+                                              color: Color.fromARGB(
+                                                  177, 158, 158, 158),
                                             ),
                                           ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ))
-                              ],
-                            ),
+                                        ),
+                                        Text(
+                                          getFormattedDate(notes[i].createdAt),
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            // fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  )
-                : const Center(
-                    child: Text("Нет записей"),
-                  )
-          ],
-        ),
+                      ),
+                    );
+                  },
+                )
+              : const Center(
+                  child: Text("Нет записей"),
+                )
+        ],
       ),
     );
   }
