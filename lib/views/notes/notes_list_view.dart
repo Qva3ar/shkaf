@@ -62,10 +62,16 @@ class _NotesListViewState extends State<NotesListView> {
           controller: controller,
           children: [
             notes.length > 0
-                ? ListView.builder(
+                ? GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            childAspectRatio: 1.2,
+                            crossAxisSpacing: 1,
+                            mainAxisSpacing: 1),
                     physics: const ScrollPhysics(),
                     shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     itemCount: notes.length,
                     itemBuilder: (ctx, i) {
                       return GestureDetector(
@@ -79,6 +85,7 @@ class _NotesListViewState extends State<NotesListView> {
                           padding: const EdgeInsets.all(5),
                           child: Card(
                             semanticContainer: true,
+                            elevation: 0,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +107,7 @@ class _NotesListViewState extends State<NotesListView> {
                                 Container(
                                     child: Padding(
                                   padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
+                                      const EdgeInsets.symmetric(horizontal: 5),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -115,14 +122,14 @@ class _NotesListViewState extends State<NotesListView> {
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
-                                        notes[i].price.toString() + "TL",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
+                                      // Text(
+                                      //   notes[i].price.toString() + "TL",
+                                      //   style: const TextStyle(
+                                      //     fontWeight: FontWeight.bold,
+                                      //     fontSize: 16,
+                                      //     color: Colors.black54,
+                                      //   ),
+                                      // ),
                                       const SizedBox(height: 10),
                                       Row(
                                         crossAxisAlignment:
