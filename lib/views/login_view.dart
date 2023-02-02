@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
@@ -18,45 +18,45 @@ class LoginView extends StatefulWidget {
   State<LoginView> createState() => _LoginViewState();
 }
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  // Optional clientId
-  // clientId: '656609494072-qdf0tupf8b0l9jr150e91r2v9qasb5v9.apps.googleusercontent.com',
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
+// GoogleSignIn _googleSignIn = GoogleSignIn(
+//   // Optional clientId
+//   // clientId: '656609494072-qdf0tupf8b0l9jr150e91r2v9qasb5v9.apps.googleusercontent.com',
+//   scopes: <String>[
+//     'email',
+//     'https://www.googleapis.com/auth/contacts.readonly',
+//   ],
+// );
 
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  GoogleSignInAccount? _currentUser;
+  // GoogleSignInAccount? _currentUser;
   @override
   void initState() {
     _email = TextEditingController();
     _password = TextEditingController();
-    _handleSignIn();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
-      });
-      if (_currentUser != null) {
-        log(_currentUser.toString());
-        // _handleGetContact(_currentUser!);
-      }
-    });
-    _googleSignIn.signInSilently();
+    // _handleSignIn();
+    // _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+    //   setState(() {
+    //     _currentUser = account;
+    //   });
+    //   if (_currentUser != null) {
+    //     log(_currentUser.toString());
+    //     // _handleGetContact(_currentUser!);
+    //   }
+    // });
+    // _googleSignIn.signInSilently();
 
     super.initState();
   }
 
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
-  }
+  // Future<void> _handleSignIn() async {
+  //   try {
+  //     await _googleSignIn.signIn();
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
 
   @override
   void dispose() {
