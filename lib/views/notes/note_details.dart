@@ -72,7 +72,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   @override
   Widget build(BuildContext context) {
     // createOrGetExistingNote(context);
-
+    int _current = 0;
+    final CarouselController _controller = CarouselController();
     return Scaffold(
         appBar: AppBar(
           title: Text(""),
@@ -112,11 +113,18 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                         note.imagesUrls!.isNotEmpty
                                     ? CarouselSlider.builder(
                                         itemCount: note.imagesUrls?.length,
+                                        carouselController: _controller,
                                         options: CarouselOptions(
+                                          enlargeCenterPage: true,
                                           enableInfiniteScroll: false,
                                           height: 200,
                                           aspectRatio: 16 / 9,
                                           viewportFraction: 1,
+                                          onPageChanged: (index, reason) {
+                                            setState(() {
+                                              _current = index;
+                                            });
+                                          },
                                         ),
                                         itemBuilder: (BuildContext context,
                                                 int itemIndex,
@@ -154,6 +162,32 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             ))
                                     : Image.asset(
                                         'assets/images/img_placeholder.jpeg')),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:
+                                  note.imagesUrls!.mapIndexed((entry, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    log(index.toString());
+                                    _controller.animateToPage(index);
+                                  },
+                                  child: Container(
+                                    width: 12.0,
+                                    height: 12.0,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 4.0),
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black)
+                                            .withOpacity(
+                                                _current == index ? 0.9 : 0.4)),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                             const SizedBox(height: 15),
                             Text(
                               getFormattedDate(note.createdAt),
@@ -172,7 +206,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     color: const Color.fromARGB(
                                         255, 144, 113, 229),
                                     child: Padding(
-                                        padding: EdgeInsets.all(3),
+                                        padding: const EdgeInsets.all(3),
                                         child: Text(
                                           getMainCategoryName(
                                               note.mainCategoryId ?? 0),
@@ -232,6 +266,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                             const SizedBox(height: 25),
                             note.url != ''
                                 ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       InkWell(
                                         onTap: () => openUrl(note.url ?? ""),
@@ -288,39 +324,47 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 CloudNote note = snapshot.data as CloudNote;
                 switch (snapshot.connectionState) {
                   case ConnectionState.active:
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: note.ownerUserId == userId
-                          ? Row(
+                    return note.ownerUserId == userId
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
                               children: [
                                 Expanded(
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.popAndPushNamed(
-                                            context, updateNoteRoute,
-                                            arguments: note);
-                                      },
-                                      child: const Text("Редактировать")),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.popAndPushNamed(
+                                              context, updateNoteRoute,
+                                              arguments: note);
+                                        },
+                                        child: const Text("Редактировать")),
+                                  ),
                                 ),
                                 Expanded(
-                                    child: ElevatedButton(
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.red),
-                                        ),
-                                        onPressed: () async {
-                                          final shouldDelete =
-                                              await showDeleteDialog(context);
-                                          if (shouldDelete) {
-                                            removeNote(note);
-                                          }
-                                        },
-                                        child: const Text("Удалить")))
+                                    child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.red),
+                                      ),
+                                      onPressed: () async {
+                                        final shouldDelete =
+                                            await showDeleteDialog(context);
+                                        if (shouldDelete) {
+                                          removeNote(note);
+                                        }
+                                      },
+                                      child: const Text("Удалить")),
+                                ))
                               ],
-                            )
-                          : const Text(""),
-                    );
+                            ),
+                          )
+                        : const Text("");
                   default:
                     return const CircularProgressIndicator();
                 }
@@ -328,5 +372,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 return Container();
               }
             }));
+  }
+}
+
+extension IndexedIterable<E> on Iterable<E> {
+  Iterable<T> mapIndexed<T>(T Function(E e, int i) f) {
+    var i = 0;
+    return map((e) => f(e, i++));
   }
 }
