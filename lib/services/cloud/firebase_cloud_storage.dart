@@ -60,6 +60,7 @@ class FirebaseCloudStorage {
     required int mainCategoryId,
     required int cityId,
     required int price,
+    required bool shortAdd,
     List<String>? imgUrls,
     String? phone,
     String? url,
@@ -75,6 +76,8 @@ class FirebaseCloudStorage {
         mainCategoryIdFieldName: mainCategoryId,
         cityIdFieldName: cityId,
         phoneFieldName: phone,
+        shortAddFieldName: shortAdd,
+
         // createdAtFieldName: Timestamp.now()
       });
     } catch (e) {
@@ -133,6 +136,21 @@ class FirebaseCloudStorage {
     }).listen((event) {
       noteList = [];
       noteList.addAll(event.toList());
+      var shortAddDateRange =
+          DateTime.now().subtract(const Duration(minutes: 1));
+      noteList = noteList.where((record) {
+        log(record.createdAt.microsecondsSinceEpoch.toString());
+        log(shortAddDateRange.microsecondsSinceEpoch.toString());
+
+        if (record.shortAdd) {
+          if (record.createdAt.microsecondsSinceEpoch >
+              shortAddDateRange.microsecondsSinceEpoch) {
+            return true;
+          } else
+            return false;
+        }
+        return true;
+      }).toList();
       movieController.sink.add(noteList);
     });
   }
@@ -177,6 +195,7 @@ class FirebaseCloudStorage {
     required int mainCategoryId,
     required int cityId,
     required int price,
+    required bool shortAdd,
     List<String>? imgUrls,
     String? phone,
     String? url,
@@ -193,7 +212,8 @@ class FirebaseCloudStorage {
         categoryIdFieldName: categoryId,
         cityIdFieldName: cityId,
         phoneFieldName: phone,
-        createdAtFieldName: Timestamp.now()
+        createdAtFieldName: Timestamp.now(),
+        shortAddFieldName: shortAdd,
       });
     } on FirebaseException catch (e) {
       // Caught an exception from Firebase.

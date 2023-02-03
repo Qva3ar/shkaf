@@ -19,6 +19,7 @@ class CloudNote {
   String? url;
   final DateTime createdAt;
   final List<String>? imagesUrls;
+  final bool shortAdd;
   CloudNote({
     required this.documentId,
     required this.ownerUserId,
@@ -31,16 +32,19 @@ class CloudNote {
     this.phone,
     this.imagesUrls,
     required this.createdAt,
+    required this.shortAdd,
   });
 
-  CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
-      : documentId = snapshot.id,
+  CloudNote.fromSnapshot(
+    QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
+  )   : documentId = snapshot.id,
         ownerUserId = snapshot.data()[ownerUserIdFieldName],
         text = snapshot.data()[textFieldName] as String,
         desc = snapshot.data()[descFieldName] ?? '',
         phone = snapshot.data()[phoneFieldName] ?? '',
         url = snapshot.data()[urlFieldName] ?? '',
         price = snapshot.data()[priceFieldName] ?? 0,
+        shortAdd = snapshot.data()[shortAddFieldName] ?? false,
         categoryId = snapshot.data()[categoryIdFieldName] ?? 0,
         mainCategoryId = snapshot.data()[mainCategoryIdFieldName] ?? 0,
         cityId = snapshot.data()[cityIdFieldName] ?? 0,

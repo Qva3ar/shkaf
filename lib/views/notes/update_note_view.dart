@@ -51,6 +51,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   int? cityId;
   bool isSaving = false;
   bool isFirstTime = true;
+  bool shortAdd = false;
   DraggableScrollableController controller = DraggableScrollableController();
 
   final _formKey = GlobalKey<FormState>();
@@ -126,6 +127,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
+              shortAdd: true,
             )
             .catchError((error, stackTrace) =>
                 {showSnackbar(context, error.toString())});
@@ -142,6 +144,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
+              shortAdd: true,
             )
             .catchError(
                 (error, stackTrace) => showSnackbar(context, error.toString()));
@@ -401,7 +404,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                                   int pageViewIndex) =>
                               Builder(
                                 builder: (BuildContext context) {
-                                  return Container(
+                                  return SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       // margin: EdgeInsets.symmetric(horizontal: 5.0),
                                       // decoration:BoxDecoration(color: Colors.amber),
@@ -419,7 +422,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                       onPressed: () {
                         openImages();
                       },
-                      child: const Text("Open Images")),
+                      child: const Text("Выберите до 4 фото")),
                   const SizedBox(height: 10),
                   TextFormField(
                     maxLength: 35,
@@ -431,6 +434,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     maxLines: null,
                     decoration: getInputDecoration("Заголовок"),
                   ),
+                  const SwitchShortAdds(),
                   const SizedBox(height: 10),
                   TextFormField(
                       maxLength: 350,
@@ -619,4 +623,48 @@ showSnackbar(context, message) {
     ),
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+class SwitchShortAdds extends StatefulWidget {
+  const SwitchShortAdds({Key? key}) : super(key: key);
+
+  @override
+  State<SwitchShortAdds> createState() => _SwitchShortAddsState();
+}
+
+class _SwitchShortAddsState extends State<SwitchShortAdds> {
+  bool shortAdd = true;
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 8.0, 0),
+          child: Text('14-дневное объявление'),
+        ),
+        Switch(
+          thumbIcon: thumbIcon,
+          value: shortAdd,
+          onChanged: (bool value) {
+            setState(() {
+              shortAdd = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
 }

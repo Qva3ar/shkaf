@@ -163,13 +163,13 @@ class _NotesViewState extends State<NotesAll> {
                   },
                   icon: !isOldUser
                       ? const JustTheTooltip(
-                          child: Icon(Icons.person),
                           content: Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Bacon ipsum dolor amet kevin turducken brisket pastrami, salami ribeye spare ribs tri-tip sirloin shoulder venison shank burgdoggen chicken pork belly. Short loin filet mignon shoulder rump beef ribs meatball kevin.',
                             ),
                           ),
+                          child: Icon(Icons.person),
                         )
                       : const Icon(Icons.person),
                 ),
@@ -220,8 +220,9 @@ class _NotesViewState extends State<NotesAll> {
                                           .selectedCityStream.value,
                                       items: TURKEY
                                           .map((e) => DropdownMenuItem(
-                                              child: Text(e['name'].toString()),
-                                              value: e['id']))
+                                              value: e['id'],
+                                              child:
+                                                  Text(e['name'].toString())))
                                           .toList(),
                                       onChanged: ((value) {
                                         setSelectedCity(
@@ -295,14 +296,19 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Card(
-                    elevation: 0,
-                    child: Text(
-                      selectedCat,
-                      style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          backgroundColor: Colors.white,
-                          color: Colors.black),
+                    elevation: 5,
+                    child: SizedBox(
+                      width: 190,
+                      height: 40,
+                      child: Center(
+                        child: Text(
+                          selectedCat,
+                          style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
+                      ),
                     ),
                   ),
                 ),
