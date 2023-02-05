@@ -45,7 +45,7 @@ class _NotesListViewState extends State<NotesListView> {
     if (controller.offset >= controller.position.maxScrollExtent &&
         !controller.position.outOfRange) {
       print("at the end of list");
-      _notesService.allNotesNext();
+      _notesService.allNotes(true);
     }
   }
 

@@ -74,7 +74,7 @@ class _NotesViewState extends State<NotesAll> {
   didChangeDependencies() {
     log("ALL NOTES CHASNGE");
     getArguments(context);
-    _notesService.allNotes();
+    _notesService.allNotes(false);
   }
 
   getArguments(context) {
@@ -104,15 +104,17 @@ class _NotesViewState extends State<NotesAll> {
     Navigator.popAndPushNamed(context, allNotes,
         arguments: ListViewArguments(arg.categoryId, arg.mainCategoryId));
 
-    _notesService.categoryNameForSheet.add(
-        getMainCategoryName(arg.mainCategoryId) +
-            " - " +
-            getCategoryName(arg.categoryId));
+    var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
+    if (arg.categoryId != null) {
+      selectedCategory =
+          selectedCategory + " - " + getCategoryName(arg.categoryId);
+    }
+    _notesService.categoryNameForSheet.add(selectedCatLabel);
   }
 
   Future<void> _pullRefresh() async {
     setState(() {
-      _notesService.allNotes();
+      _notesService.allNotes(false);
     });
     // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
   }
@@ -272,13 +274,12 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         // color: Color.fromARGB(255, 82, 99, 255),
-        color: const Color.fromARGB(248, 210, 206, 206),
+        decoration: const BoxDecoration(
+            color: Color.fromARGB(248, 210, 206, 206),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12.0),
+                topRight: Radius.circular(12.0))),
         child: Container(
-          decoration: const BoxDecoration(
-              color: Color.fromARGB(248, 210, 206, 206),
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12.0),
-                  topRight: Radius.circular(12.0))),
           child: ListView(
             controller: scrollController,
             children: [
@@ -288,7 +289,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                   child: Container(
                     height: 4,
                     width: 60,
-                    color: const Color.fromARGB(255, 210, 210, 210),
+                    color: Color.fromARGB(255, 240, 240, 240),
                   ),
                 ),
               ),
@@ -296,10 +297,8 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Card(
-                    elevation: 5,
-                    child: SizedBox(
-                      width: 190,
-                      height: 40,
+                    elevation: 0,
+                    child: SizedBox.square(
                       child: Center(
                         child: Text(
                           selectedCat,
@@ -323,15 +322,18 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                                   0, int.parse(u['id'].toString())))
                               : null,
                           child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
-                                  u['name'].toString(),
-                                  style: const TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      backgroundColor: Colors.transparent,
-                                      color: Color.fromARGB(255, 69, 69, 69)),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    u['name'].toString(),
+                                    style: const TextStyle(
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold,
+                                        backgroundColor: Colors.transparent,
+                                        color: Color.fromARGB(255, 69, 69, 69)),
+                                  ),
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.only(top: 4),

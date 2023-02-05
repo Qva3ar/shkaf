@@ -565,10 +565,11 @@ InputDecoration getInputDecoration(String title) {
   return InputDecoration(
       labelText: title,
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),
+        borderSide: BorderSide(color: Colors.blueAccent, width: 1.0),
       ),
       enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey, width: 2.0),
+        borderSide:
+            BorderSide(color: Color.fromARGB(255, 171, 171, 171), width: 1.0),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -579,7 +580,7 @@ InputDecoration getInputDecoration(String title) {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
-        borderSide: const BorderSide(color: Colors.grey, width: 2.0),
+        borderSide: const BorderSide(color: Colors.grey, width: 1.0),
       )
       // hintText: context.loc.start_typing_your_note,
       );
@@ -656,7 +657,6 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
           child: Text('14-дневное объявление'),
         ),
         Switch(
-          thumbIcon: thumbIcon,
           value: shortAdd,
           onChanged: (bool value) {
             setState(() {

@@ -34,9 +34,11 @@
   <style>
     .loading {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       margin: 0;
+      color: #777;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -146,9 +148,10 @@
   </script>
 
     <!-- First time loading -->
-    <div class="loading">
+  <div class="loading">
       <div class="loader"></div>
-      Загрузка
+      Первичная загрка. Подождите... </br>
+      Может занять несколько секунд
   </div>
 
   <!-- Ensure first time loading progress is gone after app loads -->

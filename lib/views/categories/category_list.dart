@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:mynotes/constants/routes.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shkaf/constants/routes.dart';
 
 final CATEGORIES = [
   {"id": 0, "name": "Все категории", "sub_categories": []},
@@ -27,6 +27,10 @@ final CATEGORIES = [
         "name": "Уборка",
       },
       {
+        "id": 29,
+        "name": "Здоровье",
+      },
+      {
         "id": 6,
         "name": "Прочее",
       },
@@ -38,11 +42,11 @@ final CATEGORIES = [
     "sub_categories": [
       {
         "id": 8,
-        "name": "Квартиры",
+        "name": "Продажа квартир",
       },
       {
         "id": 9,
-        "name": "Аренда",
+        "name": "Аренда Квартир",
       },
       {
         "id": 10,
@@ -123,7 +127,29 @@ final CATEGORIES = [
         "name": "Продажа",
       },
       {
+        "id": 30,
+        "name": "Ремонт",
+      },
+      {
         "id": 28,
+        "name": "Прочее",
+      },
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Дом",
+    "sub_categories": [
+      {
+        "id": 32,
+        "name": "Мебель",
+      },
+      {
+        "id": 33,
+        "name": "Бытовая техника",
+      },
+      {
+        "id": 34,
         "name": "Прочее",
       },
     ]
