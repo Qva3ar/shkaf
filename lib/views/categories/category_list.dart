@@ -6,7 +6,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 import 'package:flutter/material.dart';
-import 'package:shkaf/constants/routes.dart';
+import 'package:mynotes/constants/routes.dart';
 
 final CATEGORIES = [
   {"id": 0, "name": "Все категории", "sub_categories": []},
@@ -157,8 +157,8 @@ final CATEGORIES = [
 ];
 
 final TURKEY = [
-  {"id": 10, "name": "Стамбул"},
   {"id": 1, "name": "Анталия"},
+  {"id": 10, "name": "Стамбул"},
 ];
 
 class CategoryList extends StatelessWidget {

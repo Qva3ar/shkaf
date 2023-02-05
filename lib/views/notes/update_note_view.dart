@@ -218,7 +218,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isAllow = true;
     }
     if (isAllow) {
-      var images = await _imagePicker.pickMultiImage(imageQuality: 40);
+      var images = await _imagePicker.pickMultiImage(imageQuality: 20);
       if (images != null && images.length > 4) {
         images = images.take(4).toList().cast<XFile>();
         const snackBar = SnackBar(

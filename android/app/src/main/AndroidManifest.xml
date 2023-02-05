@@ -7,7 +7,7 @@
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.FLASHLIGHT" />
    <application
-        android:label="MyNotes"
+        android:label="Shkaf"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         

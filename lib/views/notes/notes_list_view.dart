@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -92,10 +93,14 @@ class _NotesListViewState extends State<NotesListView> {
                                 child: SizedBox(
                                   child: notes[i].imagesUrls != null &&
                                           notes[i].imagesUrls!.isNotEmpty
-                                      ? Image.network(notes[i].imagesUrls![0],
+                                      ? CachedNetworkImage(
                                           height: 120,
                                           width: double.infinity,
-                                          fit: BoxFit.cover)
+                                          fit: BoxFit.cover,
+                                          imageUrl: notes[i].imagesUrls![0],
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        )
                                       : Image.asset(
                                           'assets/images/img_placeholder.jpeg',
                                           height: 120,

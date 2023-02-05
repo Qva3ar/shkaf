@@ -48,10 +48,6 @@ class _NotesViewState extends State<NotesAll> {
     _notesService.categoryNameForSheet.listen((value) {
       selectedCategory = value;
     });
-
-    // showModal();
-    log("SELECTYD CITY");
-    log(_notesService.selectedCityStream.value.toString());
   }
 
   getUserInfo() async {
@@ -163,17 +159,7 @@ class _NotesViewState extends State<NotesAll> {
                       Navigator.of(context).pushNamed(login);
                     }
                   },
-                  icon: !isOldUser
-                      ? const JustTheTooltip(
-                          content: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Bacon ipsum dolor amet kevin turducken brisket pastrami, salami ribeye spare ribs tri-tip sirloin shoulder venison shank burgdoggen chicken pork belly. Short loin filet mignon shoulder rump beef ribs meatball kevin.',
-                            ),
-                          ),
-                          child: Icon(Icons.person),
-                        )
-                      : const Icon(Icons.person),
+                  icon: Icon(Icons.person),
                 ),
                 state.user != null
                     ? PopupMenuButton<MenuAction>(
@@ -209,7 +195,6 @@ class _NotesViewState extends State<NotesAll> {
                   case ConnectionState.active:
                     if (snapshot.hasData) {
                       final allNotes = snapshot.data as Iterable<CloudNote>;
-                      prefs.setBool('isOldUser', true);
                       return RefreshIndicator(
                           onRefresh: _pullRefresh,
                           child: Stack(
