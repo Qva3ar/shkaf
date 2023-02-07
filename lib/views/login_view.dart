@@ -1,7 +1,8 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
@@ -31,6 +32,11 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   // GoogleSignInAccount? _currentUser;
+
+  String welcome = "Login with Google";
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  GoogleSignInAccount? googleUser;
+
   @override
   void initState() {
     _email = TextEditingController();
@@ -48,6 +54,17 @@ class _LoginViewState extends State<LoginView> {
     // _googleSignIn.signInSilently();
 
     super.initState();
+
+    googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+      setState(() {
+        googleUser = account;
+      });
+
+      if (googleUser != null) {
+        // Perform your action
+      }
+      googleSignIn.signInSilently();
+    });
   }
 
   // Future<void> _handleSignIn() async {
@@ -57,6 +74,24 @@ class _LoginViewState extends State<LoginView> {
   //     print(error);
   //   }
   // }
+
+  Future<UserCredential> signInGoogle() async {
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    setState(() {
+      welcome = googleUser!.email;
+    });
+
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser!.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   @override
   void dispose() {
@@ -101,21 +136,21 @@ class _LoginViewState extends State<LoginView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Вход"),
+          title: const Text("Вход"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Text(
+                const Text(
                     "Введите ваши данные что бы иметь возможность создавать объявления"),
                 TextField(
                   controller: _email,
                   enableSuggestions: false,
                   autocorrect: false,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Введите email",
                   ),
                 ),
@@ -124,11 +159,11 @@ class _LoginViewState extends State<LoginView> {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Введите пароль",
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () async {
                     final email = _email.text.trim();
@@ -140,9 +175,16 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         );
                   },
-                  child: Text("Войти"),
+                  child: const Text("Войти"),
                 ),
-                SizedBox(height: 15),
+                TextButton(
+                    onPressed: () {
+                      signInGoogle();
+                    },
+                    child: const Text(
+                      "Войти с помощью Google",
+                    )),
+                const SizedBox(height: 15),
                 TextButton(
                   onPressed: () {
                     // context.read<AuthBloc>().add(
@@ -150,7 +192,7 @@ class _LoginViewState extends State<LoginView> {
                     //     );
                     Navigator.pushNamed(context, forgotPassword);
                   },
-                  child: Text(
+                  child: const Text(
                     "Забыл пароль",
                   ),
                 ),
@@ -161,7 +203,7 @@ class _LoginViewState extends State<LoginView> {
                     //     );
                     Navigator.pushNamed(context, register);
                   },
-                  child: Text(
+                  child: const Text(
                     "Еще не зарегистрированы? Зарегистрируйтесь здесь!",
                   ),
                 )

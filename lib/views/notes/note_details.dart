@@ -149,6 +149,9 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                             .width,
                                                     height: 100,
                                                     decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              9),
                                                       image: DecorationImage(
                                                         fit: BoxFit.cover,
                                                         image: NetworkImage(
@@ -172,8 +175,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     _controller.animateToPage(index);
                                   },
                                   child: Container(
-                                    width: 12.0,
-                                    height: 12.0,
+                                    width: 5.0,
+                                    height: 5.0,
                                     margin: const EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 4.0),
                                     decoration: BoxDecoration(

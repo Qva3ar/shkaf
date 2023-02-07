@@ -292,6 +292,17 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(155.0, 1.0, 155.0, 1.0),
+                child: Container(
+                  width: 5.0,
+                  height: 5.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: const Color.fromARGB(255, 91, 91, 91),
+                  ),
+                ),
+              ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),

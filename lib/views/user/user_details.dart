@@ -16,11 +16,16 @@ class UserDetails extends StatelessWidget {
       ),
       body: Column(children: [
         // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
-        ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(userNotes);
-            },
-            child: const Text('Мои объявления'))
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(userNotes);
+                },
+                child: const Text('Мои объявления')),
+          ),
+        )
       ]),
     );
   }

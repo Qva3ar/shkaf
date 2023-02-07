@@ -136,8 +136,7 @@ class FirebaseCloudStorage {
     }).listen((event) {
       noteList = [];
       noteList.addAll(event.toList());
-      var shortAddDateRange =
-          DateTime.now().subtract(const Duration(minutes: 1));
+      var shortAddDateRange = DateTime.now().subtract(const Duration(days: 14));
       noteList = noteList.where((record) {
         log(record.createdAt.microsecondsSinceEpoch.toString());
         log(shortAddDateRange.microsecondsSinceEpoch.toString());

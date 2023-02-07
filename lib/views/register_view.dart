@@ -70,7 +70,7 @@ class _RegisterViewState extends State<RegisterView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Регистрация"),
+          title: const Text("Регистрация"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -85,17 +85,17 @@ class _RegisterViewState extends State<RegisterView> {
                   autocorrect: false,
                   autofocus: true,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Введите email",
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextField(
                   controller: _password,
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Придумайте пароль",
                   ),
                 ),
@@ -104,11 +104,11 @@ class _RegisterViewState extends State<RegisterView> {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Повторите пароль",
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Center(
                   child: Column(
                     children: [
@@ -132,18 +132,18 @@ class _RegisterViewState extends State<RegisterView> {
                                 ),
                               );
                         },
-                        child: Text(
+                        child: const Text(
                           "Создать аккаунт",
                         ),
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       TextButton(
                         onPressed: () {
                           context.read<AuthBloc>().add(
                                 const AuthEventLogOut(),
                               );
                         },
-                        child: Text(
+                        child: const Text(
                           "Уже зарегистрированы? Войдите здесь",
                         ),
                       ),
