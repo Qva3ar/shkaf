@@ -31,7 +31,7 @@ class FirebaseCloudStorage {
 
   setSelectedId(int id) {
     selectedCityStream.add(id);
-    allNotes();
+    allNotes(false);
   }
 
   setCategoryId(int id) {
@@ -88,7 +88,7 @@ class FirebaseCloudStorage {
   Stream<List<CloudNote>> allUserNotes({required String ownerUserId}) {
     var addDt = DateTime.now();
     final allNotes = notes
-        .limit(8)
+        // .limit(8)
         .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
         .snapshots()
         .map((event) =>
@@ -96,12 +96,13 @@ class FirebaseCloudStorage {
     return allNotes;
   }
 
-  allNotes() {
+  allNotes(bool load) {
+    const limit = 9;
     var addDt = DateTime.now();
     Query<Map<String, dynamic>> query;
     if (mainCategoryIdStream.value == 0) {
       query = notes
-          .limit(10)
+          .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
@@ -109,7 +110,7 @@ class FirebaseCloudStorage {
           .orderBy(createdAtFieldName, descending: true);
     } else if (categoryIdStream.value == 0) {
       query = notes
-          .limit(10)
+          .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
           .where(createdAtFieldName,
@@ -118,13 +119,19 @@ class FirebaseCloudStorage {
           .orderBy(createdAtFieldName, descending: true);
     } else {
       query = notes
-          .limit(10)
+          .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
                   Timestamp.fromDate(addDt.subtract(Duration(days: 30))))
-          .where(categoryIdFieldName, isEqualTo: categoryIdStream.value);
+          .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
+          .orderBy(createdAtFieldName, descending: true);
+      ;
+    }
+
+    if (load) {
+      query = query.startAfterDocument(lastDoc);
     }
 
     query.snapshots().map((event) {
@@ -134,13 +141,13 @@ class FirebaseCloudStorage {
 
       return event.docs.map((doc) => CloudNote.fromSnapshot(doc));
     }).listen((event) {
-      noteList = [];
+      if (!load) {
+        noteList = [];
+      }
+
       noteList.addAll(event.toList());
       var shortAddDateRange = DateTime.now().subtract(const Duration(days: 14));
       noteList = noteList.where((record) {
-        log(record.createdAt.microsecondsSinceEpoch.toString());
-        log(shortAddDateRange.microsecondsSinceEpoch.toString());
-
         if (record.shortAdd) {
           if (record.createdAt.microsecondsSinceEpoch >
               shortAddDateRange.microsecondsSinceEpoch) {
@@ -163,12 +170,12 @@ class FirebaseCloudStorage {
         .where(createdAtFieldName,
             isGreaterThanOrEqualTo:
                 Timestamp.fromDate(addDt.subtract(Duration(days: 7))));
-    if (categoryIdStream.value == 0) {
-      query.where(mainCategoryIdFieldName,
-          isEqualTo: mainCategoryIdStream.value);
-    } else {
-      query.where(categoryIdFieldName, isEqualTo: categoryIdStream.value);
-    }
+    // if (categoryIdStream.value == 0) {
+    //   query.where(mainCategoryIdFieldName,
+    //       isEqualTo: mainCategoryIdStream.value);
+    // } else {
+    //   query.where(categoryIdFieldName, isEqualTo: categoryIdStream.value);
+    // }
 
     query
         .orderBy(createdAtFieldName, descending: true)
