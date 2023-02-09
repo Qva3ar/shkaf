@@ -37,17 +37,37 @@ class _NotesViewState extends State<NotesAll> {
   int? categoryId;
   int? mainCategoryId;
   bool isOldUser = false;
+  static const selectedCityKey = 'selectedCity';
   late final SharedPreferences prefs;
   String selectedCategory = "";
+
   @override
   void initState() {
     initializeSpref();
-
+    initUserSelectedCity();
     _notesService = FirebaseCloudStorage();
     super.initState();
     _notesService.categoryNameForSheet.listen((value) {
       selectedCategory = value;
     });
+  }
+
+  setSelectedCity(int id) {
+    _notesService.setSelectedId(id);
+  }
+
+  Future initUserSelectedCity() async {
+    prefs = await getUserSelectedCity();
+  }
+
+  Future setUserSelectedCity(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt(selectedCityKey, id);
+  }
+
+  Future getUserSelectedCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.getInt(selectedCityKey) ?? 10;
   }
 
   getUserInfo() async {
@@ -113,10 +133,6 @@ class _NotesViewState extends State<NotesAll> {
       _notesService.allNotes(false);
     });
     // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
-  }
-
-  setSelectedCity(int id) {
-    _notesService.setSelectedId(id);
   }
 
   @override
@@ -212,6 +228,8 @@ class _NotesViewState extends State<NotesAll> {
                                                   Text(e['name'].toString())))
                                           .toList(),
                                       onChanged: ((value) {
+                                        setUserSelectedCity(
+                                            int.parse(value.toString()));
                                         setSelectedCity(
                                             int.parse(value.toString()));
                                       }))),
@@ -274,24 +292,16 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                   child: Container(
                     height: 4,
                     width: 60,
-                    color: Color.fromARGB(255, 240, 240, 240),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(155.0, 1.0, 155.0, 1.0),
-                child: Container(
-                  width: 5.0,
-                  height: 5.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: const Color.fromARGB(255, 91, 91, 91),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: const Color.fromARGB(255, 91, 91, 91),
+                    ),
                   ),
                 ),
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(7.0),
                   child: Card(
                     elevation: 0,
                     child: SizedBox.square(
