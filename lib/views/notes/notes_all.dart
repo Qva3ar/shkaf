@@ -44,7 +44,8 @@ class _NotesViewState extends State<NotesAll> {
   @override
   void initState() {
     initializeSpref();
-    initUserSelectedCity();
+    var userSelectedId = getUserSelectedCity();
+
     _notesService = FirebaseCloudStorage();
     super.initState();
     _notesService.categoryNameForSheet.listen((value) {
@@ -56,18 +57,14 @@ class _NotesViewState extends State<NotesAll> {
     _notesService.setSelectedId(id);
   }
 
-  Future initUserSelectedCity() async {
-    prefs = await getUserSelectedCity();
-  }
-
   Future setUserSelectedCity(int id) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt(selectedCityKey, id);
   }
 
-  Future getUserSelectedCity() async {
+  getUserSelectedCity() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.getInt(selectedCityKey) ?? 10;
+    return prefs.getInt(selectedCityKey) ?? 10;
   }
 
   getUserInfo() async {
@@ -77,6 +74,9 @@ class _NotesViewState extends State<NotesAll> {
   initializeSpref() async {
     await SharedPreferences.getInstance().then((value) {
       prefs = value;
+      var cityId = prefs.getInt(selectedCityKey) ?? 10;
+      setSelectedCity(cityId);
+
       getUserInfo();
       context.read<AuthBloc>().add(const AuthEventInitialize());
       AuthService.firebase().auth?.listen((event) {
