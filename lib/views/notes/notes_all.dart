@@ -226,55 +226,25 @@ class _NotesViewState extends State<NotesAll> {
                           onRefresh: _pullRefresh,
                           child: Stack(
                             children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 20, top: 5),
-                                      child: DropdownButton(
-                                          value: _notesService
-                                              .selectedCityStream.value,
-                                          items: TURKEY
-                                              .map((e) => DropdownMenuItem(
-                                                  value: e['id'],
-                                                  child: Text(
-                                                      e['name'].toString())))
-                                              .toList(),
-                                          onChanged: ((value) {
-                                            setUserSelectedCity(
-                                                int.parse(value.toString()));
-                                            setSelectedCity(
-                                                int.parse(value.toString()));
-                                          }))),
-                                  Expanded(child: SearchBar())
-                                ],
-                              ),
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 20, top: 5),
+                                  child: DropdownButton(
+                                      value: _notesService
+                                          .selectedCityStream.value,
+                                      items: TURKEY
+                                          .map((e) => DropdownMenuItem(
+                                              value: e['id'],
+                                              child:
+                                                  Text(e['name'].toString())))
+                                          .toList(),
+                                      onChanged: ((value) {
+                                        setUserSelectedCity(
+                                            int.parse(value.toString()));
+                                        setSelectedCity(
+                                            int.parse(value.toString()));
+                                      }))),
 
-                              Row(
-                                children: [
-                                  Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 20, top: 5),
-                                      child: DropdownButton(
-                                          value: _notesService
-                                              .selectedCityStream.value,
-                                          items: TURKEY
-                                              .map((e) => DropdownMenuItem(
-                                                  value: e['id'],
-                                                  child: Text(
-                                                      e['name'].toString())))
-                                              .toList(),
-                                          onChanged: ((value) {
-                                            setUserSelectedCity(
-                                                int.parse(value.toString()));
-                                            setSelectedCity(
-                                                int.parse(value.toString()));
-                                          }))),
-                                  Expanded(
-                                    child: SearchBar(),
-                                  ),
-                                ],
-                              ),
                               SizedBox(
                                 child: NotesListView(
                                   notes: allNotes,
