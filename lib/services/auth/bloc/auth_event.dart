@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
@@ -18,9 +19,10 @@ class AuthEventGoToLogin extends AuthEvent {
 }
 
 class AuthEventLogIn extends AuthEvent {
-  final String email;
-  final String password;
-  const AuthEventLogIn(this.email, this.password);
+  final String? email;
+  final String? password;
+  UserCredential? user;
+  AuthEventLogIn(this.email, this.password, this.user);
 }
 
 class AuthEventRegister extends AuthEvent {

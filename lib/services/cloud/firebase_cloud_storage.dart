@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:mynotes/services/cloud/cloud_storage_exceptions.dart';
 import 'package:mynotes/views/categories/category_list.dart';
-import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:rxdart/subjects.dart';
 
 class FirebaseCloudStorage {
@@ -97,7 +94,7 @@ class FirebaseCloudStorage {
   }
 
   allNotes(bool load) {
-    const limit = 9;
+    const limit = 10;
     var addDt = DateTime.now();
     Query<Map<String, dynamic>> query;
     if (mainCategoryIdStream.value == 0) {
@@ -106,7 +103,7 @@ class FirebaseCloudStorage {
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(Duration(days: 30))))
+                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
           .orderBy(createdAtFieldName, descending: true);
     } else if (categoryIdStream.value == 0) {
       query = notes
@@ -115,7 +112,7 @@ class FirebaseCloudStorage {
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(Duration(days: 30))))
+                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
           .orderBy(createdAtFieldName, descending: true);
     } else {
       query = notes
@@ -124,7 +121,7 @@ class FirebaseCloudStorage {
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(Duration(days: 30))))
+                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
           .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
           .orderBy(createdAtFieldName, descending: true);
       ;
@@ -135,7 +132,7 @@ class FirebaseCloudStorage {
     }
 
     query.snapshots().map((event) {
-      if (event.docs.length > 0) {
+      if (event.docs.isNotEmpty) {
         lastDoc = event.docs[event.docs.length - 1];
       }
 
@@ -152,8 +149,9 @@ class FirebaseCloudStorage {
           if (record.createdAt.microsecondsSinceEpoch >
               shortAddDateRange.microsecondsSinceEpoch) {
             return true;
-          } else
+          } else {
             return false;
+          }
         }
         return true;
       }).toList();
@@ -182,7 +180,7 @@ class FirebaseCloudStorage {
         .startAfterDocument(lastDoc)
         .snapshots()
         .map((event) {
-      if (event.docs.length > 0) {
+      if (event.docs.isNotEmpty) {
         lastDoc = event.docs[event.docs.length - 1];
       }
 
@@ -223,7 +221,6 @@ class FirebaseCloudStorage {
       });
     } on FirebaseException catch (e) {
       // Caught an exception from Firebase.
-      print("Failed with error '${e.code}': ${e.message}");
       rethrow;
     }
   }

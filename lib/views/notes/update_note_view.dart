@@ -368,19 +368,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
           title: Text(
             context.loc.note,
           ),
-          actions: [
-            // IconButton(
-            //   onPressed: () async {
-            //     final text = _textController.text;
-            //     if (_note == null || text.isEmpty) {
-            //       await showCannotShareEmptyNoteDialog(context);
-            //     } else {
-            //       Share.share(text);
-            //     }
-            //   },
-            //   icon: const Icon(Icons.share),
-            // ),
-          ],
+          actions: const [],
         ),
         body: Form(
           key: _formKey,

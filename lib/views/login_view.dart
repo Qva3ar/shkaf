@@ -169,17 +169,18 @@ class _LoginViewState extends State<LoginView> {
                     final email = _email.text.trim();
                     final password = _password.text;
                     context.read<AuthBloc>().add(
-                          AuthEventLogIn(
-                            email,
-                            password,
-                          ),
+                          AuthEventLogIn(email, password, null),
                         );
                   },
                   child: const Text("Войти"),
                 ),
                 TextButton(
                     onPressed: () {
-                      signInGoogle();
+                      signInGoogle().then((user) {
+                        context.read<AuthBloc>().add(
+                              AuthEventLogIn(null, null, user),
+                            );
+                      });
                     },
                     child: const Text(
                       "Войти с помощью Google",

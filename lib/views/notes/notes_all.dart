@@ -12,14 +12,13 @@ import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
-import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../../models/cities.dart';
 import '../../services/auth/bloc/auth_state.dart';
 
 extension Count<T extends Iterable> on Stream<T> {
@@ -103,17 +102,13 @@ class _NotesViewState extends State<NotesAll> {
     }
   }
 
-  // showModal() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     isDismissible: true,
-  //     builder: (BuildContext context) {
-  //       log('show');
-  //       return bottomDetailsSheet(goToDetails);
-  //     },
-  //   );
-  // }
+  Future<void> openTelegramChannel() async {
+    final _url = Uri.parse("https://t.me/ShkafSupportTR");
+    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
+      // <--
+      throw Exception('Could not launch $_url');
+    }
+  }
 
   openWithCategory(ListViewArguments arg) {
     _notesService.setCategoryId(arg.categoryId);
@@ -122,9 +117,9 @@ class _NotesViewState extends State<NotesAll> {
         arguments: ListViewArguments(arg.categoryId, arg.mainCategoryId));
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
-    if (arg.categoryId != null) {
-      selectedCategory =
-          selectedCategory + " - " + getCategoryName(arg.categoryId);
+    if (arg.categoryId != 0) {
+      selectedCatLabel =
+          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
   }
@@ -153,7 +148,7 @@ class _NotesViewState extends State<NotesAll> {
                   if (snapshot.hasData) {
                     final noteCount = snapshot.data as List;
                     // final text = context.loc.notes_title(noteCount);
-                    return Text(noteCount.length.toString() + " " + userEmail);
+                    return Text("${noteCount.length} $userEmail");
                   } else {
                     return const Text('');
                   }
@@ -178,30 +173,44 @@ class _NotesViewState extends State<NotesAll> {
                   },
                   icon: Icon(Icons.person),
                 ),
-                state.user != null
-                    ? PopupMenuButton<MenuAction>(
-                        onSelected: (value) async {
-                          switch (value) {
-                            case MenuAction.logout:
-                              final shouldLogout =
-                                  await showLogOutDialog(context);
-                              if (shouldLogout) {
-                                context.read<AuthBloc>().add(
-                                      const AuthEventLogOut(),
-                                    );
-                              }
-                          }
-                        },
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem<MenuAction>(
+                PopupMenuButton<MenuAction>(
+                  onSelected: (value) async {
+                    switch (value) {
+                      case MenuAction.logout:
+                        final shouldLogout = await showLogOutDialog(context);
+                        if (shouldLogout) {
+                          context.read<AuthBloc>().add(
+                                const AuthEventLogOut(),
+                              );
+                        }
+                        break;
+
+                      case MenuAction.login:
+                        Navigator.of(context).pushNamed(login);
+                        break;
+
+                      case MenuAction.writeUs:
+                        openTelegramChannel();
+                    }
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      state.user != null
+                          ? const PopupMenuItem<MenuAction>(
                               value: MenuAction.logout,
-                              child: Text(context.loc.logout_button),
+                              child: Text("Выйти"),
+                            )
+                          : const PopupMenuItem<MenuAction>(
+                              value: MenuAction.login,
+                              child: Text("Войти"),
                             ),
-                          ];
-                        },
-                      )
-                    : Container()
+                      const PopupMenuItem<MenuAction>(
+                        value: MenuAction.writeUs,
+                        child: Text("Напишите нам"),
+                      ),
+                    ];
+                  },
+                )
               ],
             ),
             body: StreamBuilder(
@@ -337,7 +346,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(left: 10),
+                                  padding: const EdgeInsets.only(left: 10),
                                   child: Text(
                                     u['name'].toString(),
                                     style: const TextStyle(
