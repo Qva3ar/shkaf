@@ -47,7 +47,7 @@ class _NotesViewState extends State<UserNotesView> {
             if (snapshot.hasData) {
               final noteCount = snapshot.data ?? 0;
               final text = context.loc.notes_title(noteCount);
-              return Text(text + " " + email);
+              return Text("$text $email");
             } else {
               return const Text('');
             }
@@ -70,6 +70,13 @@ class _NotesViewState extends State<UserNotesView> {
                           const AuthEventLogOut(),
                         );
                   }
+                  break;
+                case MenuAction.writeUs:
+                  // TODO: Handle this case.
+                  break;
+                case MenuAction.login:
+                  // TODO: Handle this case.
+                  break;
               }
             },
             itemBuilder: (context) {

@@ -64,6 +64,7 @@ dependencies:
   google_sign_in: ^5.4.3
   url_launcher: ^6.1.7
   cached_network_image: ^3.2.3
+  google_sign_in_web: ^0.10.2+1
 
 dev_dependencies:
  

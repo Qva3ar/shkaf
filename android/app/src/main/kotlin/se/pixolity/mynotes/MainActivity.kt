@@ -1,4 +1,4 @@
-package se.pixolity.mynotes
+package com.aturdiyev.mynotes
 
 import io.flutter.embedding.android.FlutterActivity
 

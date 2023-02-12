@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:mynotes/views/categories/category_list.dart';
-
 Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
 
 class Welcome {

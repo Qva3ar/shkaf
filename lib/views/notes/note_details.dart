@@ -171,7 +171,6 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   note.imagesUrls!.mapIndexed((entry, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    log(index.toString());
                                     _controller.animateToPage(index);
                                   },
                                   child: Container(

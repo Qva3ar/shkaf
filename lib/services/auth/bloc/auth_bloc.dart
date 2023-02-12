@@ -89,7 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       var email = prefs.getString("email") ?? "";
       var password = prefs.getString("password") ?? "";
 
-      if (provider.currentUser == null) {
+      if (provider.currentUser == null && email != "") {
         try {
           await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: email,
@@ -144,14 +144,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final email = event.email;
       final password = event.password;
       final prefs = await SharedPreferences.getInstance();
-
+      var isGoogleSignIn = false;
       try {
-        final user = await provider.logIn(
-          email: email,
-          password: password,
-        );
+        var user = null;
+        if (event.user != null) {
+          user = AuthUser.fromFirebase(event.user!.user!);
+          isGoogleSignIn = true;
+        } else {
+          user = await provider.logIn(
+            email: email!,
+            password: password!,
+          );
+        }
 
-        if (user.isEmailVerified != null && user.isEmailVerified == false) {
+        if (!isGoogleSignIn &&
+            user?.isEmailVerified != null &&
+            user?.isEmailVerified == false) {
           emit(
             const AuthStateLoggedOut(
                 exception: null, isLoading: false, isLogin: false),
@@ -162,8 +170,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             const AuthStateLoggedOut(
                 exception: null, isLoading: false, isLogin: false),
           );
-          await prefs.setString('email', email);
-          await prefs.setString('password', password);
+          if (event.user == null) {
+            await prefs.setString('email', email!);
+            await prefs.setString('password', password!);
+          }
+
           emit(AuthStateLoggedIn(
             user: user,
             isLoading: false,

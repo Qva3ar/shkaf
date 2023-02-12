@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 
 class UserDetails extends StatelessWidget {
-  UserDetails({Key? key}) : super(key: key);
+  const UserDetails({Key? key}) : super(key: key);
   // final currentUser = AuthService.firebase().currentUser;
   @override
   Widget build(BuildContext context) {

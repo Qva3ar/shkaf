@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,13 +7,11 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
-import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
-import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/user/user_details.dart';
@@ -23,10 +19,8 @@ import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'firebase_options.dart';
-import 'views/notes/create_note_view.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
