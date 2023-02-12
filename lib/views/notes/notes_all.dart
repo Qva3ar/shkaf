@@ -16,6 +16,7 @@ import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
+import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -246,6 +247,32 @@ class _NotesViewState extends State<NotesAll> {
                                                 int.parse(value.toString()));
                                           }))),
                                   Expanded(child: SearchBar())
+                                ],
+                              ),
+
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 20, top: 5),
+                                      child: DropdownButton(
+                                          value: _notesService
+                                              .selectedCityStream.value,
+                                          items: TURKEY
+                                              .map((e) => DropdownMenuItem(
+                                                  value: e['id'],
+                                                  child: Text(
+                                                      e['name'].toString())))
+                                              .toList(),
+                                          onChanged: ((value) {
+                                            setUserSelectedCity(
+                                                int.parse(value.toString()));
+                                            setSelectedCity(
+                                                int.parse(value.toString()));
+                                          }))),
+                                  Expanded(
+                                    child: SearchBar(),
+                                  ),
                                 ],
                               ),
                               SizedBox(

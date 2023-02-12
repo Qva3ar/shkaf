@@ -17,7 +17,8 @@ class SearchBar extends StatelessWidget {
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.only(left: 20.0),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                ),
                 labelText: 'Поиск',
               ),
             ),
