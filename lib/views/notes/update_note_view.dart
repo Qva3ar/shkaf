@@ -127,7 +127,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
-              shortAdd: true,
+              shortAdd: false,
             )
             .catchError((error, stackTrace) =>
                 {showSnackbar(context, error.toString())});
@@ -144,7 +144,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
-              shortAdd: true,
+              shortAdd: false,
             )
             .catchError(
                 (error, stackTrace) => showSnackbar(context, error.toString()));

@@ -21,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
