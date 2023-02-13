@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
@@ -10,6 +11,8 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
+import 'package:mynotes/utilities/helpers/utilis-funs.dart';
+import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginView extends StatefulWidget {
@@ -142,6 +145,7 @@ class _LoginViewState extends State<LoginView> {
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 const Text(
                     "Введите ваши данные что бы иметь возможность создавать объявления"),
@@ -164,28 +168,42 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () async {
-                    final email = _email.text.trim();
-                    final password = _password.text;
-                    context.read<AuthBloc>().add(
-                          AuthEventLogIn(email, password, null),
-                        );
-                  },
-                  child: const Text("Войти"),
-                ),
-                TextButton(
-                    onPressed: () {
-                      signInGoogle().then((user) {
-                        context.read<AuthBloc>().add(
-                              AuthEventLogIn(null, null, user),
-                            );
-                      });
+                SizedBox(
+                  height: 40,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final email = _email.text.trim();
+                      final password = _password.text;
+                      context.read<AuthBloc>().add(
+                            AuthEventLogIn(email, password, null),
+                          );
                     },
-                    child: const Text(
-                      "Войти с помощью Google",
-                    )),
-                const SizedBox(height: 15),
+                    child: const Text("Войти"),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        child: (Image.asset(
+                      'assets/icons/google_icon.png',
+                      width: 32,
+                      height: 32,
+                    ))),
+                    TextButton(
+                        onPressed: () {
+                          signInGoogle().then((user) {
+                            context.read<AuthBloc>().add(
+                                  AuthEventLogIn(null, null, user),
+                                );
+                          });
+                        },
+                        child: const Text(
+                          "Войти с помощью Google",
+                        )),
+                  ],
+                ),
                 TextButton(
                   onPressed: () {
                     // context.read<AuthBloc>().add(
@@ -206,6 +224,29 @@ class _LoginViewState extends State<LoginView> {
                   },
                   child: const Text(
                     "Еще не зарегистрированы? Зарегистрируйтесь здесь!",
+                  ),
+                ),
+                const SizedBox(height: 15),
+                RichText(
+                  text: TextSpan(
+                    text: 'Регистрируясь на сервисе "Shkaf.in" вы принимаете ',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text:
+                            'Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.',
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => openUrl(
+                              'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline),
+                      ),
+                    ],
                   ),
                 )
               ],

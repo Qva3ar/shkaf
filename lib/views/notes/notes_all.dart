@@ -12,6 +12,7 @@ import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
+import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
@@ -70,6 +71,39 @@ class _NotesViewState extends State<NotesAll> {
 
   getUserInfo() async {
     isOldUser = prefs.getBool("isOldUser") ?? false;
+    // log(isOldUser.toString());
+    // if (isOldUser == false) {
+    //   return licenseAlertDialog(context);
+    // }
+  }
+
+  licenseAlertDialog(BuildContext context) {
+    Widget okButton = TextButton(
+      child: Text("Принимаю"),
+      onPressed: () {
+        isOldUser = true;
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Пользовательское соглашение"),
+      content: TextButton(
+        onPressed: openUrl(
+            'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
+        child: const Text(
+            'Регистрируясь на сервисе "Shkaf.in" вы принимаете Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.'),
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   initializeSpref() async {
@@ -100,14 +134,6 @@ class _NotesViewState extends State<NotesAll> {
           ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
-    }
-  }
-
-  Future<void> openTelegramChannel() async {
-    final _url = Uri.parse("https://t.me/ShkafSupportTR");
-    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
-      // <--
-      throw Exception('Could not launch $_url');
     }
   }
 
@@ -191,7 +217,7 @@ class _NotesViewState extends State<NotesAll> {
                         break;
 
                       case MenuAction.writeUs:
-                        openTelegramChannel();
+                        openUrl('https://t.me/ShkafSupportTR');
                     }
                   },
                   itemBuilder: (context) {
@@ -320,6 +346,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                       child: Center(
                         child: Text(
                           selectedCat,
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
