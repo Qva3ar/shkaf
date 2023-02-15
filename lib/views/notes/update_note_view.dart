@@ -99,6 +99,13 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     _textController.addListener(_textControllerListener);
   }
 
+  bool updateShortAdd(bool value) {
+    setState(() {
+      shortAdd = value;
+    });
+    return value;
+  }
+
   saveNote() async {
     if (_formKey.currentState!.validate()) {
       var imageUrls;
@@ -127,7 +134,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
-              shortAdd: false,
+              shortAdd: shortAdd,
             )
             .catchError((error, stackTrace) =>
                 {showSnackbar(context, error.toString())});
@@ -144,7 +151,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               mainCategoryId: mainCategoryId ?? 0,
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
-              shortAdd: false,
+              shortAdd: shortAdd,
             )
             .catchError(
                 (error, stackTrace) => showSnackbar(context, error.toString()));
@@ -422,7 +429,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     maxLines: null,
                     decoration: getInputDecoration("Заголовок"),
                   ),
-                  const SwitchShortAdds(),
+                  AppInheritedWidget(
+                      shortState: this, child: const SwitchShortAdds()),
                   const SizedBox(height: 10),
                   TextFormField(
                       maxLength: 350,
@@ -622,20 +630,9 @@ class SwitchShortAdds extends StatefulWidget {
 }
 
 class _SwitchShortAddsState extends State<SwitchShortAdds> {
-  bool shortAdd = true;
-
-  final MaterialStateProperty<Icon?> thumbIcon =
-      MaterialStateProperty.resolveWith<Icon?>(
-    (Set<MaterialState> states) {
-      if (states.contains(MaterialState.selected)) {
-        return const Icon(Icons.check);
-      }
-      return const Icon(Icons.close);
-    },
-  );
-
   @override
   Widget build(BuildContext context) {
+    final switchShortAddsState = AppInheritedWidget.of(context)!.shortState;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -645,14 +642,31 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
           child: Text('14-дневное объявление'),
         ),
         Switch(
-          value: shortAdd,
-          onChanged: (bool value) {
+          value: switchShortAddsState.shortAdd,
+          onChanged: (value) {
             setState(() {
-              shortAdd = value;
+              switchShortAddsState.updateShortAdd(value);
             });
           },
         ),
       ],
     );
+  }
+}
+
+class AppInheritedWidget extends InheritedWidget {
+  final _CreateUpdateNoteViewState shortState;
+
+  const AppInheritedWidget(
+      {Key? key, required Widget child, required this.shortState})
+      : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(AppInheritedWidget oldWidget) {
+    return shortState.shortAdd != oldWidget.shortState.shortAdd;
+  }
+
+  static AppInheritedWidget? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType();
   }
 }

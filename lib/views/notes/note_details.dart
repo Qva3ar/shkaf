@@ -32,6 +32,13 @@ class NoteDetailsView extends StatefulWidget {
 
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
+  bool _isVisible = true;
+
+  void showPhoneNumber() {
+    setState(() {
+      _isVisible = !_isVisible;
+    });
+  }
 
   String? get userId => AuthService.firebase().currentUser?.id;
   late final FirebaseCloudStorage _notesService;
@@ -260,11 +267,17 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontWeight: FontWeight.w400,
                                 )),
                             const SizedBox(height: 25),
-                            Text(note.phone ?? "",
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                )),
+                            ElevatedButton(
+                                onPressed: showPhoneNumber,
+                                child: const Text('Показать номер телефона')),
+                            Visibility(
+                              visible: _isVisible,
+                              child: Text(note.phone ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                            ),
                             const SizedBox(height: 25),
                             note.url != ''
                                 ? Column(
