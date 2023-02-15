@@ -32,7 +32,7 @@ class NoteDetailsView extends StatefulWidget {
 
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
-  bool _isVisible = true;
+  bool _isVisible = false;
 
   void showPhoneNumber() {
     setState(() {
@@ -83,7 +83,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     final CarouselController _controller = CarouselController();
     return Scaffold(
         appBar: AppBar(
-          title: Text(""),
+          title: const Text(""),
           actions: [
             // IconButton(
             //   onPressed: () async {
