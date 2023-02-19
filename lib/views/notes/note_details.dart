@@ -267,9 +267,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontWeight: FontWeight.w400,
                                 )),
                             const SizedBox(height: 25),
-                            ElevatedButton(
-                                onPressed: showPhoneNumber,
-                                child: const Text('Показать номер телефона')),
+                            Visibility(
+                              visible: !_isVisible,
+                              child: ElevatedButton(
+                                  onPressed: showPhoneNumber,
+                                  child: const Text('Показать номер телефона')),
+                            ),
                             Visibility(
                               visible: _isVisible,
                               child: Text(note.phone ?? "",
