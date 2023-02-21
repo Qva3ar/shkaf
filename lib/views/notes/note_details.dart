@@ -24,6 +24,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/cloud/cloud_storage_constants.dart';
 
+enum ReportCause { category, forbidden, obscene, fraud, spam, other }
+
 class NoteDetailsView extends StatefulWidget {
   const NoteDetailsView({Key? key}) : super(key: key);
 
@@ -33,12 +35,21 @@ class NoteDetailsView extends StatefulWidget {
 
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
+  ReportCause? _report = ReportCause.category;
   bool _isVisible = false;
   int _current = 0;
+
   void showPhoneNumber() {
     setState(() {
       _isVisible = !_isVisible;
     });
+  }
+
+  selectReportCause(ReportCause value) {
+    setState(() {
+      _report = value;
+    });
+    return value.index;
   }
 
   String? get userId => AuthService.firebase().currentUser?.id;
@@ -329,10 +340,141 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             ),
                                           ],
                                         ),
-                                      )
+                                      ),
                                     ],
                                   )
-                                : Container()
+                                : Container(),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 20.0,
+                                ),
+                                TextButton(
+                                  onPressed: () => showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text(
+                                        'Выберите причину',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      content: StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              StateSetter setState) {
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            ListTile(
+                                              title: const Text(
+                                                  'Неверная категория'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.category,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            ListTile(
+                                              title: const Text(
+                                                  'Запрещенный товар'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.forbidden,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            ListTile(
+                                              title: const Text(
+                                                  'Непристойное содержание'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.obscene,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            ListTile(
+                                              title:
+                                                  const Text('Мошенничество'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.fraud,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Спам'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.spam,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Другое'),
+                                              leading: Radio<ReportCause>(
+                                                value: ReportCause.other,
+                                                groupValue: _report,
+                                                onChanged:
+                                                    (ReportCause? value) {
+                                                  setState(() {
+                                                    _report = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Отмена'),
+                                          child: const Text('Отмена'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, 'Отправить');
+                                            selectReportCause();
+                                          },
+                                          child: const Text('Отправить'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Пожаловаться',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
 
                             // ElevatedButton(
                             //     onPressed: () {
