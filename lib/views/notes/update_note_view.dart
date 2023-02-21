@@ -114,9 +114,17 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       });
       if (isNewImages) {
         if (kIsWeb) {
-          imageUrls = await uploadFilesWEB(imagefiles!);
+          imageUrls = await uploadFilesWEB(imagefiles!).catchError((e) {
+            setState(() {
+              isSaving = false;
+            });
+          });
         } else {
-          imageUrls = await uploadFiles(imagefiles!);
+          imageUrls = await uploadFiles(imagefiles!).catchError((e) {
+            setState(() {
+              isSaving = false;
+            });
+          });
         }
         await _notesService.removeImages(oldImageUrls);
       }

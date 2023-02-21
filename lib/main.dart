@@ -17,6 +17,7 @@ import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/user/user_details.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'firebase_options.dart';
 
@@ -25,63 +26,71 @@ void main() async {
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    MaterialApp(
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primaryColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white, foregroundColor: Colors.black),
-          bottomSheetTheme:
-              const BottomSheetThemeData(backgroundColor: Colors.black54)),
-      home: firebase != null
-          ? BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const HomePage(),
-            )
-          : Container(),
-      // home: const NotesAll(),
-      routes: {
-        createNoteRoute: (context) => const UpdateNoteView(),
-        updateNoteRoute: (context) => const UpdateNoteView(),
-        login: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const LoginView(),
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://0c73491e5beb4ed086eca37c648a3183@o4504716753174528.ingest.sentry.io/4504716754092032';
+    // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+    // We recommend adjusting this value in production.
+    options.tracesSampleRate = 1.0;
+  },
+      appRunner: () => runApp(
+            MaterialApp(
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                  primaryColor: Colors.white,
+                  appBarTheme: const AppBarTheme(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black),
+                  bottomSheetTheme: const BottomSheetThemeData(
+                      backgroundColor: Colors.black54)),
+              home: firebase != null
+                  ? BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const HomePage(),
+                    )
+                  : Container(),
+              // home: const NotesAll(),
+              routes: {
+                createNoteRoute: (context) => const UpdateNoteView(),
+                updateNoteRoute: (context) => const UpdateNoteView(),
+                login: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const LoginView(),
+                    ),
+                allNotes: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const NotesAll(),
+                    ),
+                noteDetailsRoute: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const NoteDetailsView(),
+                    ),
+                userDetails: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: UserDetails(),
+                    ),
+                userNotes: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const UserNotesView(),
+                    ),
+                register: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const RegisterView(),
+                    ),
+                forgotPassword: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const ForgotPasswordView(),
+                    ),
+                emailVerification: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const VerifyEmailView(),
+                    ),
+              },
             ),
-        allNotes: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const NotesAll(),
-            ),
-        noteDetailsRoute: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const NoteDetailsView(),
-            ),
-        userDetails: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: UserDetails(),
-            ),
-        userNotes: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const UserNotesView(),
-            ),
-        register: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const RegisterView(),
-            ),
-        forgotPassword: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const ForgotPasswordView(),
-            ),
-        emailVerification: (context) => BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(FirebaseAuthProvider()),
-              child: const VerifyEmailView(),
-            ),
-      },
-    ),
-  );
+          ));
 }
 
 class HomePage extends StatelessWidget {

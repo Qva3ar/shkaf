@@ -65,6 +65,7 @@ dependencies:
   url_launcher: ^6.1.7
   cached_network_image: ^3.2.3
   google_sign_in_web: ^0.10.2+1
+  sentry_flutter: ^6.20.1
 
 dev_dependencies:
  
