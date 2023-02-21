@@ -19,6 +19,7 @@ import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/shared/gallery.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/cloud/cloud_storage_constants.dart';
@@ -33,7 +34,7 @@ class NoteDetailsView extends StatefulWidget {
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
   bool _isVisible = false;
-
+  int _current = 0;
   void showPhoneNumber() {
     setState(() {
       _isVisible = !_isVisible;
@@ -79,7 +80,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   @override
   Widget build(BuildContext context) {
     // createOrGetExistingNote(context);
-    int _current = 0;
+
     final CarouselController _controller = CarouselController();
     return Scaffold(
         appBar: AppBar(
@@ -172,31 +173,42 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             ))
                                     : Image.asset(
                                         'assets/images/img_placeholder.jpeg')),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children:
-                                  note.imagesUrls!.mapIndexed((entry, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    _controller.animateToPage(index);
-                                  },
-                                  child: Container(
-                                    width: 5.0,
-                                    height: 5.0,
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 4.0),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: (Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black)
-                                            .withOpacity(
-                                                _current == index ? 0.9 : 0.4)),
-                                  ),
-                                );
-                              }).toList(),
+                            const SizedBox(
+                              height: 10,
                             ),
+                            Center(
+                              child: AnimatedSmoothIndicator(
+                                activeIndex: _current,
+                                count: note.imagesUrls!.length,
+                                effect: const WormEffect(
+                                    dotHeight: 7,
+                                    dotWidth: 7,
+                                    dotColor: Colors.grey,
+                                    activeDotColor: Colors.black),
+                              ),
+                            ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children:
+                            //       note.imagesUrls!.mapIndexed((entry, index) {
+                            //     return GestureDetector(
+                            //       onTap: () {
+                            //         _controller.animateToPage(index);
+                            //       },
+                            //       child: Container(
+                            //         width: 5.0,
+                            //         height: 5.0,
+                            //         margin: const EdgeInsets.symmetric(
+                            //             vertical: 8.0, horizontal: 4.0),
+                            //         decoration: BoxDecoration(
+                            //             shape: BoxShape.circle,
+                            //             color: ( Colors.black)
+                            //                 .withOpacity(
+                            //                     _current == index ? 0.9 : 0.4)),
+                            //       ),
+                            //     );
+                            //   }).toList(),
+                            // ),
                             const SizedBox(height: 15),
                             Text(
                               getFormattedDate(note.createdAt),
