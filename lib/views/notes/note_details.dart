@@ -36,6 +36,7 @@ class NoteDetailsView extends StatefulWidget {
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
   ReportCause? _report = ReportCause.category;
+  late final FirebaseCloudStorage _notesService;
   bool _isVisible = false;
   int _current = 0;
 
@@ -45,15 +46,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     });
   }
 
-  selectReportCause(ReportCause value) {
-    setState(() {
-      _report = value;
-    });
-    return value.index;
-  }
-
   String? get userId => AuthService.firebase().currentUser?.id;
-  late final FirebaseCloudStorage _notesService;
 
   removeNote(CloudNote note) async {
     await _notesService.deleteNote(documentId: note.documentId);
@@ -74,13 +67,33 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   @override
   void initState() {
     super.initState();
-
     _notesService = FirebaseCloudStorage();
     // _notesService.selectedNote.listen((value) {
     //   log(value!.desc);
     // });
     log("DETAILS");
     log(userId.toString());
+  }
+
+  void sendReport() {
+    CloudNote? note = _notesService.selectedNote.stream.value;
+    if (note != null) {
+      note.reports?.add(_report!.index);
+      log(note.reports.toString());
+      _notesService.updateNote(
+          categoryId: note.categoryId!,
+          documentId: note.documentId,
+          text: note.text,
+          desc: note.desc,
+          mainCategoryId: note.mainCategoryId!,
+          cityId: note.cityId!,
+          price: note.price,
+          shortAdd: note.shortAdd,
+          imgUrls: note.imagesUrls,
+          phone: note.phone,
+          url: note.url,
+          reports: note.reports);
+    }
   }
 
   @override
@@ -368,8 +381,15 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
                                             ListTile(
-                                              title: const Text(
-                                                  'Неверная категория'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.category;
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                      'Неверная категория')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.category,
                                                 groupValue: _report,
@@ -382,8 +402,15 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               ),
                                             ),
                                             ListTile(
-                                              title: const Text(
-                                                  'Запрещенный товар'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.forbidden;
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                      'Запрещенный товар')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.forbidden,
                                                 groupValue: _report,
@@ -396,8 +423,15 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               ),
                                             ),
                                             ListTile(
-                                              title: const Text(
-                                                  'Непристойное содержание'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.obscene;
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                      'Непристойное содержание')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.obscene,
                                                 groupValue: _report,
@@ -410,8 +444,15 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               ),
                                             ),
                                             ListTile(
-                                              title:
-                                                  const Text('Мошенничество'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.fraud;
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                      'Мошенничество')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.fraud,
                                                 groupValue: _report,
@@ -424,7 +465,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               ),
                                             ),
                                             ListTile(
-                                              title: const Text('Спам'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.spam;
+                                                    });
+                                                  },
+                                                  child: const Text('Спам')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.spam,
                                                 groupValue: _report,
@@ -437,7 +485,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               ),
                                             ),
                                             ListTile(
-                                              title: const Text('Другое'),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _report =
+                                                          ReportCause.other;
+                                                    });
+                                                  },
+                                                  child: const Text('Другое')),
                                               leading: Radio<ReportCause>(
                                                 value: ReportCause.other,
                                                 groupValue: _report,
@@ -455,19 +510,23 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () =>
-                                              Navigator.pop(context, 'Отмена'),
+                                              Navigator.pop(context, 'false'),
                                           child: const Text('Отмена'),
                                         ),
                                         TextButton(
                                           onPressed: () {
-                                            Navigator.pop(context, 'Отправить');
-                                            selectReportCause();
+                                            Navigator.pop(context, 'true');
+                                            // selectReportCause();
                                           },
                                           child: const Text('Отправить'),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ).then((value) {
+                                    if (value == 'true') {
+                                      sendReport();
+                                    }
+                                  }),
                                   child: const Text(
                                     'Пожаловаться',
                                     style: TextStyle(color: Colors.red),

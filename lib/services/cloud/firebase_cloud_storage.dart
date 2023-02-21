@@ -59,6 +59,7 @@ class FirebaseCloudStorage {
     required int price,
     required bool shortAdd,
     List<String>? imgUrls,
+    List<int>? reports,
     String? phone,
     String? url,
   }) async {
@@ -74,7 +75,7 @@ class FirebaseCloudStorage {
         cityIdFieldName: cityId,
         phoneFieldName: phone,
         shortAddFieldName: shortAdd,
-
+        reportsFieldName: reports
         // createdAtFieldName: Timestamp.now()
       });
     } catch (e) {
