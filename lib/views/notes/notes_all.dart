@@ -109,21 +109,16 @@ class _NotesViewState extends State<NotesAll> {
   initializeSpref() async {
     await SharedPreferences.getInstance().then((value) {
       prefs = value;
-      var cityId = prefs.getInt(selectedCityKey) ?? 10;
+      var cityId = prefs.getInt(selectedCityKey) ?? 1;
       setSelectedCity(cityId);
 
       getUserInfo();
       context.read<AuthBloc>().add(const AuthEventInitialize());
-      AuthService.firebase().auth?.listen((event) {
-        log("User");
-        log(event.toString());
-      });
     });
   }
 
   @override
   didChangeDependencies() {
-    log("ALL NOTES CHASNGE");
     getArguments(context);
     _notesService.allNotes(false);
   }

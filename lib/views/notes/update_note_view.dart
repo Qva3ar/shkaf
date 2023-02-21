@@ -457,7 +457,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                   const SizedBox(height: 10),
                   TextFormField(
                       controller: _urlController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       decoration: getInputDecoration("Url")),
                   const SizedBox(height: 10),
 
@@ -647,7 +647,7 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
       children: [
         const Padding(
           padding: EdgeInsets.fromLTRB(0, 0, 8.0, 0),
-          child: Text('14-дневное объявление'),
+          child: Text('Короткое 14-дневное объявление'),
         ),
         Switch(
           value: switchShortAddsState.shortAdd,

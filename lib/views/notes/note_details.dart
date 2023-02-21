@@ -106,7 +106,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   case ConnectionState.active:
                     return SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 75),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -267,15 +267,18 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   fontWeight: FontWeight.w400,
                                 )),
                             const SizedBox(height: 25),
-                            Visibility(
-                              visible: !_isVisible,
-                              child: ElevatedButton(
-                                  onPressed: showPhoneNumber,
-                                  child: const Text('Показать номер телефона')),
-                            ),
+                            note.phone!.isNotEmpty
+                                ? Visibility(
+                                    visible: !_isVisible,
+                                    child: ElevatedButton(
+                                        onPressed: showPhoneNumber,
+                                        child: const Text(
+                                            'Показать номер телефона')),
+                                  )
+                                : Container(),
                             Visibility(
                               visible: _isVisible,
-                              child: Text(note.phone ?? "",
+                              child: SelectableText(note.phone ?? "",
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
