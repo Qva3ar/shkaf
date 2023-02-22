@@ -78,7 +78,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   void sendReport() {
     CloudNote? note = _notesService.selectedNote.stream.value;
     if (note != null) {
-      note.reports?.add(_report!.index);
+      note.reports?.add(_report!.index.toString());
       log(note.reports.toString());
       _notesService.updateNote(
           categoryId: note.categoryId!,

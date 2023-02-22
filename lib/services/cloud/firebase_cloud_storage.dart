@@ -59,7 +59,7 @@ class FirebaseCloudStorage {
     required int price,
     required bool shortAdd,
     List<String>? imgUrls,
-    List<int>? reports,
+    List<String>? reports,
     String? phone,
     String? url,
   }) async {

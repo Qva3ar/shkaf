@@ -17,7 +17,7 @@ class CloudNote {
   String? url;
   final DateTime createdAt;
   final List<String>? imagesUrls;
-  final List<int>? reports;
+  final List<String>? reports;
   final bool shortAdd;
   CloudNote({
     required this.documentId,
@@ -57,6 +57,8 @@ class CloudNote {
                 .toList()
             : [],
         reports = snapshot.data()['reports'] != null
-            ? (snapshot.data()['reports'] as List<int>).toList()
+            ? (snapshot.data()['reports'] as List<dynamic>)
+                .map((e) => e.toString())
+                .toList()
             : [];
 }
