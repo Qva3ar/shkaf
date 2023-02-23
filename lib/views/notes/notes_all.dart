@@ -170,7 +170,10 @@ class _NotesViewState extends State<NotesAll> {
                   if (snapshot.hasData) {
                     final noteCount = snapshot.data as List;
                     // final text = context.loc.notes_title(noteCount);
-                    return Text("${noteCount.length} $userEmail");
+                    return Text(
+                      userEmail,
+                      style: const TextStyle(fontSize: 18),
+                    );
                   } else {
                     return const Text('');
                   }
