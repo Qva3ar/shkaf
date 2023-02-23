@@ -98,6 +98,7 @@ flutter:
    - assets/json/
    - assets/icons/
    - assets/icons/google_icon.png
+   - assets/icons/googleplay.png
 
   generate: true
 

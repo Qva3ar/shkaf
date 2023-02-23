@@ -7,6 +7,7 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
+import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'firebase_options.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -168,6 +170,39 @@ class Palette {
       700: Color(0xff2e130e), //80%
       800: Color(0xff170907), //90%
       900: Color(0xff000000), //100%
+    },
+  );
+}
+
+Future<void> _showPlatformDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Наше приложение доступно в Google Play.'),
+        content: GestureDetector(
+          onTap: () {
+            openUrl(
+                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+          },
+          child: Container(
+            child: (Image.asset(
+              'assets/icons/googleplay.png',
+              width: 150,
+              height: 80,
+            )),
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ок'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
     },
   );
 }
