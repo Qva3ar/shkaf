@@ -18,7 +18,7 @@ import 'package:mynotes/views/user/user_details.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
+import 'package:in_app_update/in_app_update.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -26,6 +26,27 @@ void main() async {
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  InAppUpdate.checkForUpdate().then((updateInfo) {
+    if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+      if (updateInfo.immediateUpdateAllowed) {
+        // Perform immediate update
+        InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
+          if (appUpdateResult == AppUpdateResult.success) {
+            //App Update successful
+          }
+        });
+      } else if (updateInfo.flexibleUpdateAllowed) {
+        //Perform flexible update
+        InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
+          if (appUpdateResult == AppUpdateResult.success) {
+            //App Update successful
+            InAppUpdate.completeFlexibleUpdate();
+          }
+        });
+      }
+    }
+  });
   await SentryFlutter.init((options) {
     options.dsn =
         'https://0c73491e5beb4ed086eca37c648a3183@o4504716753174528.ingest.sentry.io/4504716754092032';
