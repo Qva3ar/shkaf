@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/loading/loading_screen.dart';
+import 'package:mynotes/services/analytics_route_obs.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
@@ -29,26 +30,30 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  InAppUpdate.checkForUpdate().then((updateInfo) {
-    if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-      if (updateInfo.immediateUpdateAllowed) {
-        // Perform immediate update
-        InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
-          if (appUpdateResult == AppUpdateResult.success) {
-            //App Update successful
-          }
-        });
-      } else if (updateInfo.flexibleUpdateAllowed) {
-        //Perform flexible update
-        InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
-          if (appUpdateResult == AppUpdateResult.success) {
-            //App Update successful
-            InAppUpdate.completeFlexibleUpdate();
-          }
-        });
+  FirebaseEvent.logScreenView('main');
+  if (!kIsWeb) {
+    InAppUpdate.checkForUpdate().then((updateInfo) {
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (updateInfo.immediateUpdateAllowed) {
+          // Perform immediate update
+          InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+            }
+          });
+        } else if (updateInfo.flexibleUpdateAllowed) {
+          //Perform flexible update
+          InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+              InAppUpdate.completeFlexibleUpdate();
+            }
+          });
+        }
       }
-    }
-  });
+    });
+  }
+
   await SentryFlutter.init((options) {
     options.dsn =
         'https://0c73491e5beb4ed086eca37c648a3183@o4504716753174528.ingest.sentry.io/4504716754092032';
@@ -173,36 +178,3 @@ class Palette {
     },
   );
 }
-
-// Future<void> _showPlatformDialog() async {
-//   return showDialog<void>(
-//     context: context,
-//     barrierDismissible: false,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: const Text('Наше приложение доступно в Google Play.'),
-//         content: GestureDetector(
-//           onTap: () {
-//             openUrl(
-//                 'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
-//           },
-//           child: Container(
-//             child: (Image.asset(
-//               'assets/icons/googleplay.png',
-//               width: 150,
-//               height: 80,
-//             )),
-//           ),
-//         ),
-//         actions: <Widget>[
-//           TextButton(
-//             child: const Text('Ок'),
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }

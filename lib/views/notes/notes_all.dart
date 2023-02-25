@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
@@ -21,6 +23,7 @@ import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../helpers/utils.dart';
 import '../../services/auth/bloc/auth_state.dart';
 
 extension Count<T extends Iterable> on Stream<T> {
@@ -47,6 +50,12 @@ class _NotesViewState extends State<NotesAll> {
   void initState() {
     initializeSpref();
     var userSelectedId = getUserSelectedCity();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (kIsWeb && getSmartPhoneOrTablet() == androidType) {
+        _showPlatformDialog(context);
+      }
+    });
 
     _notesService = FirebaseCloudStorage();
     super.initState();
@@ -167,16 +176,17 @@ class _NotesViewState extends State<NotesAll> {
               title: StreamBuilder(
                 stream: _notesService.movieStream,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final noteCount = snapshot.data as List;
-                    // final text = context.loc.notes_title(noteCount);
-                    return Text(
-                      userEmail,
-                      style: const TextStyle(fontSize: 18),
-                    );
-                  } else {
-                    return const Text('');
-                  }
+                  // if (snapshot.hasData) {
+                  //   final noteCount = snapshot.data as List;
+                  //   // final text = context.loc.notes_title(noteCount);
+                  //   return Text(
+                  //     userEmail,
+                  //     style: const TextStyle(fontSize: 18),
+                  //   );
+                  // } else {
+                  //   return const Text('');
+                  // }
+                  return const Text('ШКАФ');
                 },
               ),
               actions: [
@@ -449,6 +459,39 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
                 ]))
           ],
         ),
+      );
+    },
+  );
+}
+
+Future<void> _showPlatformDialog(context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Наше приложение доступно в Google Play.'),
+        content: GestureDetector(
+          onTap: () {
+            openUrl(
+                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+          },
+          child: Container(
+            child: (Image.asset(
+              'assets/icons/googleplay.png',
+              width: 150,
+              height: 80,
+            )),
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ок'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
       );
     },
   );

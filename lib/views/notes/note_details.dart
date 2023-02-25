@@ -22,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/analytics_route_obs.dart';
 import '../../services/cloud/cloud_storage_constants.dart';
 
 enum ReportCause { category, forbidden, obscene, fraud, spam, other }
@@ -67,11 +68,11 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   @override
   void initState() {
     super.initState();
+    FirebaseEvent.logScreenView('details');
     _notesService = FirebaseCloudStorage();
     // _notesService.selectedNote.listen((value) {
     //   log(value!.desc);
     // });
-    log("DETAILS");
     log(userId.toString());
   }
 
@@ -108,7 +109,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     final CarouselController _controller = CarouselController();
     return Scaffold(
         appBar: AppBar(
-          title: const Text(""),
+          title: const Text("ШКАФ"),
           actions: [
             // IconButton(
             //   onPressed: () async {

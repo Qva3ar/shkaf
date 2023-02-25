@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
+import 'package:mynotes/services/analytics_route_obs.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
@@ -55,7 +56,7 @@ class _LoginViewState extends State<LoginView> {
     //   }
     // });
     // _googleSignIn.signInSilently();
-
+    FirebaseEvent.logScreenView('login');
     super.initState();
 
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
