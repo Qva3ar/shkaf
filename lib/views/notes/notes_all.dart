@@ -45,6 +45,8 @@ class _NotesViewState extends State<NotesAll> {
   static const selectedCityKey = 'selectedCity';
   late final SharedPreferences prefs;
   String selectedCategory = "";
+  DraggableScrollableController controller =
+      new DraggableScrollableController();
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _NotesViewState extends State<NotesAll> {
     var userSelectedId = getUserSelectedCity();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (kIsWeb && getSmartPhoneOrTablet() == androidType) {
+      if (kIsWeb && !kDebugMode && getSmartPhoneOrTablet() == androidType) {
         _showPlatformDialog(context);
       }
     });
@@ -62,6 +64,7 @@ class _NotesViewState extends State<NotesAll> {
     _notesService.categoryNameForSheet.listen((value) {
       selectedCategory = value;
     });
+    make();
   }
 
   setSelectedCity(int id) {
@@ -84,6 +87,11 @@ class _NotesViewState extends State<NotesAll> {
     // if (isOldUser == false) {
     //   return licenseAlertDialog(context);
     // }
+  }
+
+  make() {
+    controller.animateTo(100,
+        duration: Duration(seconds: 2), curve: Curves.ease);
   }
 
   licenseAlertDialog(BuildContext context) {
@@ -124,6 +132,10 @@ class _NotesViewState extends State<NotesAll> {
       getUserInfo();
       context.read<AuthBloc>().add(const AuthEventInitialize());
     });
+  }
+
+  onSearch(String text) {
+    _notesService.allNotes(false, searchStr: text.toLowerCase());
   }
 
   @override
@@ -260,24 +272,32 @@ class _NotesViewState extends State<NotesAll> {
                           onRefresh: _pullRefresh,
                           child: Stack(
                             children: [
-                              Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 20, top: 5),
-                                  child: DropdownButton(
-                                      value: _notesService
-                                          .selectedCityStream.value,
-                                      items: TURKEY
-                                          .map((e) => DropdownMenuItem(
-                                              value: e['id'],
-                                              child:
-                                                  Text(e['name'].toString())))
-                                          .toList(),
-                                      onChanged: ((value) {
-                                        setUserSelectedCity(
-                                            int.parse(value.toString()));
-                                        setSelectedCity(
-                                            int.parse(value.toString()));
-                                      }))),
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 20, top: 5),
+                                      child: DropdownButton(
+                                          value: _notesService
+                                              .selectedCityStream.value,
+                                          items: TURKEY
+                                              .map((e) => DropdownMenuItem(
+                                                  value: e['id'],
+                                                  child: Text(
+                                                      e['name'].toString())))
+                                              .toList(),
+                                          onChanged: ((value) {
+                                            setUserSelectedCity(
+                                                int.parse(value.toString()));
+                                            setSelectedCity(
+                                                int.parse(value.toString()));
+                                          }))),
+                                  Expanded(
+                                      child: SearchBar(
+                                    searchcb: onSearch,
+                                  ))
+                                ],
+                              ),
 
                               SizedBox(
                                 child: NotesListView(
@@ -296,7 +316,7 @@ class _NotesViewState extends State<NotesAll> {
                                 ),
                               ),
                               bottomDetailsSheet(openWithCategory, 0.1, true,
-                                  selectedCategory),
+                                  selectedCategory, controller),
                               // ElevatedButton(
                               //     onPressed: showModal, child: Text("lick"))
                             ],
@@ -314,13 +334,39 @@ class _NotesViewState extends State<NotesAll> {
   }
 }
 
-Widget bottomDetailsSheet(Function fun, double initialSize,
-    bool isMainSelectable, String selectedCat) {
+Widget bottomDetailsSheet(
+    Function fun,
+    double initialSize,
+    bool isMainSelectable,
+    String selectedCat,
+    DraggableScrollableController controller) {
   return DraggableScrollableSheet(
     initialChildSize: initialSize,
     minChildSize: .1,
     maxChildSize: 1,
+    controller: controller,
     builder: (BuildContext context, ScrollController scrollController) {
+      // SchedulerBinding.instance.addPostFrameCallback((_) {
+      //   scrollController
+      //       .animateTo(20,
+      //           duration: Duration(milliseconds: 800), curve: Curves.easeIn)
+      //       .then((value) => scrollController.animateTo(0,
+      //           duration: Duration(milliseconds: 800),
+      //           curve: Curves.easeInBack));
+      // });
+
+      // open() {
+      //   controller.animateTo(
+      //     0.6,
+      //     duration: const Duration(milliseconds: 100),
+      //     curve: Curves.easeOutBack,
+      //   );
+      // }
+
+      // SchedulerBinding.instance.addPostFrameCallback((_) {
+      //   open();
+      // });
+
       return Container(
         // color: Color.fromARGB(255, 82, 99, 255),
         decoration: const BoxDecoration(

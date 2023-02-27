@@ -276,9 +276,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         _textController.text = widgetNote.text;
         _descController.text = widgetNote.desc;
         _priceController.text = widgetNote.price.toString();
-        _phoneController.text = widgetNote.phone != ""
-            ? maskFormatter.maskText(widgetNote.phone!)
-            : "";
+        _phoneController.text = widgetNote.phone != "" ? widgetNote.phone! : "";
         _categoryController.text = getCategoryName(widgetNote.categoryId ?? 0);
 
         _cityController.text = getCityName(widgetNote.cityId ?? 0);
@@ -356,7 +354,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isScrollControlled: true,
       isDismissible: true,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(selectCategory, 1, false, "Категории");
+        return bottomDetailsSheet(
+            selectCategory, 1, false, "Категории", controller);
       },
     );
   }
@@ -427,8 +426,25 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                       },
                       child: const Text("Выберите до 4 фото")),
                   const SizedBox(height: 10),
+                  RichText(
+                    text: const TextSpan(
+                      children: [
+                        WidgetSpan(
+                          child: Icon(Icons.error, size: 12),
+                        ),
+                        TextSpan(
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 95, 95, 95)),
+                          text:
+                              "Слова в заголовке будут использованы для поиска",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
                   TextFormField(
-                    maxLength: 35,
+                    maxLength: 45,
                     onChanged: (text) => setState(() {}),
                     controller: _textController,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -437,6 +453,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     maxLines: null,
                     decoration: getInputDecoration("Заголовок"),
                   ),
+
                   AppInheritedWidget(
                       shortState: this, child: const SwitchShortAdds()),
                   const SizedBox(height: 10),
@@ -464,7 +481,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    inputFormatters: [maskFormatter],
                     decoration: getInputDecoration("Номер телефона"),
                   ),
                   const SizedBox(height: 15),

@@ -66,7 +66,9 @@ class FirebaseCloudStorage {
     try {
       await notes.doc(documentId).update({
         textFieldName: text,
+        textSearchFieldName: convertToArrayForSearch(text.toLowerCase()),
         descFieldName: desc,
+        descSearchFieldName: desc.split(" "),
         imageUrls: imgUrls,
         urlFieldName: url,
         priceFieldName: price,
@@ -94,7 +96,7 @@ class FirebaseCloudStorage {
     return allNotes;
   }
 
-  allNotes(bool load) {
+  allNotes(bool load, {String? searchStr}) {
     const limit = 10;
     var addDt = DateTime.now();
     Query<Map<String, dynamic>> query;
@@ -125,7 +127,12 @@ class FirebaseCloudStorage {
                   Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
           .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
           .orderBy(createdAtFieldName, descending: true);
-      ;
+    }
+    List<String> arr = [];
+
+    if (searchStr != null && searchStr.isNotEmpty) {
+      arr.add(searchStr);
+      query = query.where(textSearchFieldName, arrayContains: searchStr);
     }
 
     if (load) {
@@ -236,6 +243,22 @@ class FirebaseCloudStorage {
     } catch (e) {
       print("Error deleting db from cloud: $e");
     }
+  }
+
+  List<String> convertToArrayForSearch(searchStr) {
+    List<String> listnumber = searchStr.split("");
+    List<String> output = []; // int -> String
+    for (int i = 0; i < listnumber.length; i++) {
+      if (i != listnumber.length - 1) {
+        output.add(listnumber[i]); //
+      }
+      List<String> temp = [listnumber[i]];
+      for (int j = i + 1; j < listnumber.length; j++) {
+        temp.add(listnumber[j]); //
+        output.add((temp.join()));
+      }
+    }
+    return output;
   }
 
   static final FirebaseCloudStorage _shared =

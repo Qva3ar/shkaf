@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,5 +15,16 @@ openUrl(String urlString) async {
   if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
     // <--
     throw Exception('Could not launch $url');
+  }
+}
+
+class Debounce {
+  Timer? _debounceTimer;
+  void debouncing({required Function() fn, int waitForMs = 500}) {
+    // if this function is called before 500ms [waitForMs] expired
+    //cancel the previous call
+    _debounceTimer?.cancel();
+    // set a 500ms [waitForMs] timer for the [fn] to be called
+    _debounceTimer = Timer(Duration(milliseconds: waitForMs), fn);
   }
 }
