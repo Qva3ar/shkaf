@@ -354,8 +354,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isScrollControlled: true,
       isDismissible: true,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(
-            selectCategory, 1, false, "Категории", controller);
+        return bottomDetailsSheet(selectCategory, 1, false, "Категории");
       },
     );
   }

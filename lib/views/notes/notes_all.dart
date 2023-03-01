@@ -316,7 +316,7 @@ class _NotesViewState extends State<NotesAll> {
                                 ),
                               ),
                               bottomDetailsSheet(openWithCategory, 0.1, true,
-                                  selectedCategory, controller),
+                                  selectedCategory),
                               // ElevatedButton(
                               //     onPressed: showModal, child: Text("lick"))
                             ],
@@ -335,16 +335,15 @@ class _NotesViewState extends State<NotesAll> {
 }
 
 Widget bottomDetailsSheet(
-    Function fun,
-    double initialSize,
-    bool isMainSelectable,
-    String selectedCat,
-    DraggableScrollableController controller) {
+  Function fun,
+  double initialSize,
+  bool isMainSelectable,
+  String selectedCat,
+) {
   return DraggableScrollableSheet(
     initialChildSize: initialSize,
     minChildSize: .1,
     maxChildSize: 1,
-    controller: controller,
     builder: (BuildContext context, ScrollController scrollController) {
       // SchedulerBinding.instance.addPostFrameCallback((_) {
       //   scrollController
