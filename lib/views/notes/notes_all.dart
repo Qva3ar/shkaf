@@ -198,7 +198,11 @@ class _NotesViewState extends State<NotesAll> {
                   // } else {
                   //   return const Text('');
                   // }
-                  return const Text('ШКАФ');
+                  return Image.asset(
+                    'assets/icons/shkaf.png',
+                    width: 80,
+                    height: 32,
+                  );
                 },
               ),
               actions: [
@@ -274,9 +278,13 @@ class _NotesViewState extends State<NotesAll> {
                             children: [
                               Row(
                                 children: [
+                                  Expanded(
+                                      child: SearchBar(
+                                    searchcb: onSearch,
+                                  )),
                                   Padding(
                                       padding: const EdgeInsets.only(
-                                          left: 20, top: 5),
+                                          left: 5, top: 5, right: 20),
                                       child: DropdownButton(
                                           value: _notesService
                                               .selectedCityStream.value,
@@ -291,11 +299,7 @@ class _NotesViewState extends State<NotesAll> {
                                                 int.parse(value.toString()));
                                             setSelectedCity(
                                                 int.parse(value.toString()));
-                                          }))),
-                                  Expanded(
-                                      child: SearchBar(
-                                    searchcb: onSearch,
-                                  ))
+                                          })))
                                 ],
                               ),
 
@@ -322,10 +326,10 @@ class _NotesViewState extends State<NotesAll> {
                             ],
                           ));
                     } else {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }
                   default:
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                 }
               },
             ),

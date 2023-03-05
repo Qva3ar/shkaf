@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
 import 'package:mynotes/views/categories/category_list.dart';
@@ -46,6 +47,7 @@ class _NotesListViewState extends State<NotesListView> {
     if (controller.offset >= controller.position.maxScrollExtent &&
         !controller.position.outOfRange) {
       print("at the end of list");
+
       _notesService.allNotes(true);
     }
   }
@@ -55,6 +57,7 @@ class _NotesListViewState extends State<NotesListView> {
     BuildContext context,
   ) {
     List<CloudNote> notes = widget.notes.toList();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 60, top: 60),
       child: ListView(
@@ -172,7 +175,7 @@ class _NotesListViewState extends State<NotesListView> {
                 )
               : const Center(
                   child: Text("Нет записей"),
-                )
+                ),
         ],
       ),
     );
