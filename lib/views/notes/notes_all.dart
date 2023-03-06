@@ -1,14 +1,8 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
-import 'package:mynotes/extensions/buildcontext/loc.dart';
-import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
@@ -19,9 +13,7 @@ import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
-import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../helpers/utils.dart';
 import '../../services/auth/bloc/auth_state.dart';
@@ -45,8 +37,7 @@ class _NotesViewState extends State<NotesAll> {
   static const selectedCityKey = 'selectedCity';
   late final SharedPreferences prefs;
   String selectedCategory = "";
-  DraggableScrollableController controller =
-      new DraggableScrollableController();
+  DraggableScrollableController controller = DraggableScrollableController();
 
   @override
   void initState() {
@@ -62,9 +53,10 @@ class _NotesViewState extends State<NotesAll> {
     _notesService = FirebaseCloudStorage();
     super.initState();
     _notesService.categoryNameForSheet.listen((value) {
-      selectedCategory = value;
+      setState(() {
+        selectedCategory = value;
+      });
     });
-    make();
   }
 
   setSelectedCity(int id) {
@@ -83,15 +75,18 @@ class _NotesViewState extends State<NotesAll> {
 
   getUserInfo() async {
     isOldUser = prefs.getBool("isOldUser") ?? false;
-    // log(isOldUser.toString());
-    // if (isOldUser == false) {
-    //   return licenseAlertDialog(context);
-    // }
   }
 
-  make() {
-    controller.animateTo(100,
-        duration: Duration(seconds: 2), curve: Curves.ease);
+  showModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return bottomDetailsSheet(openWithCategory, 1, true,
+            _notesService.categoryNameForSheet.value);
+      },
+    );
   }
 
   licenseAlertDialog(BuildContext context) {
@@ -128,20 +123,22 @@ class _NotesViewState extends State<NotesAll> {
       prefs = value;
       var cityId = prefs.getInt(selectedCityKey) ?? 1;
       setSelectedCity(cityId);
-
+      FocusScope.of(context).unfocus();
       getUserInfo();
       context.read<AuthBloc>().add(const AuthEventInitialize());
     });
   }
 
   onSearch(String text) {
-    _notesService.allNotes(false, searchStr: text.toLowerCase());
+    _notesService.setSearchStr(text);
+    _notesService.allNotes(false);
   }
 
   @override
   didChangeDependencies() {
     getArguments(context);
-    _notesService.allNotes(false);
+
+    // _notesService.allNotes(false);
   }
 
   getArguments(context) {
@@ -156,8 +153,7 @@ class _NotesViewState extends State<NotesAll> {
   openWithCategory(ListViewArguments arg) {
     _notesService.setCategoryId(arg.categoryId);
     _notesService.setMainCategoryId(arg.mainCategoryId);
-    Navigator.popAndPushNamed(context, allNotes,
-        arguments: ListViewArguments(arg.categoryId, arg.mainCategoryId));
+    _notesService.allNotes(false);
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
@@ -167,17 +163,8 @@ class _NotesViewState extends State<NotesAll> {
     _notesService.categoryNameForSheet.add(selectedCatLabel);
   }
 
-  Future<void> _pullRefresh() async {
-    setState(() {
-      _notesService.allNotes(false);
-    });
-    // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
-  }
-
   @override
   Widget build(BuildContext context) {
-    // context.read<AuthBloc>().add(const AuthEventInitialize());
-
     return BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -188,16 +175,6 @@ class _NotesViewState extends State<NotesAll> {
               title: StreamBuilder(
                 stream: _notesService.movieStream,
                 builder: (context, snapshot) {
-                  // if (snapshot.hasData) {
-                  //   final noteCount = snapshot.data as List;
-                  //   // final text = context.loc.notes_title(noteCount);
-                  //   return Text(
-                  //     userEmail,
-                  //     style: const TextStyle(fontSize: 18),
-                  //   );
-                  // } else {
-                  //   return const Text('');
-                  // }
                   return const Text('ШКАФ');
                 },
               ),
@@ -268,59 +245,58 @@ class _NotesViewState extends State<NotesAll> {
                   case ConnectionState.active:
                     if (snapshot.hasData) {
                       final allNotes = snapshot.data as Iterable<CloudNote>;
-                      return RefreshIndicator(
-                          onRefresh: _pullRefresh,
-                          child: Stack(
+                      return Stack(
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 20, top: 5),
-                                      child: DropdownButton(
-                                          value: _notesService
-                                              .selectedCityStream.value,
-                                          items: TURKEY
-                                              .map((e) => DropdownMenuItem(
-                                                  value: e['id'],
-                                                  child: Text(
-                                                      e['name'].toString())))
-                                              .toList(),
-                                          onChanged: ((value) {
-                                            setUserSelectedCity(
-                                                int.parse(value.toString()));
-                                            setSelectedCity(
-                                                int.parse(value.toString()));
-                                          }))),
-                                  Expanded(
-                                      child: SearchBar(
-                                    searchcb: onSearch,
-                                  ))
-                                ],
-                              ),
-
-                              SizedBox(
-                                child: NotesListView(
-                                  notes: allNotes,
-                                  onDeleteNote: (note) async {
-                                    await _notesService.deleteNote(
-                                        documentId: note.documentId);
-                                  },
-                                  onTap: (note) {
-                                    _notesService.selectedNote.add(note);
-                                    Navigator.of(context).pushNamed(
-                                      noteDetailsRoute,
-                                      arguments: note,
-                                    );
-                                  },
-                                ),
-                              ),
-                              bottomDetailsSheet(openWithCategory, 0.1, true,
-                                  selectedCategory),
-                              // ElevatedButton(
-                              //     onPressed: showModal, child: Text("lick"))
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 20, top: 5),
+                                  child: DropdownButton(
+                                      value: _notesService
+                                          .selectedCityStream.value,
+                                      items: TURKEY
+                                          .map((e) => DropdownMenuItem(
+                                              value: e['id'],
+                                              child:
+                                                  Text(e['name'].toString())))
+                                          .toList(),
+                                      onChanged: ((value) {
+                                        setUserSelectedCity(
+                                            int.parse(value.toString()));
+                                        setSelectedCity(
+                                            int.parse(value.toString()));
+                                      }))),
+                              Expanded(
+                                  child: SearchBar(
+                                searchcb: onSearch,
+                              ))
                             ],
-                          ));
+                          ),
+
+                          SizedBox(
+                            child: NotesListView(
+                              notes: allNotes,
+                              onDeleteNote: (note) async {
+                                await _notesService.deleteNote(
+                                    documentId: note.documentId);
+                              },
+                              onTap: (note) {
+                                _notesService.selectedNote.add(note);
+                                Navigator.of(context).pushNamed(
+                                  noteDetailsRoute,
+                                  arguments: note,
+                                );
+                              },
+                            ),
+                          ),
+
+                          // bottomDetailsSheet(
+                          //     openWithCategory, 0.1, true, selectedCategory),
+                          // ElevatedButton(
+                          //     onPressed: showModal, child: Text("lick"))
+                        ],
+                      );
                     } else {
                       return const CircularProgressIndicator();
                     }
@@ -328,6 +304,27 @@ class _NotesViewState extends State<NotesAll> {
                     return const CircularProgressIndicator();
                 }
               },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Container(
+              height: 55,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModal();
+                },
+                child: Center(
+                  child: Text(
+                    _notesService.categoryNameForSheet.value ?? "Категории",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 228, 228, 228)),
+                  ),
+                ),
+              ),
             ),
           );
         });
@@ -341,35 +338,10 @@ Widget bottomDetailsSheet(
   String selectedCat,
 ) {
   return DraggableScrollableSheet(
-    initialChildSize: initialSize,
-    minChildSize: .1,
-    maxChildSize: 1,
     builder: (BuildContext context, ScrollController scrollController) {
-      // SchedulerBinding.instance.addPostFrameCallback((_) {
-      //   scrollController
-      //       .animateTo(20,
-      //           duration: Duration(milliseconds: 800), curve: Curves.easeIn)
-      //       .then((value) => scrollController.animateTo(0,
-      //           duration: Duration(milliseconds: 800),
-      //           curve: Curves.easeInBack));
-      // });
-
-      // open() {
-      //   controller.animateTo(
-      //     0.6,
-      //     duration: const Duration(milliseconds: 100),
-      //     curve: Curves.easeOutBack,
-      //   );
-      // }
-
-      // SchedulerBinding.instance.addPostFrameCallback((_) {
-      //   open();
-      // });
-
       return Container(
-        // color: Color.fromARGB(255, 82, 99, 255),
         decoration: const BoxDecoration(
-            color: Color.fromARGB(248, 210, 206, 206),
+            color: Colors.white,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12.0),
                 topRight: Radius.circular(12.0))),
@@ -415,12 +387,15 @@ Widget bottomDetailsSheet(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Center(
                         child: GestureDetector(
-                          onTap: () => isMainSelectable
-                              ? fun(ListViewArguments(
-                                  0, int.parse(u['id'].toString())))
-                              : null,
+                          onTap: () {
+                            isMainSelectable
+                                ? fun(ListViewArguments(
+                                    0, int.parse(u['id'].toString())))
+                                : null;
+                            Navigator.pop(context);
+                          },
                           child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
@@ -433,11 +408,13 @@ Widget bottomDetailsSheet(
                                         color: Color.fromARGB(255, 69, 69, 69)),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 4),
-                                  child: Icon(
-                                    Icons.arrow_right,
-                                    color: Colors.white,
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 4),
+                                    child: Icon(
+                                      Icons.arrow_right,
+                                      color: Color.fromARGB(255, 124, 124, 124),
+                                    ),
                                   ),
                                 )
                               ]),
@@ -447,10 +424,14 @@ Widget bottomDetailsSheet(
                     ...(u['sub_categories'] as List).map((e) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: GestureDetector(
-                          onTap: () => fun(ListViewArguments(
-                              e['id'], int.parse(u['id'].toString()))),
+                          onTap: () {
+                            Navigator.pop(context);
+                            fun(ListViewArguments(
+                                e['id'], int.parse(u['id'].toString())));
+                          },
                           child: Card(
-                            color: Colors.white,
+                            elevation: 0,
+                            color: Color.fromARGB(128, 173, 204, 255),
                             child: ListTile(title: Text(e['name'].toString())),
                           ),
                         )))

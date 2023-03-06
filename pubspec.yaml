@@ -69,6 +69,9 @@ dependencies:
   smooth_page_indicator: ^1.0.1
   in_app_update: ^4.0.1
   universal_html: ^2.0.9
+  infinite_scroll_pagination: ^3.2.0
+  upgrader: ^6.0.1
+  sign_in_with_apple: ^4.3.0
 
 dev_dependencies:
  

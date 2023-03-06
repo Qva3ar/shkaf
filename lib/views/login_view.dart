@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,6 +17,8 @@ import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:crypto/crypto.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -104,6 +108,12 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
@@ -183,6 +193,9 @@ class _LoginViewState extends State<LoginView> {
                     child: const Text("Войти"),
                   ),
                 ),
+                SizedBox(
+                  height: 50,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -205,6 +218,38 @@ class _LoginViewState extends State<LoginView> {
                         )),
                   ],
                 ),
+                SignInWithAppleButton(
+                    text: "Войти с помощью Apple ID",
+                    onPressed: () async {
+                      final rawNonce = generateNonce();
+                      final nonce = sha256ofString(rawNonce);
+                      final credential =
+                          await SignInWithApple.getAppleIDCredential(
+                        scopes: [
+                          AppleIDAuthorizationScopes.email,
+                          AppleIDAuthorizationScopes.fullName,
+                        ],
+
+                        // TODO: Remove these if you have no need for them
+                        nonce: nonce,
+                        state: 'example-state',
+                      );
+                      log(credential.toString());
+
+                      final oauthCredential =
+                          OAuthProvider("apple.com").credential(
+                        idToken: credential.identityToken,
+                        rawNonce: rawNonce,
+                      );
+
+                      final authResult = await FirebaseAuth.instance
+                          .signInWithCredential(oauthCredential);
+                      if (authResult.user != null) {
+                        context.read<AuthBloc>().add(
+                              AuthEventLogIn(null, null, authResult),
+                            );
+                      }
+                    }),
                 TextButton(
                   onPressed: () {
                     // context.read<AuthBloc>().add(

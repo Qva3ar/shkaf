@@ -11,6 +11,10 @@ class FirebaseCloudStorage {
 
   late DocumentSnapshot<Object?> lastDoc;
   List<CloudNote> noteList = [];
+  String searchStr = '';
+  bool isSearching = false;
+  bool isSearchingEnded = false;
+  bool isCategorySet = false;
 
   final BehaviorSubject<List<CloudNote>> movieController =
       BehaviorSubject<List<CloudNote>>();
@@ -27,15 +31,32 @@ class FirebaseCloudStorage {
   BehaviorSubject<int> mainCategoryIdStream = BehaviorSubject<int>.seeded(0);
 
   setSelectedId(int id) {
+    isCategorySet = true;
     selectedCityStream.add(id);
+
     allNotes(false);
   }
 
   setCategoryId(int id) {
+    isCategorySet = true;
     categoryIdStream.add(id);
   }
 
+  setSearchStr(String searchStringParam) {
+    isSearchingEnded = false;
+    if (searchStr.isNotEmpty && searchStringParam.isEmpty) {
+      isSearchingEnded = true;
+      isSearching = false;
+    }
+    if (searchStringParam.isNotEmpty) {
+      isSearching = true;
+    }
+
+    searchStr = searchStringParam.toLowerCase();
+  }
+
   setMainCategoryId(int id) {
+    isCategorySet = true;
     mainCategoryIdStream.add(id);
   }
 
@@ -77,8 +98,8 @@ class FirebaseCloudStorage {
         cityIdFieldName: cityId,
         phoneFieldName: phone,
         shortAddFieldName: shortAdd,
-        reportsFieldName: reports
-        // createdAtFieldName: Timestamp.now()
+        reportsFieldName: reports,
+        updatedAtFieldName: Timestamp.now()
       });
     } catch (e) {
       throw CouldNotUpdateNoteException();
@@ -96,8 +117,8 @@ class FirebaseCloudStorage {
     return allNotes;
   }
 
-  allNotes(bool load, {String? searchStr}) {
-    const limit = 10;
+  allNotes(bool isPreload) {
+    const limit = 15;
     var addDt = DateTime.now();
     Query<Map<String, dynamic>> query;
     if (mainCategoryIdStream.value == 0) {
@@ -122,10 +143,10 @@ class FirebaseCloudStorage {
           .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
+          .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
           .where(createdAtFieldName,
               isGreaterThanOrEqualTo:
                   Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
-          .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
           .orderBy(createdAtFieldName, descending: true);
     }
     List<String> arr = [];
@@ -135,7 +156,7 @@ class FirebaseCloudStorage {
       query = query.where(textSearchFieldName, arrayContains: searchStr);
     }
 
-    if (load) {
+    if (isPreload) {
       query = query.startAfterDocument(lastDoc);
     }
 
@@ -146,12 +167,12 @@ class FirebaseCloudStorage {
 
       return event.docs.map((doc) => CloudNote.fromSnapshot(doc));
     }).listen((event) {
-      if (!load) {
-        noteList = [];
-      }
+      // if (!isPreload) {
+      noteList = [];
+      // }
 
       noteList.addAll(event.toList());
-      var shortAddDateRange = DateTime.now().subtract(const Duration(days: 14));
+      var shortAddDateRange = DateTime.now().subtract(const Duration(days: 54));
       noteList = noteList.where((record) {
         if (record.shortAdd) {
           if (record.createdAt.microsecondsSinceEpoch >
@@ -163,6 +184,7 @@ class FirebaseCloudStorage {
         }
         return true;
       }).toList();
+
       movieController.sink.add(noteList);
     });
   }
@@ -194,6 +216,7 @@ class FirebaseCloudStorage {
 
       return event.docs.map((doc) => CloudNote.fromSnapshot(doc));
     }).listen((event) {
+      noteList = [];
       noteList.addAll(event.toList());
       movieController.sink.add(noteList);
     });

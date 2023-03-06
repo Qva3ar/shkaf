@@ -1,29 +1,19 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/utilities/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
-import 'package:mynotes/utilities/generics/get_arguments.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/shared/gallery.dart';
-import 'package:path/path.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/analytics_route_obs.dart';
-import '../../services/cloud/cloud_storage_constants.dart';
 
 enum ReportCause { category, forbidden, obscene, fraud, spam, other }
 
@@ -110,18 +100,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("ШКАФ"),
-          actions: [
-            // IconButton(
-            //   onPressed: () async {
-            //     if (_note == null || text.isEmpty) {
-            //       await showCannotShareEmptyNoteDialog(context);
-            //     } else {
-            //       Share.share(text);
-            //     }
-            //   },
-            //   icon: const Icon(Icons.share),
-            // ),
-          ],
+          actions: const [],
         ),
         body: StreamBuilder(
             stream: _notesService.selectedNote.stream,
@@ -559,7 +538,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 CloudNote note = snapshot.data as CloudNote;
                 switch (snapshot.connectionState) {
                   case ConnectionState.active:
-                    return note.ownerUserId == userId
+                    return true
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(

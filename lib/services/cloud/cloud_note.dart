@@ -16,6 +16,7 @@ class CloudNote {
   String? phone;
   String? url;
   final DateTime createdAt;
+  final DateTime? updatedAt;
   final List<String>? imagesUrls;
   final List<String>? reports;
   final bool shortAdd;
@@ -31,6 +32,7 @@ class CloudNote {
     this.phone,
     this.imagesUrls,
     this.reports,
+    this.updatedAt,
     required this.createdAt,
     required this.shortAdd,
   });
@@ -51,6 +53,10 @@ class CloudNote {
         createdAt =
             Jiffy((snapshot.data()[createdAtFieldName] as Timestamp).toDate())
                 .dateTime,
+        updatedAt = snapshot.data()[updatedAtFieldName] != null
+            ? Jiffy((snapshot.data()[updatedAtFieldName] as Timestamp).toDate())
+                .dateTime
+            : null,
         imagesUrls = snapshot.data()['imageUrls'] != null
             ? (snapshot.data()['imageUrls'] as List<dynamic>)
                 .map((e) => e.toString())

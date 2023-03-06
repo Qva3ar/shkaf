@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,8 +23,10 @@ import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:upgrader/upgrader.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +34,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // if (Platform.isIOS) {
+  //check for ios if developing for both android & ios
+  // await SignInWithApple.isAvailable();
+  // SignInWithApple.
+  // }
+
   FirebaseEvent.logScreenView('main');
-  if (!kIsWeb) {
+  if (!kIsWeb && Platform.isAndroid) {
     InAppUpdate.checkForUpdate().then((updateInfo) {
       if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
         if (updateInfo.immediateUpdateAllowed) {
@@ -77,7 +87,11 @@ void main() async {
               home: firebase != null
                   ? BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const HomePage(),
+                      child: UpgradeAlert(
+                        upgrader:
+                            Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
+                        child: const HomePage(),
+                      ),
                     )
                   : Container(),
               // home: const NotesAll(),

@@ -10,6 +10,7 @@ const categoryIdFieldName = 'category_id';
 const mainCategoryIdFieldName = 'main_category_id';
 const cityIdFieldName = 'city_id';
 const createdAtFieldName = 'created_at';
+const updatedAtFieldName = 'updated_at';
 const imageUrls = 'imageUrls';
 const shortAddFieldName = 'short_add';
 const reportsFieldName = 'reports';
