@@ -82,6 +82,12 @@ void main() async {
                   appBarTheme: const AppBarTheme(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black),
+                  elevatedButtonTheme: ElevatedButtonThemeData(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 104, 136, 164),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
                   bottomSheetTheme: const BottomSheetThemeData(
                       backgroundColor: Colors.black54)),
               home: firebase != null

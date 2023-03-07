@@ -79,6 +79,8 @@ class _NotesViewState extends State<NotesAll> {
 
   showModal() {
     showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
       isDismissible: true,
@@ -320,9 +322,9 @@ class _NotesViewState extends State<NotesAll> {
               },
             ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
+                FloatingActionButtonLocation.centerFloat,
             floatingActionButton: Container(
-              height: 55,
+              height: 35,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
                 onPressed: () {
@@ -333,7 +335,7 @@ class _NotesViewState extends State<NotesAll> {
                     _notesService.categoryNameForSheet.value ?? "Категории",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 228, 228, 228)),
                   ),
@@ -355,7 +357,7 @@ Widget bottomDetailsSheet(
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Color.fromARGB(255, 104, 136, 164),
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12.0),
                 topRight: Radius.circular(12.0))),
@@ -371,7 +373,7 @@ Widget bottomDetailsSheet(
                     width: 60,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromARGB(255, 91, 91, 91),
+                      color: Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
                 ),
@@ -387,7 +389,7 @@ Widget bottomDetailsSheet(
                           selectedCat,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                              fontSize: 25,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.black),
                         ),
@@ -416,10 +418,10 @@ Widget bottomDetailsSheet(
                                   child: Text(
                                     u['name'].toString(),
                                     style: const TextStyle(
-                                        fontSize: 23,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         backgroundColor: Colors.transparent,
-                                        color: Color.fromARGB(255, 69, 69, 69)),
+                                        color: Colors.black),
                                   ),
                                 ),
                                 const Center(
@@ -427,7 +429,7 @@ Widget bottomDetailsSheet(
                                     padding: EdgeInsets.only(top: 4),
                                     child: Icon(
                                       Icons.arrow_right,
-                                      color: Color.fromARGB(255, 124, 124, 124),
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                     ),
                                   ),
                                 )
@@ -445,7 +447,7 @@ Widget bottomDetailsSheet(
                           },
                           child: Card(
                             elevation: 0,
-                            color: Color.fromARGB(128, 173, 204, 255),
+                            color: Color.fromARGB(255, 255, 255, 255),
                             child: ListTile(title: Text(e['name'].toString())),
                           ),
                         )))

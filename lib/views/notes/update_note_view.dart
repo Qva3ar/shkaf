@@ -423,13 +423,15 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                   text: const TextSpan(
                     children: [
                       WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
                         child: Icon(Icons.error, size: 12),
                       ),
                       TextSpan(
                         style: TextStyle(
                             fontSize: 12,
                             color: Color.fromARGB(255, 95, 95, 95)),
-                        text: "Слова в заголовке будут использованы для поиска",
+                        text:
+                            " Слова в заголовке будут использованы для поиска",
                       ),
                     ],
                   ),
@@ -557,9 +559,10 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
           ),
         ),
       ),
-      bottomSheet: ButtonTheme(
-        minWidth: 200.0,
-        height: 100.0,
+      bottomSheet: Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.transparent,
         child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
