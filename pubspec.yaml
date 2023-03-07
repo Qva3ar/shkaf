@@ -72,6 +72,7 @@ dependencies:
   infinite_scroll_pagination: ^3.2.0
   upgrader: ^6.0.1
   sign_in_with_apple: ^4.3.0
+  image_network: ^2.5.1
 
 dev_dependencies:
  

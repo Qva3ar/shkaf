@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_network/image_network.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -146,13 +147,32 @@ class _NotesListViewState extends State<NotesListView> {
                             child: SizedBox(
                               child: note.imagesUrls != null &&
                                       note.imagesUrls!.isNotEmpty
-                                  ? CachedNetworkImage(
+                                  ? ImageNetwork(
+                                      image: note.imagesUrls![0],
+                                      imageCache: CachedNetworkImageProvider(
+                                          note.imagesUrls![0]),
                                       height: 120,
                                       width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      imageUrl: note.imagesUrls![0],
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
+                                      duration: 1500,
+                                      onPointer: true,
+                                      debugPrint: false,
+                                      fullScreen: false,
+                                      fitAndroidIos: BoxFit.cover,
+                                      fitWeb: BoxFitWeb.cover,
+                                      borderRadius: BorderRadius.circular(4),
+                                      onLoading:
+                                          const CircularProgressIndicator(
+                                        color: Colors.indigoAccent,
+                                      ),
+                                      onError: const Icon(
+                                        Icons.error,
+                                        color: Colors.red,
+                                      ),
+                                      onTap: () {
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                        widget.onTap(note);
+                                      },
                                     )
                                   : Image.asset(
                                       'assets/images/img_placeholder.jpeg',
