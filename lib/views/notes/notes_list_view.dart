@@ -67,7 +67,7 @@ class _NotesListViewState extends State<NotesListView> {
           notes.isNotEmpty
               ? GridView.builder(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
+                      maxCrossAxisExtent: 300,
                       childAspectRatio: 1.2,
                       crossAxisSpacing: 1,
                       mainAxisSpacing: 1),

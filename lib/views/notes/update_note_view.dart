@@ -430,6 +430,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     text: const TextSpan(
                       children: [
                         WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
                           child: Icon(Icons.error, size: 12),
                         ),
                         TextSpan(
@@ -437,7 +438,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                               fontSize: 12,
                               color: Color.fromARGB(255, 95, 95, 95)),
                           text:
-                              "Слова в заголовке будут использованы для поиска",
+                              " Слова в заголовке будут использованы для поиска",
                         ),
                       ],
                     ),
