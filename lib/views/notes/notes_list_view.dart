@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
+import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 
 import '../../services/cloud/firebase_cloud_storage.dart';
@@ -112,8 +115,9 @@ class _NotesListViewState extends State<NotesListView> {
           child: PagedGridView<int, CloudNote>(
             scrollController: scrollController,
             pagingController: _pagingController,
+            physics: const AlwaysScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
+                maxCrossAxisExtent: 300,
                 childAspectRatio: 1.2,
                 crossAxisSpacing: 1,
                 mainAxisSpacing: 1),
@@ -216,8 +220,7 @@ class _NotesListViewState extends State<NotesListView> {
                 );
               },
             ),
-            physics: const ScrollPhysics(),
-            shrinkWrap: true,
+            // shrinkWrap: true,
             padding: const EdgeInsets.symmetric(horizontal: 5),
           ),
         ));

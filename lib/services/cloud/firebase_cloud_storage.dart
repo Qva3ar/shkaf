@@ -4,6 +4,7 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:mynotes/services/cloud/cloud_storage_exceptions.dart';
 import 'package:mynotes/views/categories/category_list.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
 class FirebaseCloudStorage {
@@ -60,7 +61,8 @@ class FirebaseCloudStorage {
     mainCategoryIdStream.add(id);
   }
 
-  Stream<List<CloudNote>> get movieStream => movieController.stream;
+  Stream<List<CloudNote>> get movieStream =>
+      movieController.stream.throttleTime(const Duration(milliseconds: 300));
 
   Future<void> deleteNote({required String documentId}) async {
     try {

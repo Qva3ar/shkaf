@@ -306,7 +306,7 @@ class _NotesViewState extends State<NotesAll> {
               },
             ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: Container(
               height: 55,
               margin: const EdgeInsets.symmetric(horizontal: 8),
