@@ -320,6 +320,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                         text: const TextSpan(
                                           children: [
                                             WidgetSpan(
+                                              alignment:
+                                                  PlaceholderAlignment.middle,
                                               child:
                                                   Icon(Icons.error, size: 12),
                                             ),
@@ -329,7 +331,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                   color: Color.fromARGB(
                                                       255, 95, 95, 95)),
                                               text:
-                                                  "Перейдя по ссылке вы найдете оригинал объявления",
+                                                  " Перейдя по ссылке вы найдете оригинал объявления",
                                             ),
                                           ],
                                         ),

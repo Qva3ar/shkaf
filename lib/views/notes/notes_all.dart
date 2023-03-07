@@ -175,7 +175,21 @@ class _NotesViewState extends State<NotesAll> {
               title: StreamBuilder(
                 stream: _notesService.movieStream,
                 builder: (context, snapshot) {
-                  return const Text('ШКАФ');
+                  // if (snapshot.hasData) {
+                  //   final noteCount = snapshot.data as List;
+                  //   // final text = context.loc.notes_title(noteCount);
+                  //   return Text(
+                  //     userEmail,
+                  //     style: const TextStyle(fontSize: 18),
+                  //   );
+                  // } else {
+                  //   return const Text('');
+                  // }
+                  return Image.asset(
+                    'assets/icons/shkaf.png',
+                    width: 80,
+                    height: 32,
+                  );
                 },
               ),
               actions: [
@@ -298,10 +312,10 @@ class _NotesViewState extends State<NotesAll> {
                         ],
                       );
                     } else {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }
                   default:
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                 }
               },
             ),

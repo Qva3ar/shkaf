@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:jiffy/jiffy.dart';
+
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
@@ -104,6 +105,7 @@ class _NotesListViewState extends State<NotesListView> {
     BuildContext context,
   ) {
     List<CloudNote> notes = widget.notes.toList();
+
     return Padding(
         padding: const EdgeInsets.only(bottom: 60, top: 60),
         child: RefreshIndicator(

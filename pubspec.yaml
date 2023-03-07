@@ -103,6 +103,7 @@ flutter:
    - assets/icons/
    - assets/icons/google_icon.png
    - assets/icons/googleplay.png
+   - assets/icons/shkaf.png
 
   generate: true
 
