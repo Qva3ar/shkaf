@@ -49,8 +49,8 @@ class AuthService implements AuthProvider {
       provider.sendPasswordReset(toEmail: toEmail);
 
   @override
-  Future<void> deleteUser() {
+  Future<void> deleteUser() async {
     // TODO: implement deleteUser
-    throw UnimplementedError();
+    provider.deleteUser();
   }
 }

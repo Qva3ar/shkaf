@@ -538,7 +538,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 CloudNote note = snapshot.data as CloudNote;
                 switch (snapshot.connectionState) {
                   case ConnectionState.active:
-                    return true
+                    return note.ownerUserId == userId
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(

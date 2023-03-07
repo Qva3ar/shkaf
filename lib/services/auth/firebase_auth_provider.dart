@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mynotes/firebase_options.dart';
@@ -139,10 +141,9 @@ class FirebaseAuthProvider implements AuthProvider {
     try {
       final users = FirebaseFirestore.instance.collection('users');
       // users.doc(FirebaseAuth.instance.currentUser!.uid).delete().;
-      FirebaseAuth.instance.currentUser!.delete();
+      await FirebaseAuth.instance.currentUser!.delete();
       logOut();
-      // .whenComplete(() => Future.value(true))
-      // .catchError(() => Future.value(false));
+      return;
     } catch (err) {
       throw FirebaseException;
     }

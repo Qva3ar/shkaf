@@ -219,7 +219,7 @@ class _LoginViewState extends State<LoginView> {
                   ],
                 ),
                 SignInWithAppleButton(
-                    text: "Войти с помощью Apple ID",
+                    text: "Войти с помощью Apple",
                     onPressed: () async {
                       final rawNonce = generateNonce();
                       final nonce = sha256ofString(rawNonce);

@@ -7,13 +7,20 @@ import 'package:mynotes/services/auth/firebase_auth_provider.dart';
 import '../../services/auth/bloc/auth_bloc.dart';
 import '../../services/auth/bloc/auth_event.dart';
 
-class UserDetails extends StatelessWidget {
+class UserDetails extends StatefulWidget {
   UserDetails({Key? key}) : super(key: key);
+
+  @override
+  State<UserDetails> createState() => _UserDetailsState();
+}
+
+class _UserDetailsState extends State<UserDetails> {
   final currentUser = AuthService.firebase().currentUser;
+
   final provider = FirebaseAuthProvider();
-  deleteAcc(context) {
-    provider.deleteUser();
-    Navigator.popAndPushNamed(context, allNotes);
+
+  Future<bool> deleteAcc(context) async {
+    return await provider.deleteUser().then((value) => Future.value(true));
   }
 
   Future<void> _showPlatformDialog(contextt) async {
@@ -30,9 +37,9 @@ class UserDetails extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               child: const Text('Удалить'),
-              onPressed: () {
-                deleteAcc(context);
-                // Navigator.of(context).pop();
+              onPressed: () async {
+                var result = await deleteAcc(context);
+                Navigator.pop(contextt, result);
               },
             ),
             TextButton(
@@ -69,8 +76,14 @@ class UserDetails extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Center(
             child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Background color
+                ),
                 onPressed: () {
-                  _showPlatformDialog(context);
+                  _showPlatformDialog(context).then((value) {
+                    context.read<AuthBloc>().add(const AuthEventLogOut());
+                    Navigator.pushReplacementNamed(context, allNotes);
+                  });
                 },
                 child: const Text('Удалить аккаунт')),
           ),
