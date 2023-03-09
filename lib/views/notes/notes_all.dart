@@ -322,9 +322,9 @@ class _NotesViewState extends State<NotesAll> {
               },
             ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: Container(
-              height: 35,
+              height: 40,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
                 onPressed: () {

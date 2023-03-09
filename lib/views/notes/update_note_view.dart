@@ -560,7 +560,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         ),
       ),
       bottomSheet: Container(
-        height: 40,
+        height: 50,
         width: MediaQuery.of(context).size.width,
         color: Colors.transparent,
         child: ElevatedButton(
