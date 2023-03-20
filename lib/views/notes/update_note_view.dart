@@ -48,6 +48,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   bool isSaving = false;
   bool isFirstTime = true;
   bool shortAdd = false;
+
   DraggableScrollableController controller = DraggableScrollableController();
 
   final _formKey = GlobalKey<FormState>();
@@ -137,6 +138,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               cityId: cityId ?? 0,
               imgUrls: isNewImages ? imageUrls : imagesUrls,
               shortAdd: shortAdd,
+              views: _note?.views ?? 0,
             )
             .catchError((error, stackTrace) =>
                 {showSnackbar(context, error.toString())});

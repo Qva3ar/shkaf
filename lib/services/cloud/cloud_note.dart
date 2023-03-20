@@ -10,6 +10,7 @@ class CloudNote {
   final String text;
   final String desc;
   final int price;
+  final int views;
   int? categoryId;
   int? mainCategoryId;
   int? cityId;
@@ -26,6 +27,7 @@ class CloudNote {
     required this.text,
     required this.desc,
     required this.price,
+    required this.views,
     this.categoryId,
     this.mainCategoryId,
     this.cityId,
@@ -50,6 +52,7 @@ class CloudNote {
         categoryId = snapshot.data()[categoryIdFieldName] ?? 0,
         mainCategoryId = snapshot.data()[mainCategoryIdFieldName] ?? 0,
         cityId = snapshot.data()[cityIdFieldName] ?? 0,
+        views = snapshot.data()[viewsFieldName] ?? 0,
         createdAt =
             Jiffy((snapshot.data()[createdAtFieldName] as Timestamp).toDate())
                 .dateTime,

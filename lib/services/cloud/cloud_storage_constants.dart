@@ -14,3 +14,4 @@ const updatedAtFieldName = 'updated_at';
 const imageUrls = 'imageUrls';
 const shortAddFieldName = 'short_add';
 const reportsFieldName = 'reports';
+const viewsFieldName = 'views';

@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -34,10 +37,17 @@ class _NotesViewState extends State<NotesAll> {
   int? categoryId;
   int? mainCategoryId;
   bool isOldUser = false;
+  int views = 0;
   static const selectedCityKey = 'selectedCity';
   late final SharedPreferences prefs;
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
+
+  void updateCounter(views) {
+    setState(() {
+      views++;
+    });
+  }
 
   @override
   void initState() {
@@ -298,6 +308,7 @@ class _NotesViewState extends State<NotesAll> {
                                     documentId: note.documentId);
                               },
                               onTap: (note) {
+                                updateCounter(views);
                                 _notesService.selectedNote.add(note);
                                 Navigator.of(context).pushNamed(
                                   noteDetailsRoute,
