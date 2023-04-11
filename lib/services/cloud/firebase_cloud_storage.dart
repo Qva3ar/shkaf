@@ -176,6 +176,7 @@ class FirebaseCloudStorage {
     String? phone,
     String? url,
     String? telegramId,
+    int? views,
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -193,6 +194,7 @@ class FirebaseCloudStorage {
         phoneFieldName: phone,
         shortAddFieldName: shortAdd,
         reportsFieldName: reports,
+        viewsFieldName: views,
         updatedAtFieldName: Timestamp.now()
       });
     } catch (e) {

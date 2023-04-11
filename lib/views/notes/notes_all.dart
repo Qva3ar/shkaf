@@ -3,6 +3,9 @@ import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:math';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -51,10 +54,17 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   int? categoryId;
   int? mainCategoryId;
   bool isOldUser = false;
+  int views = 0;
   static const selectedCityKey = 'selectedCity';
   late final SharedPreferences prefs;
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
+
+  void updateCounter(views) {
+    setState(() {
+      views++;
+    });
+  }
 
   @override
   void initState() {
@@ -70,7 +80,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     WidgetsBinding.instance!.addObserver(this);
     _notesService = FirebaseCloudStorage();
     _notesService.createInterstitialAd();
-    log("all");
     // _notesService.initConfig();
     _notesService.getSettings();
     registerNotification();
@@ -106,7 +115,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       // For handling the received notifications
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         // Parse the message received
-        log(message.data.toString());
         PushNotification notification = PushNotification(
           title: message.notification?.title,
           body: message.notification?.body,
@@ -447,6 +455,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                                     documentId: note.documentId);
                               },
                               onTap: (note) {
+                                updateCounter(views);
                                 _notesService.selectedNote.add(note);
                                 Navigator.of(context).pushNamed(
                                   noteDetailsRoute,

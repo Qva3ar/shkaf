@@ -1,20 +1,26 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:http/http.dart' as http;
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
+import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/shared/gallery.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/analytics_route_obs.dart';
 
@@ -129,6 +135,30 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     //   log(value!.desc);
     // });
     CloudNote? note = _notesService.selectedNote.stream.value;
+    // _views = _notesService.;
+    // _notesService.selectedNote.listen((value) {
+    //   log(value!.desc);
+    // });
+    log(userId.toString());
+
+    if (note != null) {
+      var views = note.views + 1;
+
+      log(note.views.toString());
+      _notesService.updateNote(
+          categoryId: note.categoryId!,
+          documentId: note.documentId,
+          text: note.text,
+          desc: note.desc,
+          mainCategoryId: note.mainCategoryId!,
+          cityId: note.cityId!,
+          price: note.price,
+          shortAdd: note.shortAdd,
+          imgUrls: note.imagesUrls,
+          phone: note.phone,
+          url: note.url,
+          views: views);
+    }
   }
 
   void sendReport() {
@@ -147,7 +177,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
           imgUrls: note.imagesUrls,
           phone: note.phone,
           url: note.url,
-          reports: note.reports);
+          reports: note.reports,
+          views: note.views);
     }
   }
 
@@ -293,15 +324,36 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                               //     );
                               //   }).toList(),
                               // ),
-                              const SizedBox(height: 15),
-                              Text(
-                                getFormattedDate(note.createdAt),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      getFormattedDate(note.createdAt),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        // fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.visibility,
+                                    color: Colors.grey,
+                                    size: 10.0,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    note.views.toString(),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 10),
                               Row(
@@ -351,6 +403,23 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     fontSize: 24,
                                     fontWeight: FontWeight.w600,
                                   )),
+                              const SizedBox(height: 25),
+                              note.phone!.isNotEmpty
+                                  ? Visibility(
+                                      visible: !_isVisible,
+                                      child: ElevatedButton(
+                                          onPressed: showPhoneNumber,
+                                          child: const Text(
+                                              'Показать номер телефона')),
+                                    )
+                                  : Container(),
+                              Visibility(
+                                  visible: _isVisible,
+                                  child: SelectableText(note.phone ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w600,
+                                      ))),
                               const SizedBox(height: 25),
                               const Text("Описание",
                                   textAlign: TextAlign.left,
