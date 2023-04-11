@@ -106,9 +106,9 @@ class _NotesListViewState extends State<NotesListView> {
     BuildContext context,
   ) {
     List<CloudNote> notes = widget.notes.toList();
-
+    double paddingTop = _notesService.showAD ? 115 : 60;
     return Padding(
-        padding: const EdgeInsets.only(bottom: 60, top: 60),
+        padding: EdgeInsets.only(bottom: 50, top: paddingTop),
         child: RefreshIndicator(
           onRefresh: () => Future.sync(
             () {

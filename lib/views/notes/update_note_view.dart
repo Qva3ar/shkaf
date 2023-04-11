@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as Rand;
 
@@ -30,6 +31,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   late final FirebaseCloudStorage _notesService;
   late final TextEditingController _textController;
   late final TextEditingController _urlController;
+  late final TextEditingController _telegramIdController;
   late final TextEditingController _descController;
   late final TextEditingController _priceController;
   late final TextEditingController _phoneController;
@@ -67,6 +69,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     _phoneController = TextEditingController();
     _textController = TextEditingController();
     _urlController = TextEditingController();
+    _telegramIdController = TextEditingController();
     _descController = TextEditingController();
     _priceController = TextEditingController();
     _categoryController = TextEditingController();
@@ -122,7 +125,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         }
         await _notesService.removeImages(oldImageUrls);
       }
-
+      log(_telegramIdController.text);
       if (_note != null) {
         await _notesService
             .updateNote(
@@ -131,6 +134,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               desc: _descController.text,
               phone: _phoneController.text,
               url: _urlController.text,
+              telegramId: _telegramIdController.text,
               price: int.parse(_priceController.text),
               categoryId: categoryId ?? 0,
               mainCategoryId: mainCategoryId ?? 0,
@@ -147,6 +151,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               text: _textController.text,
               desc: _descController.text,
               url: _urlController.text,
+              telegramId: _telegramIdController.text,
               price: int.parse(_priceController.text),
               phone: _phoneController.text,
               categoryId: categoryId ?? 0,
@@ -269,6 +274,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         _note = widgetNote;
         _textController.text = widgetNote.text;
         _descController.text = widgetNote.desc;
+        _telegramIdController.text = widgetNote.telegramId ?? '';
         _priceController.text = widgetNote.price.toString();
         _phoneController.text = widgetNote.phone != "" ? widgetNote.phone! : "";
         _categoryController.text = getCategoryName(widgetNote.categoryId ?? 0);
@@ -452,7 +458,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     shortState: this, child: const SwitchShortAdds()),
                 const SizedBox(height: 10),
                 TextFormField(
-                    maxLength: 350,
+                    maxLength: 550,
                     onChanged: (text) => setState(() {}),
                     validator: descValidator,
                     controller: _descController,
@@ -470,6 +476,11 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     controller: _urlController,
                     keyboardType: TextInputType.text,
                     decoration: getInputDecoration("Url")),
+                const SizedBox(height: 10),
+                TextFormField(
+                    controller: _telegramIdController,
+                    keyboardType: TextInputType.text,
+                    decoration: getInputDecoration("@Telegram username")),
                 const SizedBox(height: 10),
 
                 TextFormField(

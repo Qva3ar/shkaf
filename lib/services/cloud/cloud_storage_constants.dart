@@ -5,6 +5,7 @@ const textSearchFieldName = 'text_search';
 const descSearchFieldName = 'desc_search';
 const phoneFieldName = 'phone';
 const urlFieldName = 'url';
+const telegramIdFieldName = 'telegramId';
 const priceFieldName = 'price';
 const categoryIdFieldName = 'category_id';
 const mainCategoryIdFieldName = 'main_category_id';

@@ -154,4 +154,10 @@ class MockAuthProvider implements AuthProvider {
   @override
   // TODO: implement auth
   Stream<User?>? get auth => throw UnimplementedError();
+
+  @override
+  Future<void> deleteUser() {
+    // TODO: implement deleteUser
+    throw UnimplementedError();
+  }
 }

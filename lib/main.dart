@@ -1,8 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/loading/loading_screen.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
@@ -10,6 +13,7 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
+import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
@@ -34,11 +38,23 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  MobileAds.instance.initialize();
+
   // if (Platform.isIOS) {
   //check for ios if developing for both android & ios
   // await SignInWithApple.isAvailable();
   // SignInWithApple.
   // }
+
+  // final fcmToken = await FirebaseMessaging.instance.getToken();
+  // FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+  //   // TODO: If necessary send token to application server.
+
+  //   // Note: This callback is fired at each app startup and whenever a new
+  //   // token is generated.
+  // }).onError((err) {
+  //   // Error getting token.
+  // });
 
   FirebaseEvent.logScreenView('main');
   if (!kIsWeb && Platform.isAndroid) {

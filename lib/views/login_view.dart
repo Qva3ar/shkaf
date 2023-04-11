@@ -234,7 +234,6 @@ class _LoginViewState extends State<LoginView> {
                         nonce: nonce,
                         state: 'example-state',
                       );
-                      log(credential.toString());
 
                       final oauthCredential =
                           OAuthProvider("apple.com").credential(

@@ -7,7 +7,7 @@
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.FLASHLIGHT" />
    <application
-        android:label="Shkaf"
+        android:label="Шкаф"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         
@@ -37,5 +37,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3060459956824180~3751036929"/>
     </application>
 </manifest>

@@ -15,6 +15,7 @@ class CloudNote {
   int? cityId;
   String? phone;
   String? url;
+  String? telegramId;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<String>? imagesUrls;
@@ -45,6 +46,7 @@ class CloudNote {
         desc = snapshot.data()[descFieldName] ?? '',
         phone = snapshot.data()[phoneFieldName] ?? '',
         url = snapshot.data()[urlFieldName] ?? '',
+        telegramId = snapshot.data()[telegramIdFieldName] ?? '',
         price = snapshot.data()[priceFieldName] ?? 0,
         shortAdd = snapshot.data()[shortAddFieldName] ?? false,
         categoryId = snapshot.data()[categoryIdFieldName] ?? 0,

@@ -1,6 +1,12 @@
+import 'dart:developer';
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
@@ -8,14 +14,17 @@ import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
+import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
+import 'package:mynotes/views/shared/notification_badge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/utils.dart';
+import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
 
 extension Count<T extends Iterable> on Stream<T> {
@@ -29,8 +38,16 @@ class NotesAll extends StatefulWidget {
   _NotesViewState createState() => _NotesViewState();
 }
 
-class _NotesViewState extends State<NotesAll> {
+class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late final FirebaseCloudStorage _notesService;
+  late final FirebaseMessaging _messaging;
+
+  late BannerAd _bannerAd;
+  bool _isBannerAdReady = false;
+
+  late int _totalNotifications;
+  PushNotification? _notificationInfo;
+
   int? categoryId;
   int? mainCategoryId;
   bool isOldUser = false;
@@ -42,6 +59,7 @@ class _NotesViewState extends State<NotesAll> {
   @override
   void initState() {
     initializeSpref();
+    _loadBannerAd();
     var userSelectedId = getUserSelectedCity();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -49,14 +67,75 @@ class _NotesViewState extends State<NotesAll> {
         _showPlatformDialog(context);
       }
     });
-
+    WidgetsBinding.instance!.addObserver(this);
     _notesService = FirebaseCloudStorage();
+    _notesService.createInterstitialAd();
+    log("all");
+    // _notesService.initConfig();
+    _notesService.getSettings();
+    registerNotification();
     super.initState();
     _notesService.categoryNameForSheet.listen((value) {
       setState(() {
         selectedCategory = value;
       });
     });
+  }
+
+  void registerNotification() async {
+    // 1. Initialize the Firebase app
+
+    // 2. Instantiate Firebase Messaging
+    _messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    _messaging.getToken().then((value) {
+      print('firebase token = $value');
+      //sendTokenToServer(value);
+    });
+    // 3. On iOS, this helps to take the user permissions
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+
+      // For handling the received notifications
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        // Parse the message received
+        log(message.data.toString());
+        PushNotification notification = PushNotification(
+          title: message.notification?.title,
+          body: message.notification?.body,
+        );
+
+        setState(() {
+          _notificationInfo = notification;
+          _totalNotifications++;
+        });
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const AlertDialog(
+                title: Text("Success"),
+                titleTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20),
+                backgroundColor: Colors.greenAccent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                content: Text("Save successfully"),
+              );
+            });
+      });
+    } else {
+      print('User declined or has not accepted permission');
+    }
   }
 
   setSelectedCity(int id) {
@@ -127,6 +206,7 @@ class _NotesViewState extends State<NotesAll> {
       setSelectedCity(cityId);
       FocusScope.of(context).unfocus();
       getUserInfo();
+
       context.read<AuthBloc>().add(const AuthEventInitialize());
     });
   }
@@ -166,6 +246,56 @@ class _NotesViewState extends State<NotesAll> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      var usedLast = prefs.getString('last_used');
+      if (usedLast != null) {
+        var treshold = DateTime.now();
+        DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
+
+        Duration diff = treshold.difference(dt1);
+        if (diff.inMinutes > 60) {
+          _notesService.allNotes(false);
+        }
+      }
+
+      var currentTime = Timestamp.now();
+      prefs.setString(
+          'last_used', currentTime.millisecondsSinceEpoch.toString());
+    }
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdReady = true && _notesService.showAD;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
+  }
+
+  @override
+  void dispose() {
+    //don't forget to dispose of it when not needed anymore
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {},
@@ -202,7 +332,12 @@ class _NotesViewState extends State<NotesAll> {
                         },
                         icon: const Icon(Icons.add_business),
                       )
-                    : Container(),
+                    : IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(login);
+                        },
+                        icon: const Icon(Icons.add_business),
+                      ),
                 IconButton(
                   onPressed: () {
                     if (state.user != null) {
@@ -289,6 +424,20 @@ class _NotesViewState extends State<NotesAll> {
                               ))
                             ],
                           ),
+                          if (_isBannerAdReady)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 60),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: _bannerAd.size.width.toDouble(),
+                                    height: _bannerAd.size.height.toDouble(),
+                                    child: AdWidget(ad: _bannerAd),
+                                  )
+                                ],
+                              ),
+                            ),
 
                           SizedBox(
                             child: NotesListView(
@@ -537,4 +686,9 @@ Future<void> _showPlatformDialog(context) async {
       );
     },
   );
+}
+
+@pragma('vm:entry-point')
+Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
 }

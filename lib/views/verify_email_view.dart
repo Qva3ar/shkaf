@@ -4,6 +4,8 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 
+import '../constants/routes.dart';
+
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({Key? key}) : super(key: key);
 
@@ -24,7 +26,17 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                context.loc.verify_email_view_prompt,
+                // We've sent you an email verification. Please open it to verify your account.
+                // If you haven't received a verification email yet, press the button below!'
+                "Вам на почту было выслано верификационное сообщение. Пожалуйста, откройте его и подтвердите верификацию. Если вы не получили сообщение, нажмите кнопку 'Отправить еще раз'",
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                // We've sent you an email verification. Please open it to verify your account.
+                // If you haven't received a verification email yet, press the button below!'
+                "После подверждения акаунта, перейдите на страницу авторизации и залогиньтесь.",
               ),
             ),
             TextButton(
@@ -34,17 +46,18 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     );
               },
               child: Text(
-                context.loc.verify_email_send_email_verification,
+                "Отправить еще раз",
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () async {
                 context.read<AuthBloc>().add(
                       const AuthEventLogOut(),
                     );
+                Navigator.pushReplacementNamed(context, login);
               },
               child: Text(
-                context.loc.restart,
+                "На страницу авторизации",
               ),
             )
           ],

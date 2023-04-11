@@ -1,14 +1,26 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:mynotes/services/cloud/cloud_storage_exceptions.dart';
+import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
+  final settings =
+      FirebaseFirestore.instance.collection('configs').doc('settings');
+
+  late FirebaseRemoteConfig remoteConfig;
+  InterstitialAd? interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  int maxFailedLoadAttempts = 3;
 
   late DocumentSnapshot<Object?> lastDoc;
   List<CloudNote> noteList = [];
@@ -16,6 +28,9 @@ class FirebaseCloudStorage {
   bool isSearching = false;
   bool isSearchingEnded = false;
   bool isCategorySet = false;
+
+  bool showAD = false;
+  int maxViewsWithoutAD = 5;
 
   final BehaviorSubject<List<CloudNote>> movieController =
       BehaviorSubject<List<CloudNote>>();
@@ -28,8 +43,83 @@ class FirebaseCloudStorage {
   BehaviorSubject<int> selectedCityStream =
       BehaviorSubject<int>.seeded(TURKEY[0]['id'] as int);
 
+  BehaviorSubject<int> recordViewCounter = BehaviorSubject<int>.seeded(0);
+
   BehaviorSubject<int> categoryIdStream = BehaviorSubject<int>.seeded(0);
   BehaviorSubject<int> mainCategoryIdStream = BehaviorSubject<int>.seeded(0);
+
+  void createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            interstitialAd = ad;
+            // _interstitialAd!.show();
+            _numInterstitialLoadAttempts = 0;
+            interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              createInterstitialAd();
+            }
+          },
+        )).then((value) => log("AD LOADED"));
+  }
+
+  Future<void> getSettings() async {
+    // Get docs from collection reference
+    FirebaseFirestore.instance
+        .collection('configs')
+        .doc("settings")
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        showAD = documentSnapshot['showAd'];
+        maxViewsWithoutAD = documentSnapshot['maxViewsWithoutAD'];
+        // Map<String, dynamic> data = documentSnapshot.data();
+        //Set the relevant data to variables as needed
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+    // Get data from docs and convert map to List
+
+    // print(allData);
+  }
+
+  Future<void> initConfig() async {
+    log("ini");
+    remoteConfig = FirebaseRemoteConfig.instance;
+    // await remoteConfig.ensureInitialized();
+    // await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    //   fetchTimeout: Duration(minutes: 1),
+    //   minimumFetchInterval: Duration(seconds: 0),
+    // ));
+
+    _fetchConfig();
+  }
+
+  void _fetchConfig() async {
+    log("ini -2");
+
+    remoteConfig.fetchAndActivate();
+    log("ini -3");
+
+    log(remoteConfig.getBool('showAd').toString());
+  }
+
+  incrimentRecordViewCounter() {
+    recordViewCounter.add(recordViewCounter.value + 1);
+  }
+
+  resetRecordViewCounter() {
+    recordViewCounter.add(0);
+  }
 
   setSelectedId(int id) {
     isCategorySet = true;
@@ -85,6 +175,7 @@ class FirebaseCloudStorage {
     List<String>? reports,
     String? phone,
     String? url,
+    String? telegramId,
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -94,6 +185,7 @@ class FirebaseCloudStorage {
         descSearchFieldName: desc.split(" "),
         imageUrls: imgUrls,
         urlFieldName: url,
+        telegramIdFieldName: telegramId,
         priceFieldName: price,
         categoryIdFieldName: categoryId,
         mainCategoryIdFieldName: mainCategoryId,
@@ -236,6 +328,7 @@ class FirebaseCloudStorage {
     List<String>? imgUrls,
     String? phone,
     String? url,
+    String? telegramId,
   }) async {
     try {
       final document = await notes.add({
@@ -244,6 +337,7 @@ class FirebaseCloudStorage {
         descFieldName: desc,
         imageUrls: imgUrls,
         urlFieldName: url,
+        telegramIdFieldName: telegramId,
         priceFieldName: price,
         mainCategoryIdFieldName: mainCategoryId,
         categoryIdFieldName: categoryId,
