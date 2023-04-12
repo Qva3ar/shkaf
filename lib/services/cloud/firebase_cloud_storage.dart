@@ -202,6 +202,45 @@ class FirebaseCloudStorage {
     }
   }
 
+  Future<void> updateNotViews({
+    required String documentId,
+    required String text,
+    required String desc,
+    required int categoryId,
+    required int mainCategoryId,
+    required int cityId,
+    required int price,
+    required bool shortAdd,
+    List<String>? imgUrls,
+    List<String>? reports,
+    String? phone,
+    String? url,
+    String? telegramId,
+    int? views,
+  }) async {
+    try {
+      await notes.doc(documentId).update({
+        textFieldName: text,
+        textSearchFieldName: convertToArrayForSearch(text.toLowerCase()),
+        descFieldName: desc,
+        descSearchFieldName: desc.split(" "),
+        imageUrls: imgUrls,
+        urlFieldName: url,
+        telegramIdFieldName: telegramId,
+        priceFieldName: price,
+        categoryIdFieldName: categoryId,
+        mainCategoryIdFieldName: mainCategoryId,
+        cityIdFieldName: cityId,
+        phoneFieldName: phone,
+        shortAddFieldName: shortAdd,
+        reportsFieldName: reports,
+        viewsFieldName: views,
+      });
+    } catch (e) {
+      throw CouldNotUpdateNoteException();
+    }
+  }
+
   Stream<List<CloudNote>> allUserNotes({required String ownerUserId}) {
     var addDt = DateTime.now();
     final allNotes = notes

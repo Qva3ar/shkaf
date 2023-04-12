@@ -145,7 +145,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       var views = note.views + 1;
 
       log(note.views.toString());
-      _notesService.updateNote(
+      _notesService.updateNotViews(
           categoryId: note.categoryId!,
           documentId: note.documentId,
           text: note.text,
@@ -403,24 +403,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     fontSize: 24,
                                     fontWeight: FontWeight.w600,
                                   )),
-                              const SizedBox(height: 25),
-                              note.phone!.isNotEmpty
-                                  ? Visibility(
-                                      visible: !_isVisible,
-                                      child: ElevatedButton(
-                                          onPressed: showPhoneNumber,
-                                          child: const Text(
-                                              'Показать номер телефона')),
-                                    )
-                                  : Container(),
-                              Visibility(
-                                  visible: _isVisible,
-                                  child: SelectableText(note.phone ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w600,
-                                      ))),
-                              const SizedBox(height: 25),
+
                               const Text("Описание",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
@@ -444,6 +427,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     )
                                   ],
                                 ),
+                              const SizedBox(height: 25),
                               note.phone!.isNotEmpty
                                   ? Visibility(
                                       visible: !_isVisible,
@@ -453,15 +437,13 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               'Показать номер телефона')),
                                     )
                                   : Container(),
-
                               Visibility(
-                                visible: _isVisible,
-                                child: SelectableText(note.phone ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                    )),
-                              ),
+                                  visible: _isVisible,
+                                  child: SelectableText(note.phone ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w600,
+                                      ))),
                               const SizedBox(height: 25),
                               note.telegramId!.isNotEmpty
                                   ? ElevatedButton(
