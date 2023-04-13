@@ -7,6 +7,14 @@ Future<String> loadJsonData(path) async {
   return await rootBundle.loadString(path);
 }
 
+Future<void> makePhoneCall(String phoneNumber) async {
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: phoneNumber,
+  );
+  await launchUrl(launchUri);
+}
+
 openUrl(String urlString) async {
   // final suppotrUrl = Uri.parse("https://t.me/ShkafSupportTR");
   // final licenseUrl = Uri.parse(

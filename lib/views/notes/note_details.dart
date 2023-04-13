@@ -439,11 +439,15 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   : Container(),
                               Visibility(
                                   visible: _isVisible,
-                                  child: SelectableText(note.phone ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w600,
-                                      ))),
+                                  child: TextButton(
+                                    onPressed: () =>
+                                        makePhoneCall(note.phone ?? ""),
+                                    child: Text(note.phone ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600,
+                                        )),
+                                  )),
                               const SizedBox(height: 25),
                               note.telegramId!.isNotEmpty
                                   ? ElevatedButton(
