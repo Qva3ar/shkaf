@@ -265,8 +265,9 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
 
   checkPermission() async {
     var status = await Permission.photos.status;
-
+    // if (await Permission.contacts.request().isGranted) {
     return status.isDenied;
+    // }
   }
 
   Future<void> createOrGetExistingNote(BuildContext context) async {

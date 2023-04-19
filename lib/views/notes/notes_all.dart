@@ -18,6 +18,7 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
+import 'package:mynotes/utilities/helpers/placeholders.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
@@ -25,6 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:mynotes/views/shared/notification_badge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../helpers/utils.dart';
 import '../../models/push_notification.dart';
@@ -47,7 +49,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
-
+  bool _enabled = true;
   late int _totalNotifications;
   PushNotification? _notificationInfo;
 
@@ -472,7 +474,58 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         ],
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          enabled: _enabled,
+                          child: ListView(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            children: [
+                              BannerPlaceholder(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ContentPlaceholder(),
+                                  ContentPlaceholder(),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ContentPlaceholder(),
+                                  ContentPlaceholder(),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ContentPlaceholder(),
+                                  ContentPlaceholder(),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ContentPlaceholder(),
+                                  ContentPlaceholder(),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ContentPlaceholder(),
+                                  ContentPlaceholder(),
+                                ],
+                              ),
+                            ],
+                          ));
+
+                      // return const Center(child: CircularProgressIndicator());
                     }
                   default:
                     return const Center(child: CircularProgressIndicator());

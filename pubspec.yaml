@@ -76,6 +76,7 @@ dependencies:
   firebase_messaging: ^14.2.6
   google_mobile_ads: ^2.4.0
   firebase_remote_config: ^4.0.0
+  shimmer: ^2.0.0
 
 dev_dependencies:
  
