@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
@@ -29,6 +30,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../helpers/utils.dart';
 import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
+import '../../services/cloud/cloud_storage_constants.dart';
+import '../../utilities/widgets/categories_bottom_sheet.dart';
+import 'infinite_scroll.dart';
 
 extension Count<T extends Iterable> on Stream<T> {
   Stream<int> get getLength => map((event) => event.length);
@@ -59,6 +63,9 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late final SharedPreferences prefs;
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
+
+  final PagingController<int, CloudNote> _pagingController =
+      PagingController(firstPageKey: 0);
 
   void updateCounter(views) {
     setState(() {
@@ -173,7 +180,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isDismissible: true,
       builder: (BuildContext context) {
         return bottomDetailsSheet(openWithCategory, 1, true,
-            _notesService.categoryNameForSheet.value);
+            _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -251,6 +258,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
+    _notesService.loadingManager.add(true);
   }
 
   @override
@@ -258,21 +266,57 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.resumed) {
+      print("App resumed");
+
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var treshold = DateTime.now();
+        var threshold =
+            DateTime.now().subtract(Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
-        Duration diff = treshold.difference(dt1);
-        if (diff.inMinutes > 60) {
-          _notesService.allNotes(false);
-        }
+        Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
+
+        print("Last used: ${dt1.toString()}");
+        print("Difference in minutes: ${diff.inMinutes}");
+
+        // if (diff.inMinutes > 0) {
+        print("Fetching new notes");
+        _notesService.allNotes(false);
+        _notesService.getSettings().then((value) => setState(() {
+              _isBannerAdReady = true && _notesService.showAD;
+            }));
+
+        // }
       }
 
-      var currentTime = Timestamp.now();
+      var currentTime = DateTime.now();
       prefs.setString(
           'last_used', currentTime.millisecondsSinceEpoch.toString());
+
+      print("Current time: ${currentTime.toString()}");
     }
+  }
+
+  void onFeaturedClicked(id, isMain, name) {
+    if (isMain) {
+      _notesService.setCategoryId(0);
+      _notesService.setMainCategoryId(id);
+      _notesService.categoryNameForSheet.add(name);
+      getAllNotes();
+    } else {
+      _notesService.setCategoryId(id);
+      _notesService.setMainCategoryId(-1);
+      _notesService.categoryNameForSheet.add(name);
+
+      getAllNotes();
+    }
+    _notesService.scrollManager.add(true);
+    Navigator.pop(context);
+  }
+
+  void getAllNotes() {
+    _notesService.allNotes(false);
+    // _scrollController.jumpTo(0);
   }
 
   void _loadBannerAd() {
@@ -299,7 +343,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   @override
   void dispose() {
     //don't forget to dispose of it when not needed anymore
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -396,88 +440,81 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 )
               ],
             ),
-            body: StreamBuilder(
-              stream: _notesService.movieStream,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    if (snapshot.hasData) {
-                      final allNotes = snapshot.data as Iterable<CloudNote>;
-                      return Stack(
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 20, top: 5),
-                                  child: DropdownButton(
-                                      value: _notesService
-                                          .selectedCityStream.value,
-                                      items: TURKEY
-                                          .map((e) => DropdownMenuItem(
-                                              value: e['id'],
-                                              child:
-                                                  Text(e['name'].toString())))
-                                          .toList(),
-                                      onChanged: ((value) {
-                                        setUserSelectedCity(
-                                            int.parse(value.toString()));
-                                        setSelectedCity(
-                                            int.parse(value.toString()));
-                                      }))),
-                              Expanded(
-                                  child: SearchBar(
-                                searchcb: onSearch,
-                              ))
-                            ],
-                          ),
-                          if (_isBannerAdReady)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 60),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: _bannerAd.size.width.toDouble(),
-                                    height: _bannerAd.size.height.toDouble(),
-                                    child: AdWidget(ad: _bannerAd),
-                                  )
-                                ],
-                              ),
-                            ),
+            body: Column(
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                        padding:
+                            const EdgeInsets.only(left: 20, top: 5, bottom: 5),
+                        child: DropdownButton(
+                            value: _notesService.selectedCityStream.value,
+                            items: TURKEY
+                                .map((e) => DropdownMenuItem(
+                                    value: e['id'],
+                                    child: Text(e['name'].toString())))
+                                .toList(),
+                            onChanged: ((value) {
+                              setUserSelectedCity(int.parse(value.toString()));
+                              setSelectedCity(int.parse(value.toString()));
+                            }))),
+                    Expanded(
+                        child: SearchBar(
+                      searchcb: onSearch,
+                    ))
+                  ],
+                ),
+                if (_isBannerAdReady)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: _bannerAd.size.width.toDouble(),
+                          height: _bannerAd.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd),
+                        )
+                      ],
+                    ),
+                  ),
 
-                          SizedBox(
-                            child: NotesListView(
-                              notes: allNotes,
-                              onDeleteNote: (note) async {
-                                await _notesService.deleteNote(
-                                    documentId: note.documentId);
-                              },
-                              onTap: (note) {
-                                updateCounter(views);
-                                _notesService.selectedNote.add(note);
-                                Navigator.of(context).pushNamed(
-                                  noteDetailsRoute,
-                                  arguments: note,
-                                );
-                              },
-                            ),
-                          ),
+                Expanded(
+                    child: InfiniteScrollWidget(
+                  notes: [],
+                  onTap: (note) {
+                    updateCounter(views);
+                    _notesService.selectedNote.add(note);
+                    Navigator.of(context).pushNamed(
+                      noteDetailsRoute,
+                      arguments: note,
+                    );
+                  },
+                  onDeleteNote: (note) async {
+                    await _notesService.deleteNote(documentId: note.documentId);
+                  },
+                ))
+                // NotesListView(
+                //   notes: allNotes,
+                //   onDeleteNote: (note) async {
+                //     await _notesService.deleteNote(
+                //         documentId: note.documentId);
+                //   },
+                //   onTap: (note) {
+                //     updateCounter(views);
+                //     _notesService.selectedNote.add(note);
+                //     Navigator.of(context).pushNamed(
+                //       noteDetailsRoute,
+                //       arguments: note,
+                //     );
+                //   },
+                // ),
 
-                          // bottomDetailsSheet(
-                          //     openWithCategory, 0.1, true, selectedCategory),
-                          // ElevatedButton(
-                          //     onPressed: showModal, child: Text("lick"))
-                        ],
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  default:
-                    return const Center(child: CircularProgressIndicator());
-                }
-              },
+                // bottomDetailsSheet(
+                //     openWithCategory, 0.1, true, selectedCategory),
+                // ElevatedButton(
+                //     onPressed: showModal, child: Text("lick"))
+              ],
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
@@ -485,6 +522,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               height: 40,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(
+                      0xFF4CAF50), // Используйте Color для задания цвета напрямую
+                ),
                 onPressed: () {
                   showModal();
                 },
@@ -503,119 +544,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           );
         });
   }
-}
-
-Widget bottomDetailsSheet(
-  Function fun,
-  double initialSize,
-  bool isMainSelectable,
-  String selectedCat,
-) {
-  return DraggableScrollableSheet(
-    builder: (BuildContext context, ScrollController scrollController) {
-      return Container(
-        decoration: const BoxDecoration(
-            color: Color.fromARGB(255, 104, 136, 164),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12.0),
-                topRight: Radius.circular(12.0))),
-        child: Container(
-          child: ListView(
-            controller: scrollController,
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Container(
-                    height: 4,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(7.0),
-                  child: Card(
-                    elevation: 0,
-                    child: SizedBox.square(
-                      child: Center(
-                        child: Text(
-                          selectedCat,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              ...CATEGORIES.map((u) => Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            isMainSelectable
-                                ? fun(ListViewArguments(
-                                    0, int.parse(u['id'].toString())))
-                                : null;
-                            Navigator.pop(context);
-                          },
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    u['name'].toString(),
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        backgroundColor: Colors.transparent,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 4),
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                )
-                              ]),
-                        ),
-                      ),
-                    ),
-                    ...(u['sub_categories'] as List).map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                            fun(ListViewArguments(
-                                e['id'], int.parse(u['id'].toString())));
-                          },
-                          child: Card(
-                            elevation: 0,
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            child: ListTile(title: Text(e['name'].toString())),
-                          ),
-                        )))
-                  ]))
-            ],
-          ),
-        ),
-      );
-    },
-  );
 }
 
 Widget bottomCitiesSheet(Function fun, double initialSize) {

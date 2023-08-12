@@ -47,6 +47,8 @@ class FirebaseCloudStorage {
 
   BehaviorSubject<int> categoryIdStream = BehaviorSubject<int>.seeded(0);
   BehaviorSubject<int> mainCategoryIdStream = BehaviorSubject<int>.seeded(0);
+  final BehaviorSubject<bool> scrollManager = BehaviorSubject<bool>();
+  final BehaviorSubject<bool> loadingManager = BehaviorSubject<bool>();
 
   void createInterstitialAd() {
     InterstitialAd.load(
@@ -252,37 +254,66 @@ class FirebaseCloudStorage {
     return allNotes;
   }
 
-  allNotes(bool isPreload) {
+  Future<List<CloudNote>> getNotesFromFirestore(int limit) async {
+    final CollectionReference notesCollection =
+        FirebaseFirestore.instance.collection('notes');
+
+    final QuerySnapshot<Object?> querySnapshot =
+        await notesCollection.limit(limit).get();
+
+    final List<CloudNote> notes = querySnapshot.docs
+        .map((snapshot) => CloudNote.fromSnapshot(
+            snapshot as QueryDocumentSnapshot<Map<String, dynamic>>))
+        .toList();
+
+    return notes;
+  }
+
+  allNotes(bool isPreload) async {
     const limit = 15;
     var addDt = DateTime.now();
+    if (!isPreload) {
+      noteList = [];
+      movieController.sink.add(noteList);
+    }
+
     Query<Map<String, dynamic>> query;
     if (mainCategoryIdStream.value == 0) {
       query = notes
           .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
-          .where(createdAtFieldName,
-              isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
-          .orderBy(createdAtFieldName, descending: true);
+          // .where(createdAtFieldName,
+          //     isGreaterThanOrEqualTo:
+          //         Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
+          .orderBy(updatedAtFieldName, descending: true);
     } else if (categoryIdStream.value == 0) {
       query = notes
           .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
-          .where(createdAtFieldName,
-              isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
-          .orderBy(createdAtFieldName, descending: true);
+          // .where(createdAtFieldName,
+          //     isGreaterThanOrEqualTo:
+          //         Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
+          .orderBy(updatedAtFieldName, descending: true);
+    } else if (mainCategoryIdStream.value == -1) {
+      query = notes
+          .limit(limit)
+          .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
+          .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
+          // .where(createdAtFieldName,
+          //     isGreaterThanOrEqualTo:
+          //         Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
+          .orderBy(updatedAtFieldName, descending: true);
     } else {
       query = notes
           .limit(limit)
           .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
           .where(mainCategoryIdFieldName, isEqualTo: mainCategoryIdStream.value)
           .where(categoryIdFieldName, isEqualTo: categoryIdStream.value)
-          .where(createdAtFieldName,
-              isGreaterThanOrEqualTo:
-                  Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
-          .orderBy(createdAtFieldName, descending: true);
+          // .where(createdAtFieldName,
+          //     isGreaterThanOrEqualTo:
+          //         Timestamp.fromDate(addDt.subtract(const Duration(days: 30))))
+          .orderBy(updatedAtFieldName, descending: true);
     }
     List<String> arr = [];
 
@@ -294,19 +325,21 @@ class FirebaseCloudStorage {
     if (isPreload) {
       query = query.startAfterDocument(lastDoc);
     }
-
-    query.snapshots().map((event) {
-      if (event.docs.isNotEmpty) {
-        lastDoc = event.docs[event.docs.length - 1];
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot;
+    try {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await query.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
+      if (!isPreload) {
+        noteList = [];
+      }
+      final notes = querySnapshot.docs.map((doc) {
+        return CloudNote.fromSnapshot(doc);
+      }).toList();
+      noteList.addAll(notes);
 
-      return event.docs.map((doc) => CloudNote.fromSnapshot(doc));
-    }).listen((event) {
-      // if (!isPreload) {
-      noteList = [];
-      // }
-
-      noteList.addAll(event.toList());
       var shortAddDateRange = DateTime.now().subtract(const Duration(days: 54));
       noteList = noteList.where((record) {
         if (record.shortAdd) {
@@ -319,9 +352,13 @@ class FirebaseCloudStorage {
         }
         return true;
       }).toList();
-
       movieController.sink.add(noteList);
-    });
+      loadingManager.add(false);
+    } catch (e) {
+      log(e.toString());
+    }
+
+    // });
   }
 
   allNotesNext() {

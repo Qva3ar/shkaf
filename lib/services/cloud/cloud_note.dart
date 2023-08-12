@@ -22,6 +22,7 @@ class CloudNote {
   final List<String>? imagesUrls;
   final List<String>? reports;
   final bool shortAdd;
+
   CloudNote({
     required this.documentId,
     required this.ownerUserId,

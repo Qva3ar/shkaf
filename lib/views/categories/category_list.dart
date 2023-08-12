@@ -8,6 +8,18 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 
+final List<Map<String, dynamic>> FEATURED = [
+  {"id": 1, "name": "Услуги", "isMain": true},
+  {"id": 9, "name": "Аренда квартир", "isMain": false},
+  {
+    "id": 17,
+    "name": "Работа",
+    "isMain": true,
+  },
+  {"id": 26, "name": "Аренда Машины", "isMain": false},
+  {"id": 31, "name": "Мебель и техника", "isMain": true},
+];
+
 final CATEGORIES = [
   {"id": 0, "name": "Все категории", "sub_categories": []},
   {
@@ -168,6 +180,28 @@ final CATEGORIES = [
       },
       {
         "id": 38,
+        "name": "Прочее",
+      },
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Всё остальное",
+    "sub_categories": [
+      {
+        "id": 40,
+        "name": "Спорт",
+      },
+      {
+        "id": 41,
+        "name": "Вещи",
+      },
+      {
+        "id": 42,
+        "name": "Инструменты",
+      },
+      {
+        "id": 43,
         "name": "Прочее",
       },
     ]

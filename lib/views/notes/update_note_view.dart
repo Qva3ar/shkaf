@@ -19,6 +19,8 @@ import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/validators/validators.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../utilities/widgets/categories_bottom_sheet.dart';
+
 class UpdateNoteView extends StatefulWidget {
   const UpdateNoteView({Key? key}) : super(key: key);
 
@@ -356,7 +358,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isScrollControlled: true,
       isDismissible: true,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(selectCategory, 1, false, "Категории");
+        return bottomDetailsSheet(selectCategory, 1, false, "Категории", null);
       },
     );
   }
