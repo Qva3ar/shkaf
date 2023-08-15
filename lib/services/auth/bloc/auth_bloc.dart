@@ -1,8 +1,6 @@
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:mynotes/services/auth/auth_provider.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
@@ -146,7 +144,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final prefs = await SharedPreferences.getInstance();
       var isGoogleSignIn = false;
       try {
-        var user = null;
+        AuthUser user;
         if (event.user != null) {
           user = AuthUser.fromFirebase(event.user!.user!);
           isGoogleSignIn = true;
@@ -158,8 +156,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         if (!isGoogleSignIn &&
-            user?.isEmailVerified != null &&
-            user?.isEmailVerified == false) {
+            user.isEmailVerified != null &&
+            user.isEmailVerified == false) {
           emit(
             const AuthStateLoggedOut(
                 exception: null, isLoading: false, isLogin: false),

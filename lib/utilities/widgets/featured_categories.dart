@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../views/categories/category_list.dart';
@@ -10,19 +9,20 @@ Map<String, IconData> categoryIcons = {
   "Аренда Машины": Icons.directions_car,
   "Мебель и техника": Icons.weekend,
   "Бытовая техника": Icons.kitchen,
+  "Электроника": Icons.phone_android,
 };
 
 Widget featuredList(
   Function? fun,
 ) {
   return Padding(
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Column(
       children: FEATURED.map((item) {
         return GestureDetector(
           onTap: () => fun!(item['id'], item['isMain'], item['name']),
           child: Card(
-            color: Color.fromARGB(255, 174, 235, 177),
+            color: const Color.fromARGB(255, 174, 235, 177),
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),

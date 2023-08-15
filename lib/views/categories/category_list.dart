@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 
 final List<Map<String, dynamic>> FEATURED = [
@@ -18,6 +14,7 @@ final List<Map<String, dynamic>> FEATURED = [
   },
   {"id": 26, "name": "Аренда Машины", "isMain": false},
   {"id": 31, "name": "Мебель и техника", "isMain": true},
+  {"id": 12, "name": "Электроника", "isMain": true},
 ];
 
 final CATEGORIES = [
@@ -241,7 +238,7 @@ class CategoryList extends StatelessWidget {
                         ...(u['sub_categories'] as List).map((e) => Padding(
                               padding: const EdgeInsets.only(left: 10.0),
                               child: Card(
-                                color: Color.fromARGB(255, 244, 237, 196),
+                                color: const Color.fromARGB(255, 244, 237, 196),
                                 child:
                                     ListTile(title: Text(e['name'].toString())),
                               ),

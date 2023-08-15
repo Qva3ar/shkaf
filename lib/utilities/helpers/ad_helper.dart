@@ -7,7 +7,7 @@ class AdHelper {
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3060459956824180/2107670810';
     } else {
-      throw new UnsupportedError('Unsupported platform');
+      throw UnsupportedError('Unsupported platform');
     }
   }
 
@@ -17,7 +17,7 @@ class AdHelper {
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3060459956824180/9355605441';
     } else {
-      throw new UnsupportedError('Unsupported platform');
+      throw UnsupportedError('Unsupported platform');
     }
   }
 }

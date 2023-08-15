@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -13,8 +11,6 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
-import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
-import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
@@ -27,7 +23,6 @@ import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:in_app_update/in_app_update.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:upgrader/upgrader.dart';
@@ -100,7 +95,7 @@ void main() async {
                       foregroundColor: Colors.black),
                   elevatedButtonTheme: ElevatedButtonThemeData(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 104, 136, 164),
+                      backgroundColor: const Color.fromARGB(255, 104, 136, 164),
                       foregroundColor: Colors.white,
                     ),
                   ),
@@ -134,7 +129,7 @@ void main() async {
                     ),
                 userDetails: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: UserDetails(),
+                      child: const UserDetails(),
                     ),
                 userNotes: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),

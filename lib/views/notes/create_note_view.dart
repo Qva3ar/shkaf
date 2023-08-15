@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +14,6 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../services/cloud/cloud_storage_constants.dart';
 
 class CreateNoteView extends StatefulWidget {
   const CreateNoteView({Key? key}) : super(key: key);
@@ -69,27 +67,27 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
     Navigator.popAndPushNamed(context, allNotes);
   }
 
-  Future<List<String>> uploadFiles(List<XFile> _images) async {
+  Future<List<String>> uploadFiles(List<XFile> images) async {
     var imageUrls =
-        await Future.wait(_images.map((_image) => uploadFile(_image)));
+        await Future.wait(images.map((image) => uploadFile(image)));
 
     return imageUrls;
   }
 
-  Future<String> uploadFile(XFile _image) async {
+  Future<String> uploadFile(XFile image) async {
     var id = currentUser.id;
-    final _firebaseStorage = FirebaseStorage.instance;
+    final firebaseStorage = FirebaseStorage.instance;
 
-    var snapshot = await _firebaseStorage
+    var snapshot = await firebaseStorage
         .ref()
-        .child('images/$id/' + DateTime.now().millisecondsSinceEpoch.toString())
-        .putFile(File(_image.path));
+        .child('images/$id/${DateTime.now().millisecondsSinceEpoch}')
+        .putFile(File(image.path));
     return await snapshot.ref.getDownloadURL();
   }
 
   openImages() async {
-    final _firebaseStorage = FirebaseStorage.instance;
-    final _imagePicker = ImagePicker();
+    final firebaseStorage = FirebaseStorage.instance;
+    final imagePicker = ImagePicker();
     List<XFile>? image;
     //Check Permissions
     await Permission.photos.request();
@@ -97,9 +95,9 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
     var permissionStatus = await Permission.photos.status;
 
     if (permissionStatus.isGranted) {
-      var images = await _imagePicker.pickMultiImage();
+      var images = await imagePicker.pickMultiImage();
 
-      if (images != null && images.length > 0) {
+      if (images.isNotEmpty) {
         setState(() {
           imagefiles = images;
         });
@@ -215,13 +213,13 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
                                 int pageViewIndex) =>
                             Builder(
                               builder: (BuildContext context) {
-                                return Container(
+                                return SizedBox(
                                     width: MediaQuery.of(context).size.width,
                                     // margin: EdgeInsets.symmetric(horizontal: 5.0),
                                     // decoration:BoxDecoration(color: Colors.amber),
                                     child: imagesUrls.isNotEmpty
                                         ? Image.file(
-                                            new File(imagesUrls[itemIndex]))
+                                            File(imagesUrls[itemIndex]))
                                         : null);
                               },
                             )),

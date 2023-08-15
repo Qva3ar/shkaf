@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/routes.dart';
@@ -27,7 +26,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                     width: 60,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
                 ),
@@ -105,7 +104,7 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
                           },
                           child: Card(
                             elevation: 0,
-                            color: Color.fromARGB(255, 255, 255, 255),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             child: ListTile(title: Text(e['name'].toString())),
                           ),
                         )))

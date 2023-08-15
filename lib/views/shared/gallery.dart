@@ -18,6 +18,7 @@ class _GalleryWidgetState extends State<GalleryWidget> {
 
   PhotoViewController controller = PhotoViewController();
 
+  @override
   Widget build(BuildContext context) {
     log(widget.imageUrls.toString());
     return Scaffold(
@@ -36,11 +37,11 @@ class _GalleryWidgetState extends State<GalleryWidget> {
                     maxScale: PhotoViewComputedScale.covered * 3);
               },
               itemCount: widget.imageUrls.length,
-              loadingBuilder: (context, event) => Center(
-                child: Container(
+              loadingBuilder: (context, event) => const Center(
+                child: SizedBox(
                   width: 20.0,
                   height: 20.0,
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 ),
               ),
               // backgroundDecoration: widget.backgroundDecoration,

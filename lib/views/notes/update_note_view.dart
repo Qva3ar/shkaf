@@ -67,7 +67,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   List<String> imagesUrls = [];
   @override
   void initState() {
-    this.currentUser = AuthService?.firebase().currentUser;
+    currentUser = AuthService?.firebase().currentUser;
     _notesService = FirebaseCloudStorage();
     _phoneController = TextEditingController();
     _textController = TextEditingController();
@@ -108,7 +108,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
 
   saveNote() async {
     if (_formKey.currentState!.validate()) {
-      var imageUrls;
+      late List<String> imageUrls;
       setState(() {
         isSaving = true;
       });
@@ -175,53 +175,48 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     }
   }
 
-  Future<List<String>> uploadFilesWEB(List<XFile> _images) async {
+  Future<List<String>> uploadFilesWEB(List<XFile> images) async {
     var imageUrls =
-        await Future.wait(_images.map((_image) => uploadFileWEB(_image)));
+        await Future.wait(images.map((image) => uploadFileWEB(image)));
 
     return imageUrls;
   }
 
-  Future<String> uploadFileWEB(XFile _image) async {
-    Uint8List data = await XFile(_image.path).readAsBytes();
+  Future<String> uploadFileWEB(XFile image) async {
+    Uint8List data = await XFile(image.path).readAsBytes();
 
     var id = currentUser.id;
-    final _firebaseStorage = FirebaseStorage.instance;
+    final firebaseStorage = FirebaseStorage.instance;
 
-    var snapshot = await _firebaseStorage
+    var snapshot = await firebaseStorage
         .ref()
-        .child('images/$id/' +
-            Rand.Random().nextInt(100).toString() +
-            Rand.Random().nextInt(100).toString() +
-            DateTime.now().millisecondsSinceEpoch.toString())
-        .putData(data, SettableMetadata(contentType: '${_image.mimeType}'));
+        .child(
+            'images/$id/${Rand.Random().nextInt(100)}${Rand.Random().nextInt(100)}${DateTime.now().millisecondsSinceEpoch}')
+        .putData(data, SettableMetadata(contentType: '${image.mimeType}'));
     return await snapshot.ref.getDownloadURL();
   }
 
-  Future<List<String>> uploadFiles(List<XFile> _images) async {
-    var imageUrls =
-        await Future.wait(_images.map((_image) => uploadFile(_image)));
+  Future<List<String>> uploadFiles(List<XFile> images) async {
+    var imageUrls = await Future.wait(images.map((image) => uploadFile(image)));
 
     return imageUrls;
   }
 
-  Future<String> uploadFile(XFile _image) async {
+  Future<String> uploadFile(XFile image) async {
     var id = currentUser.id;
-    final _firebaseStorage = FirebaseStorage.instance;
+    final firebaseStorage = FirebaseStorage.instance;
 
-    var snapshot = await _firebaseStorage
+    var snapshot = await firebaseStorage
         .ref()
-        .child('images/$id/' +
-            Rand.Random().nextInt(100).toString() +
-            Rand.Random().nextInt(100).toString() +
-            DateTime.now().millisecondsSinceEpoch.toString())
-        .putFile(File(_image.path));
+        .child(
+            'images/$id/${Rand.Random().nextInt(100)}${Rand.Random().nextInt(100)}${DateTime.now().millisecondsSinceEpoch}')
+        .putFile(File(image.path));
     return await snapshot.ref.getDownloadURL();
   }
 
   openImages() async {
-    final _firebaseStorage = FirebaseStorage.instance;
-    final _imagePicker = ImagePicker();
+    final firebaseStorage = FirebaseStorage.instance;
+    final imagePicker = ImagePicker();
     Iterable<XFile>? image;
     //Check Permissions
     // await Permission.photos.request();
@@ -236,8 +231,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isAllow = true;
     }
     if (isAllow) {
-      var images = await _imagePicker.pickMultiImage(imageQuality: 20);
-      if (images != null && images.length > 4) {
+      var images = await imagePicker.pickMultiImage(imageQuality: 20);
+      if (images.length > 4) {
         images = images.take(4).toList().cast<XFile>();
         const snackBar = SnackBar(
           content: Text("Ограничение в 4 фото"),
@@ -245,7 +240,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
 
-      if (images != null && images.length > 0) {
+      if (images.isNotEmpty) {
         isNewImages = true;
         List<String> imagesPath = [];
         for (int i = 0; i < images.length; i++) {

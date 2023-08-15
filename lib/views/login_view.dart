@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,7 +13,6 @@ import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
-import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
@@ -90,12 +87,12 @@ class _LoginViewState extends State<LoginView> {
       welcome = googleUser!.email;
     });
 
-    final GoogleSignInAuthentication? googleAuth =
+    final GoogleSignInAuthentication googleAuth =
         await googleUser!.authentication;
 
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
@@ -193,7 +190,7 @@ class _LoginViewState extends State<LoginView> {
                     child: const Text("Войти"),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 ),
                 Row(

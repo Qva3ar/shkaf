@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_network/image_network.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:jiffy/jiffy.dart';
@@ -89,7 +88,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
       _timer?.cancel();
 
       // Устанавливаем новый таймер с задержкой в 500 миллисекунд
-      _timer = Timer(Duration(milliseconds: 500), () async {
+      _timer = Timer(const Duration(milliseconds: 500), () async {
         // Если осталось меньше или равно offsetFromEnd пикселей до конца списка,
         // загружаем новые данные
         // widget.onScroll();
@@ -104,15 +103,14 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
 
   Widget _buildList() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 50, top: 0, left: 16, right: 16),
+      padding: const EdgeInsets.only(bottom: 50, top: 0, left: 16, right: 16),
       child: StreamBuilder<List<CloudNote>>(
         stream: _notesService.movieController.stream,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting ||
-              _isLoading) {
-            return Center(child: CircularProgressIndicator());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final _items = snapshot.data!;
+            final items = snapshot.data!;
 
             return RefreshIndicator(
               onRefresh: () async {
@@ -129,12 +127,12 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
               },
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: _items.length + 1,
+                itemCount: items.length + 1,
                 itemBuilder: (context, index) {
-                  if (index == _items.length) {
+                  if (index == items.length) {
                     return _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : SizedBox.shrink();
+                        ? const Center(child: CircularProgressIndicator())
+                        : const SizedBox.shrink();
                   } else {
                     return Card(
                       semanticContainer: true,
@@ -144,12 +142,12 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            child: _items[index].imagesUrls != null &&
-                                    _items[index].imagesUrls!.isNotEmpty
+                            child: items[index].imagesUrls != null &&
+                                    items[index].imagesUrls!.isNotEmpty
                                 ? ImageNetwork(
-                                    image: _items[index].imagesUrls![0],
+                                    image: items[index].imagesUrls![0],
                                     imageCache: CachedNetworkImageProvider(
-                                        _items[index].imagesUrls![0]),
+                                        items[index].imagesUrls![0]),
                                     height: 120,
                                     width: double.infinity,
                                     duration: 1500,
@@ -169,7 +167,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                                     onTap: () {
                                       FocusManager.instance.primaryFocus
                                           ?.unfocus();
-                                      widget.onTap(_items[index]);
+                                      widget.onTap(items[index]);
                                     },
                                   )
                                 : Image.asset(
@@ -185,7 +183,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                               children: [
                                 const SizedBox(height: 3),
                                 Text(
-                                  _items[index].text,
+                                  items[index].text,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 14,
@@ -207,7 +205,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        getCityName(_items[index].cityId ?? 0),
+                                        getCityName(items[index].cityId ?? 0),
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           // fontWeight: FontWeight.bold,
@@ -218,9 +216,8 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                                       ),
                                     ),
                                     Text(
-                                      getFormattedDate(
-                                          _items[index].updatedAt ??
-                                              _items[index].createdAt),
+                                      getFormattedDate(items[index].updatedAt ??
+                                          items[index].createdAt),
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         // fontWeight: FontWeight.bold,
@@ -241,7 +238,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
               ),
             );
           } else {
-            return Center(child: Text('Пусто'));
+            return const Center(child: Text('Пусто'));
           }
         },
       ),

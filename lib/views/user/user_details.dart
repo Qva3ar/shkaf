@@ -8,7 +8,7 @@ import '../../services/auth/bloc/auth_bloc.dart';
 import '../../services/auth/bloc/auth_event.dart';
 
 class UserDetails extends StatefulWidget {
-  UserDetails({Key? key}) : super(key: key);
+  const UserDetails({Key? key}) : super(key: key);
 
   @override
   State<UserDetails> createState() => _UserDetailsState();

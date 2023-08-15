@@ -23,16 +23,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 // We've sent you an email verification. Please open it to verify your account.
                 // If you haven't received a verification email yet, press the button below!'
                 "Вам на почту было выслано верификационное сообщение. Пожалуйста, откройте его и подтвердите верификацию. Если вы не получили сообщение, нажмите кнопку 'Отправить еще раз'",
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 // We've sent you an email verification. Please open it to verify your account.
                 // If you haven't received a verification email yet, press the button below!'
@@ -45,7 +45,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                       const AuthEventSendEmailVerification(),
                     );
               },
-              child: Text(
+              child: const Text(
                 "Отправить еще раз",
               ),
             ),
@@ -56,7 +56,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     );
                 Navigator.pushReplacementNamed(context, login);
               },
-              child: Text(
+              child: const Text(
                 "На страницу авторизации",
               ),
             )

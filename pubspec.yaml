@@ -51,7 +51,7 @@ dependencies:
   bloc: ^8.0.2
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
-  intl: ^0.17.0
+  intl: ^0.18.0
   carousel_slider: ^4.1.1
   grouped_list: ^5.1.2
   rxdart: ^0.27.5

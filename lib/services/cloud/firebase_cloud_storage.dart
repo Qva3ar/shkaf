@@ -10,7 +10,6 @@ import 'package:mynotes/services/cloud/cloud_storage_exceptions.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/subjects.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
@@ -274,7 +273,7 @@ class FirebaseCloudStorage {
     var addDt = DateTime.now();
     if (!isPreload) {
       noteList = [];
-      movieController.sink.add(noteList);
+      // movieController.sink.add(noteList);
     }
 
     Query<Map<String, dynamic>> query;
@@ -317,8 +316,8 @@ class FirebaseCloudStorage {
     }
     List<String> arr = [];
 
-    if (searchStr != null && searchStr.isNotEmpty) {
-      arr.add(searchStr);
+    if (searchStr.isNotEmpty) {
+      arr.add(searchStr.toLowerCase());
       query = query.where(textSearchFieldName, arrayContains: searchStr);
     }
 
@@ -336,14 +335,15 @@ class FirebaseCloudStorage {
         noteList = [];
       }
       final notes = querySnapshot.docs.map((doc) {
+        print(doc.data()[shortAddFieldName]);
         return CloudNote.fromSnapshot(doc);
       }).toList();
       noteList.addAll(notes);
 
-      var shortAddDateRange = DateTime.now().subtract(const Duration(days: 54));
+      var shortAddDateRange = DateTime.now().subtract(const Duration(days: 20));
       noteList = noteList.where((record) {
         if (record.shortAdd) {
-          if (record.createdAt.microsecondsSinceEpoch >
+          if (record.updatedAt!.microsecondsSinceEpoch >
               shortAddDateRange.microsecondsSinceEpoch) {
             return true;
           } else {
@@ -369,7 +369,7 @@ class FirebaseCloudStorage {
         .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
         .where(createdAtFieldName,
             isGreaterThanOrEqualTo:
-                Timestamp.fromDate(addDt.subtract(Duration(days: 7))));
+                Timestamp.fromDate(addDt.subtract(const Duration(days: 7))));
     // if (categoryIdStream.value == 0) {
     //   query.where(mainCategoryIdFieldName,
     //       isEqualTo: mainCategoryIdStream.value);
@@ -422,12 +422,14 @@ class FirebaseCloudStorage {
         cityIdFieldName: cityId,
         phoneFieldName: phone,
         createdAtFieldName: Timestamp.now(),
+        updatedAtFieldName: Timestamp.now(),
         shortAddFieldName: shortAdd,
       });
-    } on FirebaseException catch (e) {
+    } on FirebaseException {
       // Caught an exception from Firebase.
       rethrow;
     }
+    return null;
   }
 
   removeImages(List<String> imagesUrls) async {

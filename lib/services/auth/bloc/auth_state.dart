@@ -40,6 +40,7 @@ class AuthStateForgotPassword extends AuthState {
 }
 
 class AuthStateLoggedIn extends AuthState {
+  @override
   final AuthUser user;
   const AuthStateLoggedIn({
     required this.user,

@@ -1,11 +1,6 @@
-import 'dart:developer';
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'dart:math';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -16,21 +11,19 @@ import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
+import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/categories/category_list.dart';
-import 'package:mynotes/views/notes/notes_list_view.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:mynotes/views/notes/search_bar.dart';
-import 'package:mynotes/views/shared/notification_badge.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/utils.dart';
 import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
-import '../../services/cloud/cloud_storage_constants.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 import 'infinite_scroll.dart';
 
@@ -84,7 +77,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         _showPlatformDialog(context);
       }
     });
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _notesService = FirebaseCloudStorage();
     _notesService.createInterstitialAd();
     // _notesService.initConfig();
@@ -96,6 +89,15 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         selectedCategory = value;
       });
     });
+
+    // FirebaseFirestore.instance.collection('notes').get().then((snapshot) {
+    //   for (DocumentSnapshot ds in snapshot.docs) {
+    //     ds.reference.update({
+    //       updatedAtFieldName:
+    //           DateTime.now().subtract(const Duration(days: 30)), //True or false
+    //     });
+    //   }
+    // });
   }
 
   void registerNotification() async {
@@ -187,14 +189,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   licenseAlertDialog(BuildContext context) {
     Widget okButton = TextButton(
-      child: Text("Принимаю"),
+      child: const Text("Принимаю"),
       onPressed: () {
         isOldUser = true;
       },
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Пользовательское соглашение"),
+      title: const Text("Пользовательское соглашение"),
       content: TextButton(
         onPressed: openUrl(
             'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
@@ -270,8 +272,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var threshold =
-            DateTime.now().subtract(Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now()
+            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -322,7 +324,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   void _loadBannerAd() {
     _bannerAd = BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
-      request: AdRequest(),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (_) {
@@ -398,7 +400,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       Navigator.of(context).pushNamed(login);
                     }
                   },
-                  icon: Icon(Icons.person),
+                  icon: const Icon(Icons.person),
                 ),
                 PopupMenuButton<MenuAction>(
                   onSelected: (value) async {
@@ -459,7 +461,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                               setSelectedCity(int.parse(value.toString()));
                             }))),
                     Expanded(
-                        child: SearchBar(
+                        child: SearchBarWidget(
                       searchcb: onSearch,
                     ))
                   ],
@@ -470,7 +472,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
+                        SizedBox(
                           width: _bannerAd.size.width.toDouble(),
                           height: _bannerAd.size.height.toDouble(),
                           child: AdWidget(ad: _bannerAd),
@@ -481,7 +483,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
                 Expanded(
                     child: InfiniteScrollWidget(
-                  notes: [],
+                  notes: const [],
                   onTap: (note) {
                     updateCounter(views);
                     _notesService.selectedNote.add(note);

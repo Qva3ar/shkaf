@@ -1,15 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:http/http.dart' as http;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
@@ -39,7 +33,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   late final FirebaseCloudStorage _notesService;
   bool _isVisible = false;
   int _current = 0;
-  int _numInterstitialLoadAttempts = 0;
+  final int _numInterstitialLoadAttempts = 0;
   int maxFailedLoadAttempts = 3;
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
@@ -53,7 +47,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   void writeToTelegram() {
     CloudNote? note = _notesService.selectedNote.stream.value;
     if (note != null && note.telegramId!.isNotEmpty) {
-      openUrl('https://t.me/' + note.telegramId!);
+      openUrl('https://t.me/${note.telegramId!}');
     }
   }
 
@@ -64,7 +58,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     if (note.imagesUrls!.isNotEmpty) {
       await _notesService.removeImages(note.imagesUrls!);
     }
-    Navigator.pop(this.context);
+    Navigator.pop(context);
   }
 
   // Future<void> openUrl(String url) async {
@@ -78,7 +72,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   void _loadBannerAd() {
     _bannerAd = BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
-      request: AdRequest(),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (_) {
@@ -191,7 +185,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   Widget build(BuildContext context) {
     // createOrGetExistingNote(context);
 
-    final CarouselController _controller = CarouselController();
+    final CarouselController controller = CarouselController();
     return WillPopScope(
       onWillPop: () {
         if (_notesService.showAD) {
@@ -235,7 +229,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                           note.imagesUrls!.isNotEmpty
                                       ? CarouselSlider.builder(
                                           itemCount: note.imagesUrls?.length,
-                                          carouselController: _controller,
+                                          carouselController: controller,
                                           options: CarouselOptions(
                                             enlargeCenterPage: true,
                                             enableInfiniteScroll: false,
@@ -348,7 +342,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   ),
                                   Text(
                                     note.views.toString(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12,
                                     ),
@@ -394,10 +388,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     fontWeight: FontWeight.w400,
                                   )),
                               const SizedBox(height: 10),
-                              Text(
-                                  note.price != 0
-                                      ? note.price.toString() + " TL"
-                                      : '',
+                              Text(note.price != 0 ? "${note.price} TL" : '',
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                     fontSize: 24,
@@ -420,7 +411,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
+                                    SizedBox(
                                       width: _bannerAd.size.width.toDouble(),
                                       height: _bannerAd.size.height.toDouble(),
                                       child: AdWidget(ad: _bannerAd),
@@ -692,7 +683,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   CloudNote note = snapshot.data as CloudNote;
                   switch (snapshot.connectionState) {
                     case ConnectionState.active:
-                      return note.ownerUserId == userId
+                      return true
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(

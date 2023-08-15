@@ -5,15 +5,15 @@ import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 
 typedef SearchCb = void Function(String searchText);
 
-class SearchBar extends StatefulWidget {
+class SearchBarWidget extends StatefulWidget {
   final SearchCb searchcb;
-  SearchBar({required this.searchcb}) : super();
+  const SearchBarWidget({Key? key, required this.searchcb}) : super(key: key);
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<SearchBarWidget> createState() => _SearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _SearchBarState extends State<SearchBarWidget> {
   Debounce debounce = Debounce();
   late StreamSubscription<bool> keyboardSubscription;
   @override
