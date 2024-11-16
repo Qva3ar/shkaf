@@ -1,4 +1,3 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/services/auth/auth_provider.dart';
@@ -8,8 +7,7 @@ import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(AuthProvider provider)
-      : super(const AuthStateUninitialized(isLoading: true)) {
+  AuthBloc(AuthProviderService provider) : super(const AuthStateUninitialized(isLoading: true)) {
     on<AuthEventShouldRegister>((event, emit) {
       emit(const AuthStateRegistering(
         exception: null,
@@ -120,8 +118,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLogin: false,
           ),
         );
-      } else if (user.isEmailVerified != null &&
-          user.isEmailVerified == false) {
+      } else if (user.isEmailVerified != null && user.isEmailVerified == false) {
         emit(const AuthStateNeedsVerification(isLoading: false));
       } else {
         emit(AuthStateLoggedIn(
@@ -155,18 +152,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
 
-        if (!isGoogleSignIn &&
-            user.isEmailVerified != null &&
-            user.isEmailVerified == false) {
+        if (!isGoogleSignIn && user.isEmailVerified != null && user.isEmailVerified == false) {
           emit(
-            const AuthStateLoggedOut(
-                exception: null, isLoading: false, isLogin: false),
+            const AuthStateLoggedOut(exception: null, isLoading: false, isLogin: false),
           );
           emit(const AuthStateNeedsVerification(isLoading: false));
         } else {
           emit(
-            const AuthStateLoggedOut(
-                exception: null, isLoading: false, isLogin: false),
+            const AuthStateLoggedOut(exception: null, isLoading: false, isLogin: false),
           );
           if (event.user == null) {
             await prefs.setString('email', email!);

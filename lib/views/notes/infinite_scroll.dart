@@ -38,9 +38,9 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
   DocumentSnapshot? _lastDocument;
   // List<CloudNote> _items = [];
   bool _isLoading = false;
+  bool _isInfiniteScrollLoading = false;
   final ScrollController _scrollController = ScrollController();
-  final PagingController<int, CloudNote> _pagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
 
   @override
   void initState() {
@@ -49,8 +49,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
     _notesService = FirebaseCloudStorage();
     paddingTop = _notesService.showAD ? 115 : 60;
     // _getMoreData();
-    _scrollController
-        .addListener(_scrollListener); // Добавляем слушателя скролла
+    _scrollController.addListener(_scrollListener); // Добавляем слушателя скролла
 
     _notesService.loadingManager.listen((event) {
       setState(() {
@@ -67,8 +66,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(
-        _scrollListener); // Удаляем слушателя при уничтожении виджета
+    _scrollController.removeListener(_scrollListener); // Удаляем слушателя при уничтожении виджета
     _scrollController.dispose();
     super.dispose();
   }
@@ -82,7 +80,7 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - offsetFromEnd) {
       setState(() {
-        _isLoading = true;
+        _isInfiniteScrollLoading = true;
       });
       // Отменяем предыдущий таймер, если он был установлен
       _timer?.cancel();
@@ -95,154 +93,151 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
         await _notesService.allNotes(true);
 
         setState(() {
-          _isLoading = false;
+          _isInfiniteScrollLoading = false;
         });
       });
     }
   }
 
   Widget _buildList() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 50, top: 0, left: 16, right: 16),
-      child: StreamBuilder<List<CloudNote>>(
-        stream: _notesService.movieController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final items = snapshot.data!;
+    return !_isLoading
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 50, top: 0, left: 16, right: 16),
+            child: StreamBuilder<List<CloudNote>>(
+              stream: _notesService.movieController.stream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  final items = snapshot.data!;
 
-            return RefreshIndicator(
-              onRefresh: () async {
-                setState(() {
-                  _isLoading =
-                      true; // Устанавливаем состояние загрузки в true перед началом обновления
-                });
-                await _notesService.allNotes(
-                    false); // Загрузка данных с "pull down to refresh"
-                setState(() {
-                  _isLoading =
-                      false; // Устанавливаем состояние загрузки в true перед началом обновления
-                });
-              },
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: items.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == items.length) {
-                    return _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : const SizedBox.shrink();
-                  } else {
-                    return Card(
-                      semanticContainer: true,
-                      elevation: 0,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            child: items[index].imagesUrls != null &&
-                                    items[index].imagesUrls!.isNotEmpty
-                                ? ImageNetwork(
-                                    image: items[index].imagesUrls![0],
-                                    imageCache: CachedNetworkImageProvider(
-                                        items[index].imagesUrls![0]),
-                                    height: 120,
-                                    width: double.infinity,
-                                    duration: 1500,
-                                    onPointer: true,
-                                    debugPrint: false,
-                                    fullScreen: false,
-                                    fitAndroidIos: BoxFit.cover,
-                                    fitWeb: BoxFitWeb.cover,
-                                    borderRadius: BorderRadius.circular(4),
-                                    onLoading: const CircularProgressIndicator(
-                                      color: Colors.indigoAccent,
-                                    ),
-                                    onError: const Icon(
-                                      Icons.error,
-                                      color: Colors.red,
-                                    ),
-                                    onTap: () {
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                      widget.onTap(items[index]);
-                                    },
-                                  )
-                                : Image.asset(
-                                    'assets/images/img_placeholder.jpeg',
-                                    height: 120,
-                                    width: double.infinity,
-                                    fit: BoxFit.fill),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      setState(() {
+                        _isLoading =
+                            true; // Устанавливаем состояние загрузки в true перед началом обновления
+                      });
+                      await _notesService
+                          .allNotes(false); // Загрузка данных с "pull down to refresh"
+                      setState(() {
+                        _isLoading =
+                            false; // Устанавливаем состояние загрузки в true перед началом обновления
+                      });
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: items.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == items.length) {
+                          return _isInfiniteScrollLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : const SizedBox.shrink();
+                        } else {
+                          return Card(
+                            semanticContainer: true,
+                            elevation: 0,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 3),
-                                Text(
-                                  items[index].text,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                SizedBox(
+                                  child: items[index].imagesUrls != null &&
+                                          items[index].imagesUrls!.isNotEmpty
+                                      ? ImageNetwork(
+                                          image: items[index].imagesUrls![0],
+                                          imageCache: CachedNetworkImageProvider(
+                                              items[index].imagesUrls![0]),
+                                          height: 120,
+                                          width: double.infinity,
+                                          duration: 1500,
+                                          onPointer: true,
+                                          debugPrint: false,
+                                          fullScreen: false,
+                                          fitAndroidIos: BoxFit.cover,
+                                          fitWeb: BoxFitWeb.cover,
+                                          borderRadius: BorderRadius.circular(4),
+                                          onLoading: const CircularProgressIndicator(
+                                            color: Colors.indigoAccent,
+                                          ),
+                                          onError: const Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                          ),
+                                          onTap: () {
+                                            FocusManager.instance.primaryFocus?.unfocus();
+                                            widget.onTap(items[index]);
+                                          },
+                                        )
+                                      : Image.asset('assets/images/img_placeholder.jpeg',
+                                          height: 120, width: double.infinity, fit: BoxFit.fill),
                                 ),
-                                const SizedBox(height: 2),
-                                // Text(
-                                //   notes[i].price.toString() + "TL",
-                                //   style: const TextStyle(
-                                //     fontWeight: FontWeight.bold,
-                                //     fontSize: 16,
-                                //     color: Colors.black54,
-                                //   ),
-                                // ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        getCityName(items[index].cityId ?? 0),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        items[index].text,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          // fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          color: Color.fromARGB(
-                                              177, 158, 158, 158),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                    ),
-                                    Text(
-                                      getFormattedDate(items[index].updatedAt ??
-                                          items[index].createdAt),
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        // fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 2),
+                                      // Text(
+                                      //   notes[i].price.toString() + "TL",
+                                      //   style: const TextStyle(
+                                      //     fontWeight: FontWeight.bold,
+                                      //     fontSize: 16,
+                                      //     color: Colors.black54,
+                                      //   ),
+                                      // ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              getCityName(items[index].cityId ?? 0),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                // fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: Color.fromARGB(177, 158, 158, 158),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            getFormattedDate(
+                                                items[index].updatedAt ?? items[index].createdAt),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              // fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
-            );
-          } else {
-            return const Center(child: Text('Пусто'));
-          }
-        },
-      ),
-    );
+                          );
+                        }
+                      },
+                    ),
+                  );
+                } else {
+                  return const Center(child: Text('Пусто'));
+                }
+              },
+            ),
+          )
+        : const Center(child: CircularProgressIndicator());
   }
 
   @override
@@ -254,5 +249,5 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
 }
 
 getFormattedDate(DateTime date) {
-  return Jiffy(date).format('dd.MM.yyyy');
+  return Jiffy.parseFromDateTime(date).format(pattern: 'dd.MM.yyyy');
 }

@@ -37,8 +37,6 @@ class _NotesViewState extends State<UserNotesView> {
 
   @override
   Widget build(BuildContext context) {
-    log("userId");
-    log(userId);
     return Scaffold(
       appBar: AppBar(
         title: StreamBuilder(

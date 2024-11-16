@@ -42,15 +42,13 @@ void main() {
         password: 'anypassword',
       );
 
-      expect(badEmailUser,
-          throwsA(const TypeMatcher<UserNotFoundAuthException>()));
+      expect(badEmailUser, throwsA(const TypeMatcher<UserNotFoundAuthException>()));
 
       final badPasswordUser = provider.createUser(
         email: 'someone@bar.com',
         password: 'foobar',
       );
-      expect(badPasswordUser,
-          throwsA(const TypeMatcher<WrongPasswordAuthException>()));
+      expect(badPasswordUser, throwsA(const TypeMatcher<WrongPasswordAuthException>()));
 
       final user = await provider.createUser(
         email: 'foo',
@@ -160,4 +158,8 @@ class MockAuthProvider implements AuthProvider {
     // TODO: implement deleteUser
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement providerId
+  String get providerId => throw UnimplementedError();
 }

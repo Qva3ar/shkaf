@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
 
-abstract class AuthProvider {
+abstract class AuthProviderService {
   Future<void> initialize();
   AuthUser? get currentUser;
   Stream<User?>? get auth;

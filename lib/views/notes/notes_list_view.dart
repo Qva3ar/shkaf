@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_network/image_network.dart';
@@ -37,8 +36,7 @@ class _NotesListViewState extends State<NotesListView> {
 
   bool firstLoad = true;
   var counter = 0;
-  final PagingController<int, CloudNote> _pagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
 
   @override
   void initState() {
@@ -130,8 +128,7 @@ class _NotesListViewState extends State<NotesListView> {
                     widget.onTap(note);
                   },
                   child: Container(
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                     // margin: EdgeInsets.all(5),
                     padding: const EdgeInsets.all(5),
                     child: Card(
@@ -143,12 +140,10 @@ class _NotesListViewState extends State<NotesListView> {
                         children: [
                           Expanded(
                             child: SizedBox(
-                              child: note.imagesUrls != null &&
-                                      note.imagesUrls!.isNotEmpty
+                              child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
                                   ? ImageNetwork(
                                       image: note.imagesUrls![0],
-                                      imageCache: CachedNetworkImageProvider(
-                                          note.imagesUrls![0]),
+                                      imageCache: CachedNetworkImageProvider(note.imagesUrls![0]),
                                       height: 120,
                                       width: double.infinity,
                                       duration: 1500,
@@ -158,8 +153,7 @@ class _NotesListViewState extends State<NotesListView> {
                                       fitAndroidIos: BoxFit.cover,
                                       fitWeb: BoxFitWeb.cover,
                                       borderRadius: BorderRadius.circular(4),
-                                      onLoading:
-                                          const CircularProgressIndicator(
+                                      onLoading: const CircularProgressIndicator(
                                         color: Colors.indigoAccent,
                                       ),
                                       onError: const Icon(
@@ -167,16 +161,12 @@ class _NotesListViewState extends State<NotesListView> {
                                         color: Colors.red,
                                       ),
                                       onTap: () {
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
+                                        FocusManager.instance.primaryFocus?.unfocus();
                                         widget.onTap(note);
                                       },
                                     )
-                                  : Image.asset(
-                                      'assets/images/img_placeholder.jpeg',
-                                      height: 120,
-                                      width: double.infinity,
-                                      fit: BoxFit.fill),
+                                  : Image.asset('assets/images/img_placeholder.jpeg',
+                                      height: 120, width: double.infinity, fit: BoxFit.fill),
                             ),
                           ),
                           Padding(
@@ -213,14 +203,12 @@ class _NotesListViewState extends State<NotesListView> {
                                         style: const TextStyle(
                                           // fontWeight: FontWeight.bold,
                                           fontSize: 12,
-                                          color: Color.fromARGB(
-                                              177, 158, 158, 158),
+                                          color: Color.fromARGB(177, 158, 158, 158),
                                         ),
                                       ),
                                     ),
                                     Text(
-                                      getFormattedDate(
-                                          note.updatedAt ?? note.createdAt),
+                                      getFormattedDate(note.updatedAt ?? note.createdAt),
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         // fontWeight: FontWeight.bold,
@@ -248,5 +236,5 @@ class _NotesListViewState extends State<NotesListView> {
 }
 
 getFormattedDate(DateTime date) {
-  return Jiffy(date).format('dd.MM.yyyy');
+  return Jiffy.parseFromDateTime(date).format(pattern: 'dd.MM.yyyy');
 }

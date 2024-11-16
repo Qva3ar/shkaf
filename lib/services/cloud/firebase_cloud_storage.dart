@@ -13,8 +13,7 @@ import 'package:rxdart/rxdart.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
-  final settings =
-      FirebaseFirestore.instance.collection('configs').doc('settings');
+  final settings = FirebaseFirestore.instance.collection('configs').doc('settings');
 
   late FirebaseRemoteConfig remoteConfig;
   InterstitialAd? interstitialAd;
@@ -31,16 +30,13 @@ class FirebaseCloudStorage {
   bool showAD = false;
   int maxViewsWithoutAD = 5;
 
-  final BehaviorSubject<List<CloudNote>> movieController =
-      BehaviorSubject<List<CloudNote>>();
+  final BehaviorSubject<List<CloudNote>> movieController = BehaviorSubject<List<CloudNote>>();
 
   BehaviorSubject<String> categoryNameForSheet =
       BehaviorSubject<String>.seeded(CATEGORIES[0]['name'].toString());
 
-  BehaviorSubject<CloudNote?> selectedNote =
-      BehaviorSubject<CloudNote?>.seeded(null);
-  BehaviorSubject<int> selectedCityStream =
-      BehaviorSubject<int>.seeded(TURKEY[0]['id'] as int);
+  BehaviorSubject<CloudNote?> selectedNote = BehaviorSubject<CloudNote?>.seeded(null);
+  BehaviorSubject<int> selectedCityStream = BehaviorSubject<int>.seeded(TURKEY[0]['id'] as int);
 
   BehaviorSubject<int> recordViewCounter = BehaviorSubject<int>.seeded(0);
 
@@ -243,26 +239,23 @@ class FirebaseCloudStorage {
   }
 
   Stream<List<CloudNote>> allUserNotes({required String ownerUserId}) {
-    var addDt = DateTime.now();
+    print(ownerUserId.toString());
     final allNotes = notes
         // .limit(8)
         .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
         .snapshots()
-        .map((event) =>
-            event.docs.map((doc) => CloudNote.fromSnapshot(doc)).toList());
+        .map((event) => event.docs.map((doc) => CloudNote.fromSnapshot(doc)).toList());
     return allNotes;
   }
 
   Future<List<CloudNote>> getNotesFromFirestore(int limit) async {
-    final CollectionReference notesCollection =
-        FirebaseFirestore.instance.collection('notes');
+    final CollectionReference notesCollection = FirebaseFirestore.instance.collection('notes');
 
-    final QuerySnapshot<Object?> querySnapshot =
-        await notesCollection.limit(limit).get();
+    final QuerySnapshot<Object?> querySnapshot = await notesCollection.limit(limit).get();
 
     final List<CloudNote> notes = querySnapshot.docs
-        .map((snapshot) => CloudNote.fromSnapshot(
-            snapshot as QueryDocumentSnapshot<Map<String, dynamic>>))
+        .map((snapshot) =>
+            CloudNote.fromSnapshot(snapshot as QueryDocumentSnapshot<Map<String, dynamic>>))
         .toList();
 
     return notes;
@@ -273,6 +266,7 @@ class FirebaseCloudStorage {
     var addDt = DateTime.now();
     if (!isPreload) {
       noteList = [];
+      loadingManager.add(true);
       // movieController.sink.add(noteList);
     }
 
@@ -326,8 +320,7 @@ class FirebaseCloudStorage {
     }
     final QuerySnapshot<Map<String, dynamic>> querySnapshot;
     try {
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await query.get();
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get();
       if (querySnapshot.docs.isNotEmpty) {
         lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
@@ -343,8 +336,7 @@ class FirebaseCloudStorage {
       var shortAddDateRange = DateTime.now().subtract(const Duration(days: 20));
       noteList = noteList.where((record) {
         if (record.shortAdd) {
-          if (record.updatedAt!.microsecondsSinceEpoch >
-              shortAddDateRange.microsecondsSinceEpoch) {
+          if (record.updatedAt!.microsecondsSinceEpoch > shortAddDateRange.microsecondsSinceEpoch) {
             return true;
           } else {
             return false;
@@ -368,8 +360,7 @@ class FirebaseCloudStorage {
         .limit(8)
         .where(cityIdFieldName, isEqualTo: selectedCityStream.value)
         .where(createdAtFieldName,
-            isGreaterThanOrEqualTo:
-                Timestamp.fromDate(addDt.subtract(const Duration(days: 7))));
+            isGreaterThanOrEqualTo: Timestamp.fromDate(addDt.subtract(const Duration(days: 7))));
     // if (categoryIdStream.value == 0) {
     //   query.where(mainCategoryIdFieldName,
     //       isEqualTo: mainCategoryIdStream.value);
@@ -460,8 +451,7 @@ class FirebaseCloudStorage {
     return output;
   }
 
-  static final FirebaseCloudStorage _shared =
-      FirebaseCloudStorage._sharedInstance();
+  static final FirebaseCloudStorage _shared = FirebaseCloudStorage._sharedInstance();
   FirebaseCloudStorage._sharedInstance();
   factory FirebaseCloudStorage() => _shared;
 }

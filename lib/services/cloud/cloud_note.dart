@@ -57,20 +57,16 @@ class CloudNote {
         cityId = snapshot.data()[cityIdFieldName] ?? 0,
         views = snapshot.data()[viewsFieldName] ?? 0,
         createdAt =
-            Jiffy((snapshot.data()[createdAtFieldName] as Timestamp).toDate())
+            Jiffy.parseFromDateTime((snapshot.data()[createdAtFieldName] as Timestamp).toDate())
                 .dateTime,
         updatedAt = snapshot.data()[updatedAtFieldName] != null
-            ? Jiffy((snapshot.data()[updatedAtFieldName] as Timestamp).toDate())
+            ? Jiffy.parseFromDateTime((snapshot.data()[updatedAtFieldName] as Timestamp).toDate())
                 .dateTime
             : null,
         imagesUrls = snapshot.data()['imageUrls'] != null
-            ? (snapshot.data()['imageUrls'] as List<dynamic>)
-                .map((e) => e.toString())
-                .toList()
+            ? (snapshot.data()['imageUrls'] as List<dynamic>).map((e) => e.toString()).toList()
             : [],
         reports = snapshot.data()['reports'] != null
-            ? (snapshot.data()['reports'] as List<dynamic>)
-                .map((e) => e.toString())
-                .toList()
+            ? (snapshot.data()['reports'] as List<dynamic>).map((e) => e.toString()).toList()
             : [];
 }

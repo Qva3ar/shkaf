@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -95,10 +96,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       print('Warning: attempt to show interstitial before loaded.');
       return;
     }
-    _notesService.interstitialAd!.fullScreenContentCallback =
-        FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
+    _notesService.interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => print('ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
@@ -185,9 +184,9 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   Widget build(BuildContext context) {
     // createOrGetExistingNote(context);
 
-    final CarouselController controller = CarouselController();
-    return WillPopScope(
-      onWillPop: () {
+    CarouselSliderController controller = CarouselSliderController();
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
         if (_notesService.showAD) {
           var viewCounter = _notesService.recordViewCounter.value;
           if (viewCounter == _notesService.maxViewsWithoutAD) {
@@ -221,12 +220,10 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                             children: [
                               Container(
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 228, 228, 228),
+                                    color: const Color.fromARGB(255, 228, 228, 228),
                                     borderRadius: BorderRadius.circular(9),
                                   ),
-                                  child: note.imagesUrls != null &&
-                                          note.imagesUrls!.isNotEmpty
+                                  child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
                                       ? CarouselSlider.builder(
                                           itemCount: note.imagesUrls?.length,
                                           carouselController: controller,
@@ -242,46 +239,35 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                               });
                                             },
                                           ),
-                                          itemBuilder: (BuildContext context,
-                                                  int itemIndex,
+                                          itemBuilder: (BuildContext context, int itemIndex,
                                                   int pageViewIndex) =>
                                               Builder(
-                                                builder:
-                                                    (BuildContext context) {
+                                                builder: (BuildContext context) {
                                                   return GestureDetector(
                                                     onTap: () {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  GalleryWidget(
-                                                                      imageUrls:
-                                                                          note.imagesUrls ??
-                                                                              [])));
+                                                              builder: (context) => GalleryWidget(
+                                                                  imageUrls:
+                                                                      note.imagesUrls ?? [])));
                                                     },
                                                     child: Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
+                                                      width: MediaQuery.of(context).size.width,
                                                       height: 100,
                                                       decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(9),
+                                                        borderRadius: BorderRadius.circular(9),
                                                         image: DecorationImage(
                                                           fit: BoxFit.cover,
                                                           image: NetworkImage(
-                                                              note.imagesUrls![
-                                                                  itemIndex]),
+                                                              note.imagesUrls![itemIndex]),
                                                         ),
                                                       ),
                                                     ),
                                                   );
                                                 },
                                               ))
-                                      : Image.asset(
-                                          'assets/images/img_placeholder.jpeg')),
+                                      : Image.asset('assets/images/img_placeholder.jpeg')),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -354,30 +340,23 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                 children: [
                                   Card(
                                       elevation: 0,
-                                      color: const Color.fromARGB(
-                                          255, 144, 113, 229),
+                                      color: const Color.fromARGB(255, 144, 113, 229),
                                       child: Padding(
                                           padding: const EdgeInsets.all(3),
                                           child: Text(
-                                            getMainCategoryName(
-                                                note.mainCategoryId ?? 0),
+                                            getMainCategoryName(note.mainCategoryId ?? 0),
                                             style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w500),
+                                                color: Colors.white, fontWeight: FontWeight.w500),
                                           ))),
                                   Card(
                                       elevation: 0,
-                                      color: const Color.fromARGB(
-                                          243, 77, 128, 147),
+                                      color: const Color.fromARGB(243, 77, 128, 147),
                                       child: Padding(
                                           padding: const EdgeInsets.all(3),
-                                          child: Text(
-                                              getCategoryName(
-                                                  note.categoryId ?? 0),
+                                          child: Text(getCategoryName(note.categoryId ?? 0),
                                               style: const TextStyle(
                                                   color: Colors.white,
-                                                  fontWeight:
-                                                      FontWeight.w500)))),
+                                                  fontWeight: FontWeight.w500)))),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -424,8 +403,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                       visible: !_isVisible,
                                       child: ElevatedButton(
                                           onPressed: showPhoneNumber,
-                                          child: const Text(
-                                              'Показать номер телефона')),
+                                          child: const Text('Показать номер телефона')),
                                     )
                                   : Container(),
                               Visibility(
@@ -445,16 +423,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
 
                               note.url != ''
                                   ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         InkWell(
                                           onTap: () => openUrl(note.url ?? ""),
                                           child: Text(
                                             note.url ?? "",
                                             style: const TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
+                                                decoration: TextDecoration.underline,
                                                 color: Colors.blue),
                                           ),
                                         ),
@@ -462,16 +438,13 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                           text: const TextSpan(
                                             children: [
                                               WidgetSpan(
-                                                alignment:
-                                                    PlaceholderAlignment.middle,
-                                                child:
-                                                    Icon(Icons.error, size: 12),
+                                                alignment: PlaceholderAlignment.middle,
+                                                child: Icon(Icons.error, size: 12),
                                               ),
                                               TextSpan(
                                                 style: TextStyle(
                                                     fontSize: 12,
-                                                    color: Color.fromARGB(
-                                                        255, 95, 95, 95)),
+                                                    color: Color.fromARGB(255, 95, 95, 95)),
                                                 text:
                                                     " Перейдя по ссылке вы найдете оригинал объявления",
                                               ),
@@ -492,15 +465,13 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   TextButton(
                                     onPressed: () => showDialog<String>(
                                       context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
+                                      builder: (BuildContext context) => AlertDialog(
                                         title: const Text(
                                           'Выберите причину',
                                           style: TextStyle(color: Colors.red),
                                         ),
-                                        content: StatefulBuilder(builder:
-                                            (BuildContext context,
-                                                StateSetter setState) {
+                                        content: StatefulBuilder(
+                                            builder: (BuildContext context, StateSetter setState) {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
@@ -508,17 +479,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report = ReportCause
-                                                            .category;
+                                                        _report = ReportCause.category;
                                                       });
                                                     },
-                                                    child: const Text(
-                                                        'Неверная категория')),
+                                                    child: const Text('Неверная категория')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.category,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -529,17 +497,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report = ReportCause
-                                                            .forbidden;
+                                                        _report = ReportCause.forbidden;
                                                       });
                                                     },
-                                                    child: const Text(
-                                                        'Запрещенный товар')),
+                                                    child: const Text('Запрещенный товар')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.forbidden,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -550,17 +515,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report =
-                                                            ReportCause.obscene;
+                                                        _report = ReportCause.obscene;
                                                       });
                                                     },
-                                                    child: const Text(
-                                                        'Непристойное содержание')),
+                                                    child: const Text('Непристойное содержание')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.obscene,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -571,17 +533,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report =
-                                                            ReportCause.fraud;
+                                                        _report = ReportCause.fraud;
                                                       });
                                                     },
-                                                    child: const Text(
-                                                        'Мошенничество')),
+                                                    child: const Text('Мошенничество')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.fraud,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -592,16 +551,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report =
-                                                            ReportCause.spam;
+                                                        _report = ReportCause.spam;
                                                       });
                                                     },
                                                     child: const Text('Спам')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.spam,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -612,17 +569,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 title: GestureDetector(
                                                     onTap: () {
                                                       setState(() {
-                                                        _report =
-                                                            ReportCause.other;
+                                                        _report = ReportCause.other;
                                                       });
                                                     },
-                                                    child:
-                                                        const Text('Другое')),
+                                                    child: const Text('Другое')),
                                                 leading: Radio<ReportCause>(
                                                   value: ReportCause.other,
                                                   groupValue: _report,
-                                                  onChanged:
-                                                      (ReportCause? value) {
+                                                  onChanged: (ReportCause? value) {
                                                     setState(() {
                                                       _report = value;
                                                     });
@@ -634,8 +588,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                         }),
                                         actions: <Widget>[
                                           TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, 'false'),
+                                            onPressed: () => Navigator.pop(context, 'false'),
                                             child: const Text('Отмена'),
                                           ),
                                           TextButton(
@@ -683,19 +636,17 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   CloudNote note = snapshot.data as CloudNote;
                   switch (snapshot.connectionState) {
                     case ConnectionState.active:
-                      return true
+                      return note.ownerUserId == userId
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                       child: ElevatedButton(
                                           onPressed: () {
-                                            Navigator.popAndPushNamed(
-                                                context, updateNoteRoute,
+                                            Navigator.popAndPushNamed(context, updateNoteRoute,
                                                 arguments: note);
                                           },
                                           child: const Text("Редактировать")),
@@ -703,17 +654,14 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   ),
                                   Expanded(
                                       child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                     child: ElevatedButton(
                                         style: ButtonStyle(
                                           backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.red),
+                                              MaterialStateProperty.all<Color>(Colors.red),
                                         ),
                                         onPressed: () async {
-                                          final shouldDelete =
-                                              await showDeleteDialog(context);
+                                          final shouldDelete = await showDeleteDialog(context);
                                           if (shouldDelete) {
                                             removeNote(note);
                                           }

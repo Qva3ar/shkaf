@@ -128,7 +128,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         }
         await _notesService.removeImages(oldImageUrls);
       }
-      log(_telegramIdController.text);
       if (_note != null) {
         await _notesService
             .updateNote(
@@ -272,11 +271,13 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       if (widgetNote != null) {
         _note = widgetNote;
         _textController.text = widgetNote.text;
+        _urlController.text = widgetNote.url ?? '';
         _descController.text = widgetNote.desc;
         _telegramIdController.text = widgetNote.telegramId ?? '';
         _priceController.text = widgetNote.price.toString();
         _phoneController.text = widgetNote.phone != "" ? widgetNote.phone! : "";
-        _categoryController.text = getCategoryName(widgetNote.categoryId ?? 0);
+        _categoryController.text =
+            '${getMainCategoryName(widgetNote.mainCategoryId ?? 0)} ${getCategoryName(widgetNote.categoryId ?? 0)}';
 
         _cityController.text = getCityName(widgetNote.cityId ?? 0);
         cityId = widgetNote.cityId ?? 0;
@@ -454,7 +455,10 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                 ),
 
                 AppInheritedWidget(
-                    shortState: this, child: const SwitchShortAdds()),
+                    shortState: this,
+                    child: SwitchShortAdds(
+                      initialValue: _note?.shortAdd ?? false,
+                    )),
                 const SizedBox(height: 10),
                 TextFormField(
                     maxLength: 550,
@@ -650,16 +654,27 @@ showSnackbar(context, message) {
 }
 
 class SwitchShortAdds extends StatefulWidget {
-  const SwitchShortAdds({Key? key}) : super(key: key);
+  final bool initialValue;
+  const SwitchShortAdds({required this.initialValue, Key? key})
+      : super(key: key);
 
   @override
   State<SwitchShortAdds> createState() => _SwitchShortAddsState();
 }
 
 class _SwitchShortAddsState extends State<SwitchShortAdds> {
+  late bool switchValue;
+
+  @override
+  void initState() {
+    super.initState();
+    switchValue = widget.initialValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     final switchShortAddsState = AppInheritedWidget.of(context)!.shortState;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -669,9 +684,10 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
           child: Text('Короткое 14-дневное объявление'),
         ),
         Switch(
-          value: switchShortAddsState.shortAdd,
+          value: switchValue,
           onChanged: (value) {
             setState(() {
+              switchValue = value;
               switchShortAddsState.updateShortAdd(value);
             });
           },

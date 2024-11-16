@@ -57,8 +57,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
 
-  final PagingController<int, CloudNote> _pagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
 
   void updateCounter(views) {
     setState(() {
@@ -93,8 +92,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     // FirebaseFirestore.instance.collection('notes').get().then((snapshot) {
     //   for (DocumentSnapshot ds in snapshot.docs) {
     //     ds.reference.update({
-    //       updatedAtFieldName:
-    //           DateTime.now().subtract(const Duration(days: 30)), //True or false
+    //       shortAddFieldName: true, //True or false
     //     });
     //   }
     // });
@@ -139,13 +137,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             builder: (BuildContext context) {
               return const AlertDialog(
                 title: Text("Success"),
-                titleTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 20),
+                titleTextStyle:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
                 backgroundColor: Colors.greenAccent,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
                 content: Text("Save successfully"),
               );
             });
@@ -181,8 +176,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isScrollControlled: true,
       isDismissible: true,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(openWithCategory, 1, true,
-            _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(
+            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -221,6 +216,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       prefs = value;
       var cityId = prefs.getInt(selectedCityKey) ?? 1;
       setSelectedCity(cityId);
+      Future.delayed(Duration(microseconds: 100), setSelectedCity(cityId));
       FocusScope.of(context).unfocus();
       getUserInfo();
 
@@ -242,8 +238,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   getArguments(context) {
     if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args =
-          ModalRoute.of(context)!.settings.arguments as ListViewArguments;
+      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
     }
@@ -256,8 +251,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
-      selectedCatLabel =
-          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
+      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
     _notesService.loadingManager.add(true);
@@ -272,8 +266,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now()
-            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -281,19 +274,17 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         print("Last used: ${dt1.toString()}");
         print("Difference in minutes: ${diff.inMinutes}");
 
-        // if (diff.inMinutes > 0) {
-        print("Fetching new notes");
-        _notesService.allNotes(false);
-        _notesService.getSettings().then((value) => setState(() {
-              _isBannerAdReady = true && _notesService.showAD;
-            }));
-
-        // }
+        if (diff.inMinutes > 60) {
+          print("Fetching new notes");
+          _notesService.allNotes(false);
+          _notesService.getSettings().then((value) => setState(() {
+                _isBannerAdReady = true && _notesService.showAD;
+              }));
+        }
       }
 
       var currentTime = DateTime.now();
-      prefs.setString(
-          'last_used', currentTime.millisecondsSinceEpoch.toString());
+      prefs.setString('last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -447,14 +438,12 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 Row(
                   children: [
                     Padding(
-                        padding:
-                            const EdgeInsets.only(left: 20, top: 5, bottom: 5),
+                        padding: const EdgeInsets.only(left: 20, top: 5, bottom: 5),
                         child: DropdownButton(
                             value: _notesService.selectedCityStream.value,
                             items: TURKEY
                                 .map((e) => DropdownMenuItem(
-                                    value: e['id'],
-                                    child: Text(e['name'].toString())))
+                                    value: e['id'], child: Text(e['name'].toString())))
                                 .toList(),
                             onChanged: ((value) {
                               setUserSelectedCity(int.parse(value.toString()));
@@ -487,10 +476,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   onTap: (note) {
                     updateCounter(views);
                     _notesService.selectedNote.add(note);
-                    Navigator.of(context).pushNamed(
-                      noteDetailsRoute,
-                      arguments: note,
-                    );
+                    // Navigator.of(context).pushNamed(
+                    //   noteDetailsRoute,
+                    //   arguments: note,
+                    // );
+                    Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
                   },
                   onDeleteNote: (note) async {
                     await _notesService.deleteNote(documentId: note.documentId);
@@ -518,15 +508,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 //     onPressed: showModal, child: Text("lick"))
               ],
             ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             floatingActionButton: Container(
               height: 40,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(
-                      0xFF4CAF50), // Используйте Color для задания цвета напрямую
+                  backgroundColor:
+                      const Color(0xFF4CAF50), // Используйте Color для задания цвета напрямую
                 ),
                 onPressed: () {
                   showModal();
@@ -582,8 +571,7 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
                             onTap: () => fun(u['id']),
                             child: Card(
                               color: Colors.white,
-                              child:
-                                  ListTile(title: Text(u['name'].toString())),
+                              child: ListTile(title: Text(u['name'].toString())),
                             ),
                           ))),
                 ]))
@@ -603,8 +591,7 @@ Future<void> _showPlatformDialog(context) async {
         title: const Text('Наше приложение доступно в Google Play.'),
         content: GestureDetector(
           onTap: () {
-            openUrl(
-                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+            openUrl('https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
           },
           child: Container(
             child: (Image.asset(
