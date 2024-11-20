@@ -16,6 +16,7 @@ import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
+import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
@@ -48,6 +49,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late int _totalNotifications;
   PushNotification? _notificationInfo;
 
+  int currentIndex = 0;
+
   int? categoryId;
   int? mainCategoryId;
   bool isOldUser = false;
@@ -57,7 +60,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
 
-  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController =
+      PagingController(firstPageKey: 0);
 
   void updateCounter(views) {
     setState(() {
@@ -137,10 +141,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             builder: (BuildContext context) {
               return const AlertDialog(
                 title: Text("Success"),
-                titleTextStyle:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+                titleTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20),
                 backgroundColor: Colors.greenAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
                 content: Text("Save successfully"),
               );
             });
@@ -175,9 +182,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       context: context,
       isScrollControlled: true,
       isDismissible: true,
+      useRootNavigator: false,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(
-            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(openWithCategory, 1, true,
+            _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -238,7 +246,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   getArguments(context) {
     if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
+      ListViewArguments args =
+          ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
     }
@@ -251,7 +260,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
-      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
+      selectedCatLabel =
+          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
     _notesService.loadingManager.add(true);
@@ -266,7 +276,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now()
+            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -284,7 +295,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var currentTime = DateTime.now();
-      prefs.setString('last_used', currentTime.millisecondsSinceEpoch.toString());
+      prefs.setString(
+          'last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -433,17 +445,52 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 )
               ],
             ),
+            bottomNavigationBar: CustomBottomNavigationBar(
+              currentIndex:
+                  currentIndex, // Pass the current index of the selected item
+              onTabSelected: (index) {
+                setState(() {
+                  currentIndex = index; // Update the selected index on tap
+                });
+
+                // Handle navigation based on the selected index
+                switch (index) {
+                  case 0:
+                    // Navigate to the "Избранное" (Favorites) section
+                    Navigator.of(context).pushNamed('/favorites');
+                    break;
+                  case 1:
+                    // Opens Modal "Все категории"
+                    showModal();
+                    break;
+                  case 2:
+                    // Handle the "Добавить" (Add) action
+                    if (state.user != null) {
+                      Navigator.of(context).pushNamed(
+                          '/createAd'); // Navigate to Create Ad screen
+                    } else {
+                      Navigator.of(context)
+                          .pushNamed(login); // Navigate to Login screen
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              },
+            ),
             body: Column(
               children: [
                 Row(
                   children: [
                     Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 5, bottom: 5),
+                        padding:
+                            const EdgeInsets.only(left: 20, top: 5, bottom: 5),
                         child: DropdownButton(
                             value: _notesService.selectedCityStream.value,
                             items: TURKEY
                                 .map((e) => DropdownMenuItem(
-                                    value: e['id'], child: Text(e['name'].toString())))
+                                    value: e['id'],
+                                    child: Text(e['name'].toString())))
                                 .toList(),
                             onChanged: ((value) {
                               setUserSelectedCity(int.parse(value.toString()));
@@ -480,7 +527,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                     //   noteDetailsRoute,
                     //   arguments: note,
                     // );
-                    Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
+                    Navigator.pushNamed(context, noteDetailsRoute,
+                        arguments: note);
                   },
                   onDeleteNote: (note) async {
                     await _notesService.deleteNote(documentId: note.documentId);
@@ -508,30 +556,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 //     onPressed: showModal, child: Text("lick"))
               ],
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: Container(
-              height: 40,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      const Color(0xFF4CAF50), // Используйте Color для задания цвета напрямую
-                ),
-                onPressed: () {
-                  showModal();
-                },
-                child: Center(
-                  child: Text(
-                    _notesService.categoryNameForSheet.value ?? "Категории",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 228, 228, 228)),
-                  ),
-                ),
-              ),
-            ),
+            floatingActionButtonLocation: null,
+            floatingActionButton: null,
           );
         });
   }
@@ -571,7 +597,8 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
                             onTap: () => fun(u['id']),
                             child: Card(
                               color: Colors.white,
-                              child: ListTile(title: Text(u['name'].toString())),
+                              child:
+                                  ListTile(title: Text(u['name'].toString())),
                             ),
                           ))),
                 ]))
@@ -591,7 +618,8 @@ Future<void> _showPlatformDialog(context) async {
         title: const Text('Наше приложение доступно в Google Play.'),
         content: GestureDetector(
           onTap: () {
-            openUrl('https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+            openUrl(
+                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
           },
           child: Container(
             child: (Image.asset(
