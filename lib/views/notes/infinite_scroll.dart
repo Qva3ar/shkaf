@@ -111,7 +111,7 @@ class _ImprovedInfiniteScrollWidgetState extends State<ImprovedInfiniteScrollWid
 
     final snapshot = await query.get();
     final notes = snapshot.docs
-        .map((doc) => CloudNote.fromFirestore(doc))
+        .map((doc) => CloudNote.fromFirestore(doc as QueryDocumentSnapshot<Map<String, dynamic>>))
         .toList();
 
     return (notes, snapshot.docs.isNotEmpty ? snapshot.docs.last : null);

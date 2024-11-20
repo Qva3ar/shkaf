@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -471,7 +472,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   ),
 
                 Expanded(
-                    child: InfiniteScrollWidget(
+                     child:  InfiniteScrollWidget (
                   notes: const [],
                   onTap: (note) {
                     updateCounter(views);
@@ -535,6 +536,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           );
         });
   }
+  
+  InfiniteScrollWidget({required List notes, required Null Function(dynamic note) onTap, required Future<Null> Function(dynamic note) onDeleteNote}) {}
 }
 
 Widget bottomCitiesSheet(Function fun, double initialSize) {
