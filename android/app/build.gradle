@@ -5,7 +5,6 @@ plugins {
     id "com.google.gms.google-services"
 }
 
-
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -33,12 +32,11 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 34 // Explicitly set compile SDK version
     ndkVersion flutter.ndkVersion
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -52,12 +50,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.aturdiyev.mynotes"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 23
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 34 // Explicitly set target SDK version
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -90,6 +85,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:23.3.0'
     
     def billing_version = "7.0.0"
-
     implementation "com.android.billingclient:billing:$billing_version"
 }

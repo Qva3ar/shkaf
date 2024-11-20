@@ -27,6 +27,7 @@ import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:upgrader/upgrader.dart';
 
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebase = await Firebase.initializeApp(
