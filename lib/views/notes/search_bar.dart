@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 
@@ -16,6 +15,16 @@ class SearchBarWidget extends StatefulWidget {
 class _SearchBarState extends State<SearchBarWidget> {
   Debounce debounce = Debounce();
   late StreamSubscription<bool> keyboardSubscription;
+  String selectedCity = 'Select City';
+
+  final List<String> cities = [
+    'New York',
+    'London',
+    'Tokyo',
+    'Paris',
+    'Mumbai',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -26,17 +35,18 @@ class _SearchBarState extends State<SearchBarWidget> {
     return Row(
       children: [
         Expanded(
+          flex: 3,
           child: Padding(
-            padding: const EdgeInsets.only(left: 10, top: 10, right: 10),
+            padding: const EdgeInsets.all(8.0),
             child: TextFormField(
               autofocus: false,
               decoration: const InputDecoration(
-                isDense: true, // Added this
-                contentPadding: EdgeInsets.all(12), //
+                isDense: true,
+                contentPadding: EdgeInsets.all(12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
-                labelText: 'Поиск',
+                labelText: 'Search',
               ),
               onChanged: (text) {
                 debounce.debouncing(
@@ -48,15 +58,56 @@ class _SearchBarState extends State<SearchBarWidget> {
             ),
           ),
         ),
-        // Padding(
-        //   padding: const EdgeInsets.only(top: 8.0),
-        //   child: IconButton(
-        //     onPressed: (() {}),
-        //     icon: const Icon(Icons.search),
-        //     color: Colors.black,
-        //     iconSize: 20,
-        //   ),
-        // ),
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<String>(
+              value: selectedCity == 'Select City' ? null : selectedCity,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.all(12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+                labelText: 'City',
+              ),
+              items: cities.map((city) {
+                return DropdownMenuItem<String>(
+                  value: city,
+                  child: Text(city),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCity = value!;
+                });
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.account_circle, size: 28),
+            onPressed: () {
+              // Add profile icon action here
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text("Profile"),
+                  content: const Text("Profile actions will be here."),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Close"),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }

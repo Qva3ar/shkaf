@@ -27,6 +27,10 @@ import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:upgrader/upgrader.dart';
 
+// Import the SearchBarWidget
+import 'package:mynotes/views/notes/search_bar.dart';
+
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebase = await Firebase.initializeApp(
@@ -35,38 +39,19 @@ void main() async {
 
   MobileAds.instance.initialize();
 
-  // if (Platform.isIOS) {
-  //check for ios if developing for both android & ios
-  // await SignInWithApple.isAvailable();
-  // SignInWithApple.
-  // }
-
-  // final fcmToken = await FirebaseMessaging.instance.getToken();
-  // FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-  //   // TODO: If necessary send token to application server.
-
-  //   // Note: This callback is fired at each app startup and whenever a new
-  //   // token is generated.
-  // }).onError((err) {
-  //   // Error getting token.
-  // });
-
   FirebaseEvent.logScreenView('main');
   if (!kIsWeb && Platform.isAndroid) {
     InAppUpdate.checkForUpdate().then((updateInfo) {
       if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
         if (updateInfo.immediateUpdateAllowed) {
-          // Perform immediate update
           InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
             if (appUpdateResult == AppUpdateResult.success) {
-              //App Update successful
+              // App Update successful
             }
           });
         } else if (updateInfo.flexibleUpdateAllowed) {
-          //Perform flexible update
           InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
             if (appUpdateResult == AppUpdateResult.success) {
-              //App Update successful
               InAppUpdate.completeFlexibleUpdate();
             }
           });
@@ -78,8 +63,6 @@ void main() async {
   await SentryFlutter.init((options) {
     options.dsn =
         'https://0c73491e5beb4ed086eca37c648a3183@o4504716753174528.ingest.sentry.io/4504716754092032';
-    // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-    // We recommend adjusting this value in production.
     options.tracesSampleRate = 1.0;
   },
       appRunner: () => runApp(
@@ -111,7 +94,6 @@ void main() async {
                       ),
                     )
                   : Container(),
-              // home: const NotesAll(),
               routes: {
                 createNoteRoute: (context) => const UpdateNoteView(),
                 updateNoteRoute: (context) => const UpdateNoteView(),
@@ -152,6 +134,39 @@ void main() async {
           ));
 }
 
+class NotesAll extends StatelessWidget {
+  const NotesAll({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('All Notes'),
+      ),
+      body: Column(
+        children: [
+          // Add the SearchBarWidget here
+          SearchBarWidget(
+            searchcb: (searchText) {
+              print("Search text: $searchText");
+            },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 20, // Replace with actual note count
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text('Note $index'),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -190,22 +205,4 @@ class HomePage extends StatelessWidget {
       },
     );
   }
-}
-
-class Palette {
-  static const MaterialColor kToDark = MaterialColor(
-    0xffe55f48, // 0% comes in here, this will be color picked if no shade is selected when defining a Color property which doesn’t require a swatch.
-    <int, Color>{
-      50: Color(0xffce5641), //10%
-      100: Color(0xffb74c3a), //20%
-      200: Color(0xffa04332), //30%
-      300: Color(0xff89392b), //40%
-      400: Color(0xff733024), //50%
-      500: Color(0xff5c261d), //60%
-      600: Color(0xff451c16), //70%
-      700: Color(0xff2e130e), //80%
-      800: Color(0xff170907), //90%
-      900: Color(0xff000000), //100%
-    },
-  );
 }
