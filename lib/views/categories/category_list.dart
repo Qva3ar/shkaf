@@ -286,7 +286,7 @@ int? getMainCategory(int categoryId) {
   return null;
 }
 
-String getCityName(int cityId) {
+String getCityName(int cityId, [List<Map<String, Object>>? turkey]) {
   for (var city in TURKEY) {
     if (city['id'] == cityId) {
       return city['name'].toString();

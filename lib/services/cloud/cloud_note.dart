@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:flutter/foundation.dart';
@@ -69,4 +70,12 @@ class CloudNote {
         reports = snapshot.data()['reports'] != null
             ? (snapshot.data()['reports'] as List<dynamic>).map((e) => e.toString()).toList()
             : [];
+
+            
 }
+
+String formatUpdatedAt(DateTime? updatedAt) {
+  if (updatedAt == null) return "No Date";
+  return DateFormat('dd.MM.yyyy').format(updatedAt);
+}
+
