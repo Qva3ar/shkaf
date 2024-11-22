@@ -39,14 +39,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
         children: [
           // NavItem for Favorites
           NavItem(
-            icon: Icons.favorite,
+            icon: Icons.favorite_rounded,
             label: 'Избранное', // "Favorites" in Russian
             isSelected: currentIndex == 0, 
             onTap: () => onTabSelected(0), // Notify parent widget when tapped
           ),
           // NavItem for Categories
           NavItem(
-            icon: Icons.grid_view,
+            icon: Icons.apps,
             label: 'Категории', // "Categories" in Russian
             isSelected: currentIndex == 1,
             onTap: () => onTabSelected(1),

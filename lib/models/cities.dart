@@ -37,3 +37,13 @@ class City {
         "name": name,
       };
 }
+
+List<City> cityList = [
+  City(id: 1, name: "Анталия"),
+  City(id: 2, name: "Истанбул"),
+  City(id: 3, name: "Анкара"),
+];
+
+String getCityName(int? cityId, List<City> cities) {
+  return cities.firstWhere((city) => city.id == cityId, orElse: () => City(id: 0, name: "Unknown")).name;
+}
