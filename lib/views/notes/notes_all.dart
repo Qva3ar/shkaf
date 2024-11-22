@@ -1,5 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -17,10 +16,9 @@ import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
-import 'package:mynotes/views/notes/search_bar.dart';
+import 'package:mynotes/views/notes/search_and_city_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../helpers/utils.dart';
 import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
@@ -369,6 +367,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
+            centerTitle: true,
             title: StreamBuilder(
               stream: _notesService.movieStream,
               builder: (context, snapshot) {
@@ -380,25 +379,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               },
             ),
             actions: [
-              state.user != null
-                  ? IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(createNoteRoute);
-                      },
-                      icon: const Icon(
-                        Icons.add_business,
-                        color: AppColors.black,
-                      ),
-                    )
-                  : IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(login);
-                      },
-                      icon: const Icon(
-                        Icons.add_business,
-                        color: AppColors.black,
-                      ),
-                    ),
               IconButton(
                 onPressed: () {
                   if (state.user != null) {
@@ -408,7 +388,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   }
                 },
                 icon: const Icon(
-                  Icons.person,
+                  Icons.person_rounded,
                   color: AppColors.black,
                 ),
               ),
@@ -441,35 +421,30 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           ),
           body: Column(
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, top: 5, bottom: 5),
-                    child: DropdownButton(
-                      value: _notesService.selectedCityStream.value,
-                      dropdownColor: AppColors.white,
-                      items: TURKEY
-                          .map((e) => DropdownMenuItem(
-                                value: e['id'],
-                                child: Text(
-                                  e['name'].toString(),
-                                  style: AppTextStyles.s16w400,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setUserSelectedCity(int.parse(value.toString()));
-                        setSelectedCity(int.parse(value.toString()));
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: SearchBarWidget(
-                      searchcb: onSearch,
-                    ),
-                  ),
-                ],
+              SearchAndCityBar(
+                onSearch: (text) {
+                  _notesService.setSearchStr(text);
+                  _notesService.allNotes(false);
+                },
+                selectedCityId: _notesService.selectedCityStream.value,
+                onCityChanged: (cityId) async {
+                  await setUserSelectedCity(cityId);
+                  setSelectedCity(cityId);
+                  _notesService.allNotes(false);
+                },
               ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Популярное',
+                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 9),
               Expanded(
                 child: StreamBuilder<List<CloudNote>>(
                   stream: _notesService.movieStream,
@@ -486,7 +461,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         ),
                       );
                     }
-
                     // Get data from the theat
                     final notes = snapshot.data!;
                     return NotesGridView(notes: notes);
