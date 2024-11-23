@@ -8,6 +8,7 @@ class AppColors {
   static const Color unselectedTextGrey = Color(0xff999999);
   static const Color unselectedTapGrey = Color(0xff7590A6);
   static const Color titleBlack = Color(0xff090909);
-
+  static const Color lightGrey = Color(0xffF2F2F7);
+  static const Color darkGrey = Color(0xff292929);
 
 }
