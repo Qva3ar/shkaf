@@ -285,7 +285,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                               Center(
                                 child: AnimatedSmoothIndicator(
                                   activeIndex: _current,
-                                  count: note.imagesUrls!.length,
+                                  count: note.imagesUrls?.length ?? 1,
                                   effect: const WormEffect(
                                       dotHeight: 7,
                                       dotWidth: 7,

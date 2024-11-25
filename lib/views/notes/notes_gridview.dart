@@ -10,12 +10,14 @@ typedef NoteEmptyCallback = void Function();
 class NotesGridView extends StatelessWidget {
   final NoteCallback onDeleteNote;
   final NoteCallback onTap;
-  const NotesGridView({
-    Key? key,
-    required this.notes,
-    required this.onDeleteNote,
-    required this.onTap,
-  }) : super(key: key);
+  final ScrollController scrollController;
+  const NotesGridView(
+      {Key? key,
+      required this.notes,
+      required this.onDeleteNote,
+      required this.onTap,
+      required this.scrollController})
+      : super(key: key);
 
   final List<CloudNote> notes;
 
@@ -24,6 +26,7 @@ class NotesGridView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: GridView.builder(
+        controller: scrollController,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, // Two items per row
           mainAxisSpacing: 14, // Spacing between rows
@@ -96,14 +99,14 @@ class NotesGridView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      note.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.s16w600.copyWith(
-                        color: AppColors.black,
-                      ),
-                    ),
+                    // Text(
+                    //   note.text,
+                    //   maxLines: 1,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   style: AppTextStyles.s16w600.copyWith(
+                    //     color: AppColors.black,
+                    //   ),
+                    // ),
                     const SizedBox(height: 4),
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,

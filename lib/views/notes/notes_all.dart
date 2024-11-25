@@ -58,11 +58,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late final SharedPreferences prefs;
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
+  ScrollController _scrollController = ScrollController();
 
   final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
   late StreamController<List<CloudNote>> _streamController;
   // List<Map<String, dynamic>> _hits = [];
+
   final String _query = '';
+  List<CloudNote> _notes = [];
   int _page = 0;
   bool _isLoading = false;
   bool _hasMore = true;
@@ -85,6 +88,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     _notesService = FirebaseCloudStorage();
     _notesService.createInterstitialAd();
+    _scrollController = ScrollController(); // Initialize the ScrollController
+    _scrollController.addListener(_onScroll);
 
     initializeSpref();
     _notesService.allNotes(false);
@@ -114,45 +119,47 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     await _performSearch("");
   }
 
-  Future<void> _performSearch(String text) async {
+  Future<void> _performSearch(String text, {bool isRefresh = false}) async {
+    if (_isLoading) return;
+
     setState(() {
       _isLoading = true;
     });
 
-    var query = SearchForHits(
-      indexName: 'notes',
-      hitsPerPage: 20,
-      page: _page,
-    );
-
-    if (text.isNotEmpty) {
-      var query = SearchForHits(
-        indexName: 'notes',
-        hitsPerPage: 20,
-        query: text,
-        page: _page,
-      );
-    } else {
-      var query = SearchForHits(
-        indexName: 'notes',
-        hitsPerPage: 20,
-        page: _page,
-      );
-    }
-
     try {
+      if (isRefresh) {
+        _page = 0;
+        _hasMore = true;
+        _notes.clear();
+        _streamController.add([]);
+      }
+
+      var query = SearchForHits(
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+        query: text.isNotEmpty ? text : null, // Использование null для пустого текста
+      );
+
       final response = await client.searchIndex(request: query);
-      final List<CloudNote> newHits;
+
       if (response.hits.isNotEmpty) {
-        newHits = response.hits.map<CloudNote>((hit) => CloudNote.fromHit(hit)).toList();
+        final List<CloudNote> newHits =
+            response.hits.map<CloudNote>((hit) => CloudNote.fromHit(hit)).toList();
+
         setState(() {
           _isLoading = false;
           if (newHits.length < 20) {
             _hasMore = false;
           }
           _page++;
-          // _hits.addAll(newHits);
-          _streamController.add(newHits);
+          _notes.addAll(newHits);
+          _streamController.add(_notes);
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasMore = false;
         });
       }
     } catch (e) {
@@ -412,9 +419,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     _bannerAd.load();
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+        !_isLoading &&
+        _hasMore) {
+      _performSearch('');
+    }
+  }
+
   @override
   void dispose() {
-    //don't forget to dispose of it when not needed anymore
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _streamController.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -508,38 +525,44 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               ),
               const SizedBox(height: 9),
               Expanded(
-                child: StreamBuilder<List<CloudNote>>(
-                  stream: _streamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'Нет данных для отображения',
-                          style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
-                        ),
-                      );
-                    }
-                    // Get data from the theat
-                    final notes = snapshot.data!;
-                    return NotesGridView(
-                      notes: notes,
-                      onTap: (note) {
-                        updateCounter(views);
-                        _notesService.selectedNote.add(note);
-                        // Navigator.of(context).pushNamed(
-                        //   noteDetailsRoute,
-                        //   arguments: note,
-                        // );
-                        Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
-                      },
-                      onDeleteNote: (note) async {
-                        await _notesService.deleteNote(documentId: note.documentId);
-                      },
-                    );
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await _performSearch('', isRefresh: true); // Обновление данных
                   },
+                  child: StreamBuilder<List<CloudNote>>(
+                    stream: _streamController.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'Нет данных для отображения',
+                            style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                          ),
+                        );
+                      }
+                      // Get data from the theat
+                      final notes = snapshot.data!;
+                      return NotesGridView(
+                        notes: notes,
+                        onTap: (note) {
+                          updateCounter(views);
+                          _notesService.selectedNote.add(note);
+                          // Navigator.of(context).pushNamed(
+                          //   noteDetailsRoute,
+                          //   arguments: note,
+                          // );
+                          Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
+                        },
+                        onDeleteNote: (note) async {
+                          await _notesService.deleteNote(documentId: note.documentId);
+                        },
+                        scrollController: _scrollController,
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
