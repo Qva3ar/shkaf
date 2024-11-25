@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:algoliasearch/algoliasearch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +59,18 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
 
-  final PagingController<int, CloudNote> _pagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
+  late StreamController<List<CloudNote>> _streamController;
+  // List<Map<String, dynamic>> _hits = [];
+  final String _query = '';
+  int _page = 0;
+  bool _isLoading = false;
+  bool _hasMore = true;
+
+  SearchClient client = SearchClient(
+    appId: 'XR4DEPQU93',
+    apiKey: 'eb255f09f97a86c1c52540313c8761e6',
+  );
 
   void updateCounter(views) {
     setState(() {
@@ -68,6 +81,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _streamController = StreamController();
 
     _notesService = FirebaseCloudStorage();
     _notesService.createInterstitialAd();
@@ -93,6 +107,61 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         selectedCategory = value;
       });
     });
+    search();
+  }
+
+  search() async {
+    await _performSearch("");
+  }
+
+  Future<void> _performSearch(String text) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var query = SearchForHits(
+      indexName: 'notes',
+      hitsPerPage: 20,
+      page: _page,
+    );
+
+    if (text.isNotEmpty) {
+      var query = SearchForHits(
+        indexName: 'notes',
+        hitsPerPage: 20,
+        query: text,
+        page: _page,
+      );
+    } else {
+      var query = SearchForHits(
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+      );
+    }
+
+    try {
+      final response = await client.searchIndex(request: query);
+      final List<CloudNote> newHits;
+      if (response.hits.isNotEmpty) {
+        newHits = response.hits.map<CloudNote>((hit) => CloudNote.fromHit(hit)).toList();
+        setState(() {
+          _isLoading = false;
+          if (newHits.length < 20) {
+            _hasMore = false;
+          }
+          _page++;
+          // _hits.addAll(newHits);
+          _streamController.add(newHits);
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _hasMore = false;
+      });
+      print('Search error: $e');
+    }
   }
 
   // FirebaseFirestore.instance.collection('notes').get().then((snapshot) {
@@ -142,13 +211,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             builder: (BuildContext context) {
               return const AlertDialog(
                 title: Text("Success"),
-                titleTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 20),
+                titleTextStyle:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
                 backgroundColor: Colors.greenAccent,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
                 content: Text("Save successfully"),
               );
             });
@@ -185,8 +251,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isDismissible: true,
       useRootNavigator: false,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(openWithCategory, 1, true,
-            _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(
+            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -225,8 +291,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       prefs = value;
       var cityId = prefs.getInt(selectedCityKey) ?? 1;
       setSelectedCity(cityId);
-      Future.delayed(
-          const Duration(microseconds: 100), setSelectedCity(cityId));
+      Future.delayed(const Duration(microseconds: 100), setSelectedCity(cityId));
       FocusScope.of(context).unfocus();
       getUserInfo();
 
@@ -249,8 +314,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   getArguments(context) {
     if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args =
-          ModalRoute.of(context)!.settings.arguments as ListViewArguments;
+      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
     }
@@ -263,8 +327,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
-      selectedCatLabel =
-          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
+      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
     _notesService.loadingManager.add(true);
@@ -279,8 +342,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now()
-            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -298,8 +360,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var currentTime = DateTime.now();
-      prefs.setString(
-          'last_used', currentTime.millisecondsSinceEpoch.toString());
+      prefs.setString('last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -422,9 +483,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           body: Column(
             children: [
               SearchAndCityBar(
-                onSearch: (text) {
-                  _notesService.setSearchStr(text);
-                  _notesService.allNotes(false);
+                onSearch: (text) async {
+                  // _notesService.setSearchStr(text);
+                  // _notesService.allNotes(false);
+                  await _performSearch(text);
                 },
                 selectedCityId: _notesService.selectedCityStream.value,
                 onCityChanged: (cityId) async {
@@ -447,7 +509,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               const SizedBox(height: 9),
               Expanded(
                 child: StreamBuilder<List<CloudNote>>(
-                  stream: _notesService.movieStream,
+                  stream: _streamController.stream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -456,14 +518,27 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       return Center(
                         child: Text(
                           'Нет данных для отображения',
-                          style: AppTextStyles.s14w500
-                              .copyWith(color: AppColors.grey),
+                          style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
                         ),
                       );
                     }
                     // Get data from the theat
                     final notes = snapshot.data!;
-                    return NotesGridView(notes: notes);
+                    return NotesGridView(
+                      notes: notes,
+                      onTap: (note) {
+                        updateCounter(views);
+                        _notesService.selectedNote.add(note);
+                        // Navigator.of(context).pushNamed(
+                        //   noteDetailsRoute,
+                        //   arguments: note,
+                        // );
+                        Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
+                      },
+                      onDeleteNote: (note) async {
+                        await _notesService.deleteNote(documentId: note.documentId);
+                      },
+                    );
                   },
                 ),
               ),
@@ -509,8 +584,7 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
                             onTap: () => fun(u['id']),
                             child: Card(
                               color: Colors.white,
-                              child:
-                                  ListTile(title: Text(u['name'].toString())),
+                              child: ListTile(title: Text(u['name'].toString())),
                             ),
                           ))),
                 ]))
@@ -530,8 +604,7 @@ Future<void> _showPlatformDialog(context) async {
         title: const Text('Наше приложение доступно в Google Play.'),
         content: GestureDetector(
           onTap: () {
-            openUrl(
-                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+            openUrl('https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
           },
           child: Container(
             child: (Image.asset(

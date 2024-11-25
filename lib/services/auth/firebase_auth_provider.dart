@@ -59,11 +59,7 @@ class FirebaseAuthProvider implements AuthProviderService {
   @override
   Stream<User?>? get auth {
     final auth = FirebaseAuth.instance.authStateChanges();
-    if (auth != null) {
-      return auth;
-    } else {
-      return null;
-    }
+    return auth;
   }
 
   @override

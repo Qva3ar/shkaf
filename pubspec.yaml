@@ -72,6 +72,7 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   image_network: ^2.5.1
   google_mobile_ads: ^5.1.0
+  algoliasearch: ^1.27.3
 
 dev_dependencies:
  

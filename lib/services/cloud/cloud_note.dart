@@ -36,6 +36,8 @@ class CloudNote {
     this.cityId,
     this.phone,
     this.imagesUrls,
+    this.url,
+    this.telegramId,
     this.reports,
     this.updatedAt,
     required this.createdAt,
@@ -71,11 +73,32 @@ class CloudNote {
             ? (snapshot.data()['reports'] as List<dynamic>).map((e) => e.toString()).toList()
             : [];
 
-            
+  factory CloudNote.fromHit(Map<String, dynamic> hit) {
+    var note = CloudNote(
+      documentId: hit['objectID'] ?? '',
+      ownerUserId: hit['user_id'] ?? '',
+      text: hit['text'] ?? '',
+      desc: hit['desc'] ?? '',
+      price: hit['price'] ?? 0,
+      views: hit['views'] ?? 0,
+      categoryId: hit['category_id'],
+      mainCategoryId: hit['main_ategory_id'],
+      cityId: hit['city_id'],
+      phone: hit['phone'],
+      url: hit['url'],
+      telegramId: hit['telegramId'],
+      imagesUrls: (hit['imageUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
+      reports: (hit['reports'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
+      updatedAt:
+          hit['updated_at'] != null ? DateTime.fromMillisecondsSinceEpoch(hit['updated_at']) : null,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(hit['created_at']),
+      shortAdd: hit['short_add'] ?? false,
+    );
+    return note;
+  }
 }
 
 String formatUpdatedAt(DateTime? updatedAt) {
   if (updatedAt == null) return "No Date";
   return DateFormat('dd.MM.yyyy').format(updatedAt);
 }
-

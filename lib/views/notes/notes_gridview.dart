@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
-import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 
+typedef NoteCallback = void Function(CloudNote note);
+typedef NoteEmptyCallback = void Function();
+
 class NotesGridView extends StatelessWidget {
+  final NoteCallback onDeleteNote;
+  final NoteCallback onTap;
   const NotesGridView({
     Key? key,
     required this.notes,
+    required this.onDeleteNote,
+    required this.onTap,
   }) : super(key: key);
 
   final List<CloudNote> notes;
@@ -18,24 +24,24 @@ class NotesGridView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: GridView.builder(
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, // Two items per row
           mainAxisSpacing: 14, // Spacing between rows
           crossAxisSpacing: 20, // Spacing between columns
-          childAspectRatio:
-              183 / 220, // Aspect ratio of each card
+          childAspectRatio: 183 / 220, // Aspect ratio of each card
         ),
         itemCount: notes.length,
         itemBuilder: (context, index) {
           final note = notes[index]; // Current note
           return GestureDetector(
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                noteDetailsRoute, // Note details
-                arguments: note,
-              );
+              FocusManager.instance.primaryFocus?.unfocus();
+              onTap(notes[index]);
+              // Navigator.pushNamed(
+              //   context,
+              //   noteDetailsRoute, // Note details
+              //   arguments: note,
+              // );
             },
             child: Container(
               width: 183,
@@ -46,8 +52,7 @@ class NotesGridView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.5),
+                padding: const EdgeInsets.symmetric(horizontal: 8.5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -56,12 +61,9 @@ class NotesGridView extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(6),
                             child: Image.network(
-                              note.imagesUrls != null &&
-                                      note.imagesUrls!
-                                          .isNotEmpty
+                              note.imagesUrls != null && note.imagesUrls!.isNotEmpty
                                   ? note.imagesUrls![0]
                                   : 'https://via.placeholder.com/150',
                               width: 175,
@@ -103,27 +105,25 @@ class NotesGridView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Display city name
-                        Text(
-                          getCityName(note.cityId ?? 0, TURKEY), 
-                          style: AppTextStyles.s12w600.copyWith(
-                            color: AppColors.grey,
-                          ),
-                        ),
-                        // Display formatted updatedAt
-                        Text(
-                          formatUpdatedAt(note
-                              .updatedAt), // Format the date
-                          style: AppTextStyles.s12w600.copyWith(
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     // Display city name
+                    //     Text(
+                    //       getCityName(note.cityId ?? 0, TURKEY),
+                    //       style: AppTextStyles.s12w600.copyWith(
+                    //         color: AppColors.grey,
+                    //       ),
+                    //     ),
+                    //     // Display formatted updatedAt
+                    //     Text(
+                    //       formatUpdatedAt(note.updatedAt), // Format the date
+                    //       style: AppTextStyles.s12w600.copyWith(
+                    //         color: AppColors.grey,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // )
                   ],
                 ),
               ),

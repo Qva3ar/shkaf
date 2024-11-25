@@ -133,98 +133,100 @@ class _InfiniteScrollWidgetState extends State<InfiniteScrollWidget> {
                               ? const Center(child: CircularProgressIndicator())
                               : const SizedBox.shrink();
                         } else {
-                          return Card(
-                            semanticContainer: true,
-                            elevation: 0,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  child: items[index].imagesUrls != null &&
-                                          items[index].imagesUrls!.isNotEmpty
-                                      ? ImageNetwork(
-                                          image: items[index].imagesUrls![0],
-                                          imageCache: CachedNetworkImageProvider(
-                                              items[index].imagesUrls![0]),
-                                          height: 120,
-                                          width: double.infinity,
-                                          duration: 1500,
-                                          onPointer: true,
-                                          debugPrint: false,
-                                          fullScreen: false,
-                                          fitAndroidIos: BoxFit.cover,
-                                          fitWeb: BoxFitWeb.cover,
-                                          borderRadius: BorderRadius.circular(4),
-                                          onLoading: const CircularProgressIndicator(
-                                            color: Colors.indigoAccent,
+                          return GestureDetector(
+                            onTap: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              widget.onTap(items[index]);
+                            },
+                            child: Card(
+                              semanticContainer: true,
+                              elevation: 0,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    child: items[index].imagesUrls != null &&
+                                            items[index].imagesUrls!.isNotEmpty
+                                        ? ImageNetwork(
+                                            image: items[index].imagesUrls![0],
+                                            imageCache: CachedNetworkImageProvider(
+                                                items[index].imagesUrls![0]),
+                                            height: 120,
+                                            width: double.infinity,
+                                            duration: 1500,
+                                            onPointer: true,
+                                            debugPrint: false,
+                                            fullScreen: false,
+                                            fitAndroidIos: BoxFit.cover,
+                                            fitWeb: BoxFitWeb.cover,
+                                            borderRadius: BorderRadius.circular(4),
+                                            onLoading: const CircularProgressIndicator(
+                                              color: Colors.indigoAccent,
+                                            ),
+                                            onError: const Icon(
+                                              Icons.error,
+                                              color: Colors.red,
+                                            ),
+                                          )
+                                        : Image.asset('assets/images/img_placeholder.jpeg',
+                                            height: 120, width: double.infinity, fit: BoxFit.fill),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          items[index].text,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
                                           ),
-                                          onError: const Icon(
-                                            Icons.error,
-                                            color: Colors.red,
-                                          ),
-                                          onTap: () {
-                                            FocusManager.instance.primaryFocus?.unfocus();
-                                            widget.onTap(items[index]);
-                                          },
-                                        )
-                                      : Image.asset('assets/images/img_placeholder.jpeg',
-                                          height: 120, width: double.infinity, fit: BoxFit.fill),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        items[index].text,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      // Text(
-                                      //   notes[i].price.toString() + "TL",
-                                      //   style: const TextStyle(
-                                      //     fontWeight: FontWeight.bold,
-                                      //     fontSize: 16,
-                                      //     color: Colors.black54,
-                                      //   ),
-                                      // ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              getCityName(items[index].cityId ?? 0),
+                                        const SizedBox(height: 2),
+                                        // Text(
+                                        //   notes[i].price.toString() + "TL",
+                                        //   style: const TextStyle(
+                                        //     fontWeight: FontWeight.bold,
+                                        //     fontSize: 16,
+                                        //     color: Colors.black54,
+                                        //   ),
+                                        // ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                getCityName(items[index].cityId ?? 0),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  // fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                  color: Color.fromARGB(177, 158, 158, 158),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              getFormattedDate(
+                                                  items[index].updatedAt ?? items[index].createdAt),
                                               overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(
                                                 // fontWeight: FontWeight.bold,
                                                 fontSize: 12,
-                                                color: Color.fromARGB(177, 158, 158, 158),
+                                                color: Colors.grey,
                                               ),
                                             ),
-                                          ),
-                                          Text(
-                                            getFormattedDate(
-                                                items[index].updatedAt ?? items[index].createdAt),
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              // fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ],
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         }

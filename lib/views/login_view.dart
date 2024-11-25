@@ -87,8 +87,7 @@ class _LoginViewState extends State<LoginView> {
       welcome = googleUser!.email;
     });
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
@@ -116,8 +115,7 @@ class _LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateLoggedIn) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              allNotes, (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (Route<dynamic> route) => false);
         }
         if (state is AuthStateNeedsVerification) {
           await showErrorDialog(context,
@@ -155,8 +153,7 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                const Text(
-                    "Введите ваши данные что бы иметь возможность создавать объявления"),
+                const Text("Введите ваши данные что бы иметь возможность создавать объявления"),
                 TextField(
                   controller: _email,
                   enableSuggestions: false,
@@ -220,8 +217,7 @@ class _LoginViewState extends State<LoginView> {
                     onPressed: () async {
                       final rawNonce = generateNonce();
                       final nonce = sha256ofString(rawNonce);
-                      final credential =
-                          await SignInWithApple.getAppleIDCredential(
+                      final credential = await SignInWithApple.getAppleIDCredential(
                         scopes: [
                           AppleIDAuthorizationScopes.email,
                           AppleIDAuthorizationScopes.fullName,
@@ -232,14 +228,13 @@ class _LoginViewState extends State<LoginView> {
                         state: 'example-state',
                       );
 
-                      final oauthCredential =
-                          OAuthProvider("apple.com").credential(
+                      final oauthCredential = OAuthProvider("apple.com").credential(
                         idToken: credential.identityToken,
                         rawNonce: rawNonce,
                       );
 
-                      final authResult = await FirebaseAuth.instance
-                          .signInWithCredential(oauthCredential);
+                      final authResult =
+                          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
                       if (authResult.user != null) {
                         context.read<AuthBloc>().add(
                               AuthEventLogIn(null, null, authResult),
@@ -282,11 +277,9 @@ class _LoginViewState extends State<LoginView> {
                         text:
                             'Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.',
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => openUrl(
-                              'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
+                          ..onTap = () => openUrl('https://shkaf.in'),
                         style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline),
+                            fontWeight: FontWeight.w600, decoration: TextDecoration.underline),
                       ),
                     ],
                   ),

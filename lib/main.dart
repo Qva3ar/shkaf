@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/loading/loading_screen.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
@@ -11,6 +10,7 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
+import 'package:mynotes/services/user_service.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
@@ -33,7 +33,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  MobileAds.instance.initialize();
+  // MobileAds.instance.initialize();
+  final UserService userService = UserService();
 
   // if (Platform.isIOS) {
   //check for ios if developing for both android & ios
@@ -91,22 +92,19 @@ void main() async {
               theme: ThemeData(
                   primaryColor: Colors.white,
                   appBarTheme: const AppBarTheme(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black),
+                      backgroundColor: Colors.white, foregroundColor: Colors.black),
                   elevatedButtonTheme: ElevatedButtonThemeData(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 104, 136, 164),
                       foregroundColor: Colors.white,
                     ),
                   ),
-                  bottomSheetTheme: const BottomSheetThemeData(
-                      backgroundColor: Colors.black54)),
+                  bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black54)),
               home: firebase != null
                   ? BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: UpgradeAlert(
-                        upgrader:
-                            Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
+                        upgrader: Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
                         child: const HomePage(),
                       ),
                     )

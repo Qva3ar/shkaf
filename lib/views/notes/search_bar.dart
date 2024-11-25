@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
-import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 
 typedef SearchCb = void Function(String searchText);
 typedef FocusChangeCb = void Function(bool isFocused);
@@ -60,8 +58,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
         hintText: 'Поиск',
-        hintStyle:
-            AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
+        hintStyle: AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
         filled: true,
         fillColor: AppColors.lightGrey,
         prefixIcon: const Icon(

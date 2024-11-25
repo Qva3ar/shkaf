@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mynotes/services/user_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'package:mynotes/constants/routes.dart';
@@ -32,6 +34,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   // CloudNote? note;
   ReportCause? _report = ReportCause.category;
   late final FirebaseCloudStorage _notesService;
+  late final UserService userService;
+
   bool _isVisible = false;
   int _current = 0;
   final int _numInterstitialLoadAttempts = 0;
@@ -48,7 +52,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   void writeToTelegram() {
     CloudNote? note = _notesService.selectedNote.stream.value;
     if (note != null && note.telegramId!.isNotEmpty) {
-      openUrl('https://t.me/${note.telegramId!}');
+      // Проверяем и удаляем '@', если он первый символ
+      String telegramId = note.telegramId!;
+      if (telegramId.startsWith('@')) {
+        telegramId = telegramId.substring(1); // Удаляем первый символ
+      }
+      openUrl('https://t.me/$telegramId');
     }
   }
 
@@ -121,6 +130,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
 
     FirebaseEvent.logScreenView('details');
     _notesService = FirebaseCloudStorage();
+    userService = UserService();
 
     _loadBannerAd();
     // _createInterstitialAd();
@@ -128,6 +138,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     //   log(value!.desc);
     // });
     CloudNote? note = _notesService.selectedNote.stream.value;
+
     // _views = _notesService.;
     // _notesService.selectedNote.listen((value) {
     //   log(value!.desc);
@@ -143,7 +154,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
           documentId: note.documentId,
           text: note.text,
           desc: note.desc,
-          mainCategoryId: note.mainCategoryId!,
+          mainCategoryId: note.mainCategoryId ?? 0, //TODO
           cityId: note.cityId!,
           price: note.price,
           shortAdd: note.shortAdd,
@@ -636,7 +647,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   CloudNote note = snapshot.data as CloudNote;
                   switch (snapshot.connectionState) {
                     case ConnectionState.active:
-                      return note.ownerUserId == userId
+                      return note.ownerUserId == userService.currentUser?.uid
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
@@ -658,7 +669,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                     child: ElevatedButton(
                                         style: ButtonStyle(
                                           backgroundColor:
-                                              MaterialStateProperty.all<Color>(Colors.red),
+                                              WidgetStateProperty.all<Color>(Colors.red),
                                         ),
                                         onPressed: () async {
                                           final shouldDelete = await showDeleteDialog(context);
