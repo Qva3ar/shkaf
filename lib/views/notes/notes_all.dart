@@ -18,6 +18,7 @@ import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/categories/category_list.dart';
+import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
 import 'package:mynotes/views/notes/search_and_city_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
@@ -135,11 +136,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var query = SearchForHits(
-        indexName: 'notes',
-        hitsPerPage: 20,
-        page: _page,
-        query: text.isNotEmpty ? text : null, // Использование null для пустого текста
-      );
+          indexName: 'notes',
+          hitsPerPage: 20,
+          page: _page,
+          query: text.isNotEmpty ? text : null,
+          advancedSyntax: true);
 
       final response = await client.searchIndex(request: query);
 
@@ -554,7 +555,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           //   noteDetailsRoute,
                           //   arguments: note,
                           // );
-                          Navigator.pushNamed(context, noteDetailsRoute, arguments: note);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteDetailsView(
+                                note: note,
+                              ),
+                            ),
+                          );
                         },
                         onDeleteNote: (note) async {
                           await _notesService.deleteNote(documentId: note.documentId);

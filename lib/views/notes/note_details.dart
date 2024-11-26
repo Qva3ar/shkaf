@@ -24,14 +24,15 @@ import '../../services/analytics_route_obs.dart';
 enum ReportCause { category, forbidden, obscene, fraud, spam, other }
 
 class NoteDetailsView extends StatefulWidget {
-  const NoteDetailsView({Key? key}) : super(key: key);
+  final CloudNote note;
+  const NoteDetailsView({Key? key, required this.note}) : super(key: key);
 
   @override
   _NoteDetailsViewState createState() => _NoteDetailsViewState();
 }
 
 class _NoteDetailsViewState extends State<NoteDetailsView> {
-  // CloudNote? note;
+  late CloudNote note;
   ReportCause? _report = ReportCause.category;
   late final FirebaseCloudStorage _notesService;
   late final UserService userService;
@@ -127,17 +128,17 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
   @override
   void initState() {
     super.initState();
+    note = widget.note;
 
     FirebaseEvent.logScreenView('details');
     _notesService = FirebaseCloudStorage();
     userService = UserService();
-
     _loadBannerAd();
     // _createInterstitialAd();
     // _notesService.selectedNote.listen((value) {
     //   log(value!.desc);
     // });
-    CloudNote? note = _notesService.selectedNote.stream.value;
+    // CloudNote? note = _notesService.selectedNote.stream.value;
 
     // _views = _notesService.;
     // _notesService.selectedNote.listen((value) {
@@ -216,430 +217,410 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
             title: const Text("ШКАФ"),
             actions: const [],
           ),
-          body: StreamBuilder(
-              stream: _notesService.selectedNote.stream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  CloudNote note = snapshot.data as CloudNote;
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.active:
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 75),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 228, 228, 228),
-                                    borderRadius: BorderRadius.circular(9),
-                                  ),
-                                  child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
-                                      ? CarouselSlider.builder(
-                                          itemCount: note.imagesUrls?.length,
-                                          carouselController: controller,
-                                          options: CarouselOptions(
-                                            enlargeCenterPage: true,
-                                            enableInfiniteScroll: false,
-                                            height: 200,
-                                            aspectRatio: 16 / 9,
-                                            viewportFraction: 1,
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                _current = index;
-                                              });
+          body: Container(
+              child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 75),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 228, 228, 228),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
+                          ? CarouselSlider.builder(
+                              itemCount: note.imagesUrls?.length,
+                              carouselController: controller,
+                              options: CarouselOptions(
+                                enlargeCenterPage: true,
+                                enableInfiniteScroll: false,
+                                height: 200,
+                                aspectRatio: 16 / 9,
+                                viewportFraction: 1,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                },
+                              ),
+                              itemBuilder:
+                                  (BuildContext context, int itemIndex, int pageViewIndex) =>
+                                      Builder(
+                                        builder: (BuildContext context) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => GalleryWidget(
+                                                          imageUrls: note.imagesUrls ?? [])));
                                             },
-                                          ),
-                                          itemBuilder: (BuildContext context, int itemIndex,
-                                                  int pageViewIndex) =>
-                                              Builder(
-                                                builder: (BuildContext context) {
-                                                  return GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) => GalleryWidget(
-                                                                  imageUrls:
-                                                                      note.imagesUrls ?? [])));
-                                                    },
-                                                    child: Container(
-                                                      width: MediaQuery.of(context).size.width,
-                                                      height: 100,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(9),
-                                                        image: DecorationImage(
-                                                          fit: BoxFit.cover,
-                                                          image: NetworkImage(
-                                                              note.imagesUrls![itemIndex]),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ))
-                                      : Image.asset('assets/images/img_placeholder.jpeg')),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Center(
-                                child: AnimatedSmoothIndicator(
-                                  activeIndex: _current,
-                                  count: note.imagesUrls?.length ?? 1,
-                                  effect: const WormEffect(
-                                      dotHeight: 7,
-                                      dotWidth: 7,
-                                      dotColor: Colors.grey,
-                                      activeDotColor: Colors.black),
-                                ),
-                              ),
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.center,
-                              //   children:
-                              //       note.imagesUrls!.mapIndexed((entry, index) {
-                              //     return GestureDetector(
-                              //       onTap: () {
-                              //         _controller.animateToPage(index);
-                              //       },
-                              //       child: Container(
-                              //         width: 5.0,
-                              //         height: 5.0,
-                              //         margin: const EdgeInsets.symmetric(
-                              //             vertical: 8.0, horizontal: 4.0),
-                              //         decoration: BoxDecoration(
-                              //             shape: BoxShape.circle,
-                              //             color: ( Colors.black)
-                              //                 .withOpacity(
-                              //                     _current == index ? 0.9 : 0.4)),
-                              //       ),
-                              //     );
-                              //   }).toList(),
-                              // ),
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      getFormattedDate(note.createdAt),
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        // fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.visibility,
-                                    color: Colors.grey,
-                                    size: 10.0,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    note.views.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Card(
-                                      elevation: 0,
-                                      color: const Color.fromARGB(255, 144, 113, 229),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(3),
-                                          child: Text(
-                                            getMainCategoryName(note.mainCategoryId ?? 0),
-                                            style: const TextStyle(
-                                                color: Colors.white, fontWeight: FontWeight.w500),
-                                          ))),
-                                  Card(
-                                      elevation: 0,
-                                      color: const Color.fromARGB(243, 77, 128, 147),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(3),
-                                          child: Text(getCategoryName(note.categoryId ?? 0),
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w500)))),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(note.text,
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                              const SizedBox(height: 10),
-                              Text(note.price != 0 ? "${note.price} TL" : '',
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w600,
-                                  )),
-
-                              const Text("Описание",
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontSize: 21,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                              Text(note.desc,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                              const SizedBox(height: 25),
-                              if (_isBannerAdReady && _notesService.showAD)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: _bannerAd.size.width.toDouble(),
-                                      height: _bannerAd.size.height.toDouble(),
-                                      child: AdWidget(ad: _bannerAd),
-                                    )
-                                  ],
-                                ),
-                              const SizedBox(height: 25),
-                              note.phone!.isNotEmpty
-                                  ? Visibility(
-                                      visible: !_isVisible,
-                                      child: ElevatedButton(
-                                          onPressed: showPhoneNumber,
-                                          child: const Text('Показать номер телефона')),
-                                    )
-                                  : Container(),
-                              Visibility(
-                                  visible: _isVisible,
-                                  child: SelectableText(note.phone ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w600,
-                                      ))),
-                              const SizedBox(height: 25),
-                              note.telegramId!.isNotEmpty
-                                  ? ElevatedButton(
-                                      onPressed: writeToTelegram,
-                                      child: const Text('Написать в Телеграм'))
-                                  : Container(),
-                              const SizedBox(height: 25),
-
-                              note.url != ''
-                                  ? Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        InkWell(
-                                          onTap: () => openUrl(note.url ?? ""),
-                                          child: Text(
-                                            note.url ?? "",
-                                            style: const TextStyle(
-                                                decoration: TextDecoration.underline,
-                                                color: Colors.blue),
-                                          ),
-                                        ),
-                                        RichText(
-                                          text: const TextSpan(
-                                            children: [
-                                              WidgetSpan(
-                                                alignment: PlaceholderAlignment.middle,
-                                                child: Icon(Icons.error, size: 12),
-                                              ),
-                                              TextSpan(
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Color.fromARGB(255, 95, 95, 95)),
-                                                text:
-                                                    " Перейдя по ссылке вы найдете оригинал объявления",
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : Container(),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.error_outline,
-                                    color: Colors.red,
-                                    size: 20.0,
-                                  ),
-                                  TextButton(
-                                    onPressed: () => showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) => AlertDialog(
-                                        title: const Text(
-                                          'Выберите причину',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                        content: StatefulBuilder(
-                                            builder: (BuildContext context, StateSetter setState) {
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.category;
-                                                      });
-                                                    },
-                                                    child: const Text('Неверная категория')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.category,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
+                                            child: Container(
+                                              width: MediaQuery.of(context).size.width,
+                                              height: 100,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(9),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(note.imagesUrls![itemIndex]),
                                                 ),
                                               ),
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.forbidden;
-                                                      });
-                                                    },
-                                                    child: const Text('Запрещенный товар')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.forbidden,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.obscene;
-                                                      });
-                                                    },
-                                                    child: const Text('Непристойное содержание')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.obscene,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.fraud;
-                                                      });
-                                                    },
-                                                    child: const Text('Мошенничество')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.fraud,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.spam;
-                                                      });
-                                                    },
-                                                    child: const Text('Спам')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.spam,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              ListTile(
-                                                title: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _report = ReportCause.other;
-                                                      });
-                                                    },
-                                                    child: const Text('Другое')),
-                                                leading: Radio<ReportCause>(
-                                                  value: ReportCause.other,
-                                                  groupValue: _report,
-                                                  onChanged: (ReportCause? value) {
-                                                    setState(() {
-                                                      _report = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            ],
+                                            ),
                                           );
-                                        }),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context, 'false'),
-                                            child: const Text('Отмена'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, 'true');
-                                              // selectReportCause();
-                                            },
-                                            child: const Text('Отправить'),
-                                          ),
-                                        ],
-                                      ),
-                                    ).then((value) {
-                                      if (value == 'true') {
-                                        sendReport();
-                                      }
-                                    }),
-                                    child: const Text(
-                                      'Пожаловаться',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              // ElevatedButton(
-                              //     onPressed: () {
-                              //       saveNote();
-                              //     },
-                              //     child: const Text("Save"))
-                            ],
+                                        },
+                                      ))
+                          : Image.asset('assets/images/img_placeholder.jpeg')),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: AnimatedSmoothIndicator(
+                      activeIndex: _current,
+                      count: note.imagesUrls?.length ?? 1,
+                      effect: const WormEffect(
+                          dotHeight: 7,
+                          dotWidth: 7,
+                          dotColor: Colors.grey,
+                          activeDotColor: Colors.black),
+                    ),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children:
+                  //       note.imagesUrls!.mapIndexed((entry, index) {
+                  //     return GestureDetector(
+                  //       onTap: () {
+                  //         _controller.animateToPage(index);
+                  //       },
+                  //       child: Container(
+                  //         width: 5.0,
+                  //         height: 5.0,
+                  //         margin: const EdgeInsets.symmetric(
+                  //             vertical: 8.0, horizontal: 4.0),
+                  //         decoration: BoxDecoration(
+                  //             shape: BoxShape.circle,
+                  //             color: ( Colors.black)
+                  //                 .withOpacity(
+                  //                     _current == index ? 0.9 : 0.4)),
+                  //       ),
+                  //     );
+                  //   }).toList(),
+                  // ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          getFormattedDate(note.createdAt),
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            // fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
                         ),
-                      );
-                    default:
-                      return const CircularProgressIndicator();
-                  }
-                } else {
-                  return Container();
-                }
-              }),
+                      ),
+                      const Icon(
+                        Icons.visibility,
+                        color: Colors.grey,
+                        size: 10.0,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        note.views.toString(),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Card(
+                          elevation: 0,
+                          color: const Color.fromARGB(255, 144, 113, 229),
+                          child: Padding(
+                              padding: const EdgeInsets.all(3),
+                              child: Text(
+                                getMainCategoryName(note.mainCategoryId ?? 0),
+                                style: const TextStyle(
+                                    color: Colors.white, fontWeight: FontWeight.w500),
+                              ))),
+                      Card(
+                          elevation: 0,
+                          color: const Color.fromARGB(243, 77, 128, 147),
+                          child: Padding(
+                              padding: const EdgeInsets.all(3),
+                              child: Text(getCategoryName(note.categoryId ?? 0),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontWeight: FontWeight.w500)))),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(note.text,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      )),
+                  const SizedBox(height: 10),
+                  Text(note.price != 0 ? "${note.price} TL" : '',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      )),
+
+                  const Text("Описание",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w700,
+                      )),
+                  Text(note.desc,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      )),
+                  const SizedBox(height: 25),
+                  if (_isBannerAdReady && _notesService.showAD)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: _bannerAd.size.width.toDouble(),
+                          height: _bannerAd.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd),
+                        )
+                      ],
+                    ),
+                  const SizedBox(height: 25),
+                  note.phone!.isNotEmpty
+                      ? Visibility(
+                          visible: !_isVisible,
+                          child: ElevatedButton(
+                              onPressed: showPhoneNumber,
+                              child: const Text('Показать номер телефона')),
+                        )
+                      : Container(),
+                  Visibility(
+                      visible: _isVisible,
+                      child: SelectableText(note.phone ?? "",
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          ))),
+                  const SizedBox(height: 25),
+                  note.telegramId != null && note.telegramId!.isNotEmpty
+                      ? ElevatedButton(
+                          onPressed: writeToTelegram, child: const Text('Написать в Телеграм'))
+                      : Container(),
+                  const SizedBox(height: 25),
+
+                  note.url != ''
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: () => openUrl(note.url ?? ""),
+                              child: Text(
+                                note.url ?? "",
+                                style: const TextStyle(
+                                    decoration: TextDecoration.underline, color: Colors.blue),
+                              ),
+                            ),
+                            RichText(
+                              text: const TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: Icon(Icons.error, size: 12),
+                                  ),
+                                  TextSpan(
+                                    style: TextStyle(
+                                        fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
+                                    text: " Перейдя по ссылке вы найдете оригинал объявления",
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 20.0,
+                      ),
+                      TextButton(
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text(
+                              'Выберите причину',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            content: StatefulBuilder(
+                                builder: (BuildContext context, StateSetter setState) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.category;
+                                          });
+                                        },
+                                        child: const Text('Неверная категория')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.category,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.forbidden;
+                                          });
+                                        },
+                                        child: const Text('Запрещенный товар')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.forbidden,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.obscene;
+                                          });
+                                        },
+                                        child: const Text('Непристойное содержание')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.obscene,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.fraud;
+                                          });
+                                        },
+                                        child: const Text('Мошенничество')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.fraud,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.spam;
+                                          });
+                                        },
+                                        child: const Text('Спам')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.spam,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _report = ReportCause.other;
+                                          });
+                                        },
+                                        child: const Text('Другое')),
+                                    leading: Radio<ReportCause>(
+                                      value: ReportCause.other,
+                                      groupValue: _report,
+                                      onChanged: (ReportCause? value) {
+                                        setState(() {
+                                          _report = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'false'),
+                                child: const Text('Отмена'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context, 'true');
+                                  // selectReportCause();
+                                },
+                                child: const Text('Отправить'),
+                              ),
+                            ],
+                          ),
+                        ).then((value) {
+                          if (value == 'true') {
+                            sendReport();
+                          }
+                        }),
+                        child: const Text(
+                          'Пожаловаться',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       saveNote();
+                  //     },
+                  //     child: const Text("Save"))
+                ],
+              ),
+            ),
+          )),
           bottomSheet: StreamBuilder(
               stream: _notesService.selectedNote.stream,
               builder: (context, snapshot) {
