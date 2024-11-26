@@ -487,7 +487,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   break;
                 case 2:
                   if (state.user != null) {
-                    Navigator.of(context).pushNamed('/createAd');
+                    Navigator.of(context).pushNamed(addScreen);
                   } else {
                     Navigator.of(context).pushNamed(login);
                   }
