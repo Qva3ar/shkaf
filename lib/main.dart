@@ -122,10 +122,6 @@ void main() async {
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const NotesAll(),
                     ),
-                noteDetailsRoute: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const NoteDetailsView(),
-                    ),
                 userDetails: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const UserDetails(),
