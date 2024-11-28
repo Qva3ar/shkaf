@@ -21,6 +21,7 @@ import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/categories/category_list.dart';
+import 'package:mynotes/views/dialogs/platform_dialog.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
 import 'package:mynotes/views/notes/search_and_city_bar.dart';
@@ -86,7 +87,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (kIsWeb && !kDebugMode && getSmartPhoneOrTablet() == androidType) {
-        _showPlatformDialog(context);
+        showPlatformDialog(context);
       }
     });
 

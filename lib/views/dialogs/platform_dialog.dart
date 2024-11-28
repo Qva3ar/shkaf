@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 
-Future<void> _showPlatformDialog(context) async {
+Future<void> showPlatformDialog(context) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
