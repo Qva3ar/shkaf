@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/loading/loading_screen.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
@@ -11,11 +10,11 @@ import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
+import 'package:mynotes/services/shared_preferences_service.dart';
 import 'package:mynotes/services/user_service.dart';
 import 'package:mynotes/views/forgot_password_view.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
-import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
@@ -28,13 +27,22 @@ import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:upgrader/upgrader.dart';
 
+import 'services/notification_service.dart';
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  await SharedPreferencesService().init();
+
+  NotificationService().initialize((PushNotification notification) {
+    print('Notification received: ${notification.title}');
+  });
+
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  MobileAds.instance.initialize();
+  // MobileAds.instance.initialize();
   final UserService userService = UserService();
 
   // if (Platform.isIOS) {
@@ -54,28 +62,28 @@ void main() async {
   // });
 
   FirebaseEvent.logScreenView('main');
-  if (!kIsWeb && Platform.isAndroid) {
-    InAppUpdate.checkForUpdate().then((updateInfo) {
-      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-        if (updateInfo.immediateUpdateAllowed) {
-          // Perform immediate update
-          InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
-            if (appUpdateResult == AppUpdateResult.success) {
-              //App Update successful
-            }
-          });
-        } else if (updateInfo.flexibleUpdateAllowed) {
-          //Perform flexible update
-          InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
-            if (appUpdateResult == AppUpdateResult.success) {
-              //App Update successful
-              InAppUpdate.completeFlexibleUpdate();
-            }
-          });
-        }
-      }
-    });
-  }
+  // if (!kIsWeb && Platform.isAndroid) {
+  //   InAppUpdate.checkForUpdate().then((updateInfo) {
+  //     if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+  //       if (updateInfo.immediateUpdateAllowed) {
+  //         // Perform immediate update
+  //         InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
+  //           if (appUpdateResult == AppUpdateResult.success) {
+  //             //App Update successful
+  //           }
+  //         });
+  //       } else if (updateInfo.flexibleUpdateAllowed) {
+  //         //Perform flexible update
+  //         InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
+  //           if (appUpdateResult == AppUpdateResult.success) {
+  //             //App Update successful
+  //             InAppUpdate.completeFlexibleUpdate();
+  //           }
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 
   await SentryFlutter.init((options) {
     options.dsn =

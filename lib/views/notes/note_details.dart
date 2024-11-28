@@ -133,7 +133,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     FirebaseEvent.logScreenView('details');
     _notesService = FirebaseCloudStorage();
     userService = UserService();
-    _loadBannerAd();
+    // _loadBannerAd();
     // _createInterstitialAd();
     // _notesService.selectedNote.listen((value) {
     //   log(value!.desc);
@@ -146,24 +146,22 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     // });
     log(userId.toString());
 
-    if (note != null) {
-      var views = note.views + 1;
+    var views = note.views + 1;
 
-      log(note.views.toString());
-      _notesService.updateNotViews(
-          categoryId: note.categoryId!,
-          documentId: note.documentId,
-          text: note.text,
-          desc: note.desc,
-          mainCategoryId: note.mainCategoryId ?? 0, //TODO
-          cityId: note.cityId!,
-          price: note.price,
-          shortAdd: note.shortAdd,
-          imgUrls: note.imagesUrls,
-          phone: note.phone,
-          url: note.url,
-          views: views);
-    }
+    log(note.views.toString());
+    _notesService.updateNotViews(
+        categoryId: note.categoryId!,
+        documentId: note.documentId,
+        text: note.text,
+        desc: note.desc,
+        mainCategoryId: note.mainCategoryId ?? 0, //TODO
+        cityId: note.cityId!,
+        price: note.price,
+        shortAdd: note.shortAdd,
+        imgUrls: note.imagesUrls,
+        phone: note.phone,
+        url: note.url,
+        views: views);
   }
 
   void sendReport() {

@@ -40,16 +40,15 @@ class CityDropdown extends StatelessWidget {
                 value: city['id'] as int,
                 child: Text(
                   city['name'] as String,
-                  style: AppTextStyles.s17w400
-                      .copyWith(color: AppColors.unselectedTextGrey),
+                  style: AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
                 ),
               ))
           .toList(),
-      icon: const Icon(
-        Icons.arrow_drop_down_rounded, 
-        size: 25, 
-        color: AppColors.darkGrey, 
-      ),
+      // icon: const Icon(
+      //   Icons.arrow_drop_down_rounded,
+      //   size: 25,
+      //   color: AppColors.darkGrey,
+      // ),
       onChanged: (value) {
         if (value != null) {
           onCityChanged(value);

@@ -14,6 +14,7 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/generics/get_arguments.dart';
 import 'package:mynotes/utilities/widgets/categories_bottom_sheet.dart';
+import 'package:mynotes/views/categories/bottom_cities_sheet.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/validators/validators.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -102,12 +102,9 @@ class FirebaseCloudStorage {
   }
 
   void _fetchConfig() async {
-    log("ini -2");
+    log("fetch config");
 
     remoteConfig.fetchAndActivate();
-    log("ini -3");
-
-    log(remoteConfig.getBool('showAd').toString());
   }
 
   incrimentRecordViewCounter() {
@@ -123,6 +120,10 @@ class FirebaseCloudStorage {
     selectedCityStream.add(id);
 
     allNotes(false);
+  }
+
+  int getSelectedCityId() {
+    return selectedCityStream.value;
   }
 
   setCategoryId(int id) {

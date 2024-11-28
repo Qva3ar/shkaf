@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
-import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
-import 'package:mynotes/views/categories/category_list.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
 typedef NoteEmptyCallback = void Function();
