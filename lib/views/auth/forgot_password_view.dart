@@ -79,9 +79,9 @@ void forgotPasswordScreen(
                       onTap: () {
                         loginScreen(context, _scaffoldKey);
                       },
-                      child: Text(
+                      child: const Text(
                         'Вернуться на страницу входа',
-                        style: AppTextStyles.s12w600.copyWith(),
+                        style: AppTextStyles.s12w600,
                       ),
                     ),
                   ],

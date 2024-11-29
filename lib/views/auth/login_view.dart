@@ -39,6 +39,31 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 allNotes, (Route<dynamic> route) => false);
           }
+          if (state is AuthStateNeedsVerification) {
+            await showErrorDialog(context,
+                "Завершите регистрацию перейдя по ссылке в письме которое мы отправили вам на почту");
+          }
+          if (state is AuthStateRegistering) {
+            Navigator.of(context).pushReplacementNamed(register);
+          }
+          if (state is AuthStateLoggedOut) {
+            if (state.exception is UserNotFoundAuthException) {
+              await showErrorDialog(
+                context,
+                "Пользователь не найден",
+              );
+            } else if (state.exception is WrongPasswordAuthException) {
+              await showErrorDialog(
+                context,
+                "Неправильный email или пароль",
+              );
+            } else if (state.exception is GenericAuthException) {
+              await showErrorDialog(
+                context,
+                context.loc.login_error_auth_error,
+              );
+            }
+          }
         },
         child: Form(
           key: _formKey,
