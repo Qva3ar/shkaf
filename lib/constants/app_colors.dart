@@ -10,5 +10,6 @@ class AppColors {
   static const Color titleBlack = Color(0xff090909);
   static const Color lightGrey = Color(0xffF2F2F7);
   static const Color darkGrey = Color(0xff292929);
+  static const Color hintTextColor = Color(0xffC8C8CB);
 
 }

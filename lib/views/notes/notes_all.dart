@@ -17,6 +17,7 @@ import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
+import 'package:mynotes/views/auth/login_view.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
@@ -61,7 +62,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   DraggableScrollableController controller = DraggableScrollableController();
   ScrollController _scrollController = ScrollController();
 
-  final PagingController<int, CloudNote> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, CloudNote> _pagingController =
+      PagingController(firstPageKey: 0);
   late StreamController<List<CloudNote>> _streamController;
   // List<Map<String, dynamic>> _hits = [];
 
@@ -145,8 +147,9 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       final response = await client.searchIndex(request: query);
 
       if (response.hits.isNotEmpty) {
-        final List<CloudNote> newHits =
-            response.hits.map<CloudNote>((hit) => CloudNote.fromHit(hit)).toList();
+        final List<CloudNote> newHits = response.hits
+            .map<CloudNote>((hit) => CloudNote.fromHit(hit))
+            .toList();
 
         setState(() {
           _isLoading = false;
@@ -219,10 +222,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             builder: (BuildContext context) {
               return const AlertDialog(
                 title: Text("Success"),
-                titleTextStyle:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+                titleTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20),
                 backgroundColor: Colors.greenAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
                 content: Text("Save successfully"),
               );
             });
@@ -259,8 +265,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isDismissible: true,
       useRootNavigator: false,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(
-            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(openWithCategory, 1, true,
+            _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -299,7 +305,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       prefs = value;
       var cityId = prefs.getInt(selectedCityKey) ?? 1;
       setSelectedCity(cityId);
-      Future.delayed(const Duration(microseconds: 100), setSelectedCity(cityId));
+      Future.delayed(
+          const Duration(microseconds: 100), setSelectedCity(cityId));
       FocusScope.of(context).unfocus();
       getUserInfo();
 
@@ -322,7 +329,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   getArguments(context) {
     if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
+      ListViewArguments args =
+          ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
     }
@@ -335,7 +343,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
-      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
+      selectedCatLabel =
+          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
     _notesService.loadingManager.add(true);
@@ -350,7 +359,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = prefs.getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now()
+            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -368,7 +378,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var currentTime = DateTime.now();
-      prefs.setString('last_used', currentTime.millisecondsSinceEpoch.toString());
+      prefs.setString(
+          'last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -421,7 +432,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
         !_isLoading &&
         _hasMore) {
       _performSearch('');
@@ -437,12 +449,16 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
@@ -463,7 +479,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   if (state.user != null) {
                     Navigator.of(context).pushNamed(userDetails);
                   } else {
-                    Navigator.of(context).pushNamed(login);
+                    loginScreen(context, _scaffoldKey);
+                    //Navigator.of(context).pushNamed(login);
                   }
                 },
                 icon: const Icon(
@@ -490,7 +507,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   if (state.user != null) {
                     Navigator.of(context).pushNamed(addScreen);
                   } else {
-                    Navigator.of(context).pushNamed(login);
+                    //Navigator.of(context).pushNamed(login);
+                    loginScreen(context, _scaffoldKey);
                   }
                   break;
                 default:
@@ -520,7 +538,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     'Популярное',
-                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                    style:
+                        AppTextStyles.s16w600.copyWith(color: AppColors.black),
                   ),
                 ),
               ),
@@ -528,7 +547,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    await _performSearch('', isRefresh: true); // Обновление данных
+                    await _performSearch('',
+                        isRefresh: true); // Обновление данных
                   },
                   child: StreamBuilder<List<CloudNote>>(
                     stream: _streamController.stream,
@@ -540,7 +560,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         return Center(
                           child: Text(
                             'Нет данных для отображения',
-                            style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                            style: AppTextStyles.s14w500
+                                .copyWith(color: AppColors.grey),
                           ),
                         );
                       }
@@ -565,7 +586,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           );
                         },
                         onDeleteNote: (note) async {
-                          await _notesService.deleteNote(documentId: note.documentId);
+                          await _notesService.deleteNote(
+                              documentId: note.documentId);
                         },
                         scrollController: _scrollController,
                       );
@@ -615,7 +637,8 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
                             onTap: () => fun(u['id']),
                             child: Card(
                               color: Colors.white,
-                              child: ListTile(title: Text(u['name'].toString())),
+                              child:
+                                  ListTile(title: Text(u['name'].toString())),
                             ),
                           ))),
                 ]))
@@ -635,7 +658,8 @@ Future<void> _showPlatformDialog(context) async {
         title: const Text('Наше приложение доступно в Google Play.'),
         content: GestureDetector(
           onTap: () {
-            openUrl('https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
+            openUrl(
+                'https://play.google.com/store/apps/details?id=com.aturdiyev.mynotes');
           },
           child: Container(
             child: (Image.asset(
