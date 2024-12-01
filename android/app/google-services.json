@@ -22,20 +22,28 @@
           }
         },
         {
+          "client_id": "656609494072-qrqorfverfvlcqpd61se6ru2hs83oath.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aturdiyev.mynotes",
+            "certificate_hash": "368eac623678bebfe547adfd2c27019e89d3031c"
+          }
+        },
+        {
           "client_id": "656609494072-qdf0tupf8b0l9jr150e91r2v9qasb5v9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC7f0Pi4LtU-O6X-W4tbmvYRB6vn8XGSZc"
+          "current_key": "AIzaSyDeUd12lEie5bxBaMaIgpaYsUwKYFZ92w8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "656609494072-qdf0tupf8b0l9jr150e91r2v9qasb5v9.apps.googleusercontent.com",
+              "client_id": "656609494072-f5mpdeuth3vllleh2qk2g51pr45dkulm.apps.googleusercontent.com",
               "client_type": 3
             },
             {
