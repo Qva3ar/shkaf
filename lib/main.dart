@@ -43,7 +43,7 @@ void main() async {
   );
 
   // MobileAds.instance.initialize();
-  final UserService userService = UserService();
+  // final UserService userService = UserService();
 
   // if (Platform.isIOS) {
   //check for ios if developing for both android & ios
@@ -100,6 +100,7 @@ void main() async {
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                   primaryColor: Colors.white,
+                  fontFamily: 'Montserrat',
                   appBarTheme: const AppBarTheme(
                       backgroundColor: Colors.white, foregroundColor: Colors.black),
                   elevatedButtonTheme: ElevatedButtonThemeData(

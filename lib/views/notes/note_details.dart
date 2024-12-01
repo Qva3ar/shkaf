@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mynotes/constants/typography.dart';
 import 'package:mynotes/services/user_service.dart';
+import 'package:mynotes/views/widgets/dynamic_contact_btns.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'package:mynotes/constants/routes.dart';
@@ -215,16 +217,21 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
             title: const Text("ШКАФ"),
             actions: const [],
           ),
-          body: Container(
-              child: SingleChildScrollView(
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: DynamicContactButtons(
+            telegramId: note.telegramId,
+            phoneNumber: note.phone, // Если нет номера телефона
+            link: note.url, // Если нет ссылки
+          ),
+          body: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 75),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 75),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 228, 228, 228),
+                        // color: const Color.fromARGB(255, 228, 228, 228),
                         borderRadius: BorderRadius.circular(9),
                       ),
                       child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
@@ -285,107 +292,94 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                     ),
                   ),
                   // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children:
-                  //       note.imagesUrls!.mapIndexed((entry, index) {
-                  //     return GestureDetector(
-                  //       onTap: () {
-                  //         _controller.animateToPage(index);
-                  //       },
-                  //       child: Container(
-                  //         width: 5.0,
-                  //         height: 5.0,
-                  //         margin: const EdgeInsets.symmetric(
-                  //             vertical: 8.0, horizontal: 4.0),
-                  //         decoration: BoxDecoration(
-                  //             shape: BoxShape.circle,
-                  //             color: ( Colors.black)
-                  //                 .withOpacity(
-                  //                     _current == index ? 0.9 : 0.4)),
+                  //   mainAxisSize: MainAxisSize.max,
+                  //   children: [
+                  //     Expanded(
+                  //       child: Text(
+                  //         getFormattedDate(note.createdAt),
+                  //         overflow: TextOverflow.ellipsis,
+                  //         style: const TextStyle(
+                  //           // fontWeight: FontWeight.bold,
+                  //           fontSize: 12,
+                  //           color: Colors.grey,
+                  //         ),
                   //       ),
-                  //     );
-                  //   }).toList(),
+                  //     ),
+                  //     const Icon(
+                  //       Icons.visibility,
+                  //       color: Colors.grey,
+                  //       size: 10.0,
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 5,
+                  //     ),
+                  //     Text(
+                  //       note.views.toString(),
+                  //       style: const TextStyle(
+                  //         color: Colors.grey,
+                  //         fontSize: 12,
+                  //       ),
+                  //     ),
+                  //   ],
                   // ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          getFormattedDate(note.createdAt),
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            // fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.visibility,
-                        color: Colors.grey,
-                        size: 10.0,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        note.views.toString(),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Card(
-                          elevation: 0,
-                          color: const Color.fromARGB(255, 144, 113, 229),
-                          child: Padding(
-                              padding: const EdgeInsets.all(3),
-                              child: Text(
-                                getMainCategoryName(note.mainCategoryId ?? 0),
+                  // Row(
+                  //   children: [
+                  //     Card(
+                  //         elevation: 0,
+                  //         color: const Color.fromARGB(255, 144, 113, 229),
+                  //         child: Padding(
+                  //             padding: const EdgeInsets.all(3),
+                  //             child: Text(
+                  //               getMainCategoryName(note.mainCategoryId ?? 0),
+                  //               style: const TextStyle(
+                  //                   color: Colors.white, fontWeight: FontWeight.w500),
+                  //             ))),
+                  //     Card(
+                  //         elevation: 0,
+                  //         color: const Color.fromARGB(243, 77, 128, 147),
+                  //         child: Padding(
+                  //             padding: const EdgeInsets.all(3),
+                  //             child: Text(getCategoryName(note.categoryId ?? 0),
+                  //                 style: const TextStyle(
+                  //                     color: Colors.white, fontWeight: FontWeight.w500)))),
+                  //   ],
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(note.text,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        const SizedBox(height: 10),
+                        note.price != 0
+                            ? Text(note.price != 0 ? "${note.price} TL" : '',
+                                textAlign: TextAlign.left,
                                 style: const TextStyle(
-                                    color: Colors.white, fontWeight: FontWeight.w500),
-                              ))),
-                      Card(
-                          elevation: 0,
-                          color: const Color.fromARGB(243, 77, 128, 147),
-                          child: Padding(
-                              padding: const EdgeInsets.all(3),
-                              child: Text(getCategoryName(note.categoryId ?? 0),
-                                  style: const TextStyle(
-                                      color: Colors.white, fontWeight: FontWeight.w500)))),
-                    ],
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                ))
+                            : Container(),
+                        const Text("Описание",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            )),
+                        Text(note.desc,
+                            style: Typogaphy.Regular.copyWith(
+                              color: Colors.black,
+                              fontSize: 14,
+                            )),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(note.text,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      )),
-                  const SizedBox(height: 10),
-                  Text(note.price != 0 ? "${note.price} TL" : '',
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      )),
 
-                  const Text("Описание",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w700,
-                      )),
-                  Text(note.desc,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      )),
                   const SizedBox(height: 25),
                   if (_isBannerAdReady && _notesService.showAD)
                     Row(
@@ -399,59 +393,22 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                       ],
                     ),
                   const SizedBox(height: 25),
-                  note.phone!.isNotEmpty
-                      ? Visibility(
-                          visible: !_isVisible,
-                          child: ElevatedButton(
-                              onPressed: showPhoneNumber,
-                              child: const Text('Показать номер телефона')),
-                        )
-                      : Container(),
-                  Visibility(
-                      visible: _isVisible,
-                      child: SelectableText(note.phone ?? "",
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ))),
-                  const SizedBox(height: 25),
-                  note.telegramId != null && note.telegramId!.isNotEmpty
-                      ? ElevatedButton(
-                          onPressed: writeToTelegram, child: const Text('Написать в Телеграм'))
-                      : Container(),
-                  const SizedBox(height: 25),
+                  // note.phone!.isNotEmpty
+                  //     ? Visibility(
+                  //         visible: !_isVisible,
+                  //         child: ElevatedButton(
+                  //             onPressed: showPhoneNumber,
+                  //             child: const Text('Показать номер телефона')),
+                  //       )
+                  //     : Container(),
+                  // Visibility(
+                  //     visible: _isVisible,
+                  //     child: SelectableText(note.phone ?? "",
+                  //         style: const TextStyle(
+                  //           fontSize: 24,
+                  //           fontWeight: FontWeight.w600,
+                  //         ))),
 
-                  note.url != ''
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: () => openUrl(note.url ?? ""),
-                              child: Text(
-                                note.url ?? "",
-                                style: const TextStyle(
-                                    decoration: TextDecoration.underline, color: Colors.blue),
-                              ),
-                            ),
-                            RichText(
-                              text: const TextSpan(
-                                children: [
-                                  WidgetSpan(
-                                    alignment: PlaceholderAlignment.middle,
-                                    child: Icon(Icons.error, size: 12),
-                                  ),
-                                  TextSpan(
-                                    style: TextStyle(
-                                        fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
-                                    text: " Перейдя по ссылке вы найдете оригинал объявления",
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  const SizedBox(height: 10),
                   Row(
                     children: [
                       const Icon(
@@ -618,7 +575,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 ],
               ),
             ),
-          )),
+          ),
           bottomSheet: StreamBuilder(
               stream: _notesService.selectedNote.stream,
               builder: (context, snapshot) {

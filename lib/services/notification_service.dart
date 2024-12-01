@@ -11,7 +11,7 @@ class NotificationService {
   NotificationService._internal();
 
   // Firebase Messaging instance
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  late final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   // Инициализация уведомлений
   Future<void> initialize(Function(PushNotification) onNotification) async {
