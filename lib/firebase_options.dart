@@ -53,11 +53,12 @@ class DefaultFirebaseOptions {
     projectId: 'moka-2344b',
     authDomain: 'moka-2344b.firebaseapp.com',
     storageBucket: 'moka-2344b.appspot.com',
+    measurementId: 'G-NM72CJ2ZH1',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC7f0Pi4LtU-O6X-W4tbmvYRB6vn8XGSZc',
-    appId: '1:656609494072:android:43587daa2dc615709b92cd',
+    apiKey: 'AIzaSyDeUd12lEie5bxBaMaIgpaYsUwKYFZ92w8',
+    appId: '1:656609494072:android:4b5fa5100eb430059b92cd',
     messagingSenderId: '656609494072',
     projectId: 'moka-2344b',
     storageBucket: 'moka-2344b.appspot.com',
@@ -65,11 +66,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDOfBOxfNdBt2_pPSdCwfuQ5y0_fsbeN1s',
-    appId: '1:656609494072:ios:89971c9993b066cb9b92cd',
+    appId: '1:656609494072:ios:376d764e5591eb419b92cd',
     messagingSenderId: '656609494072',
     projectId: 'moka-2344b',
     storageBucket: 'moka-2344b.appspot.com',
-    iosClientId: '656609494072-tah19tn57egb655q2sj3tqq594d9gode.apps.googleusercontent.com',
-    iosBundleId: 'se.pixolity.mynotes',
+    androidClientId: '656609494072-iab5d9juiv6molvq8s3uck024711nvnf.apps.googleusercontent.com',
+    iosClientId: '656609494072-psn7m471853rob2if0tidq95mtni2vs2.apps.googleusercontent.com',
+    iosBundleId: 'com.aturdiyev.mynotes',
   );
+
 }
