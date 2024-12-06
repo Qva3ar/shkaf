@@ -123,10 +123,10 @@ void main() async {
               routes: {
                 createNoteRoute: (context) => const UpdateNoteView(),
                 updateNoteRoute: (context) => const UpdateNoteView(),
-                login: (context) => BlocProvider<AuthBloc>(
+                /*login: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const LoginView(),
-                    ),
+                    ),*/
                 allNotes: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const NotesAll(),
@@ -139,18 +139,18 @@ void main() async {
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const UserNotesView(),
                     ),
-                register: (context) => BlocProvider<AuthBloc>(
+                /*register: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const RegisterView(),
-                    ),
-                forgotPassword: (context) => BlocProvider<AuthBloc>(
+                    ),*/
+                /*forgotPassword: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const ForgotPasswordView(),
-                    ),
-                emailVerification: (context) => BlocProvider<AuthBloc>(
+                    ),*/
+                /*emailVerification: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const VerifyEmailView(),
-                    ),
+                      child: VerifyEmailView(),
+                    ),*/
                 addScreen: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: AddScreen(),
@@ -180,19 +180,24 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
           return const NotesAll();
-        } else if (state is AuthStateNeedsVerification) {
-          return const VerifyEmailView();
-        } else if (state is AuthStateLoggedOut) {
+        } 
+        else if (state is AuthStateNeedsVerification) {
+          //return const VerifyEmailView();
+          return const NotesAll();
+        }
+        else if (state is AuthStateLoggedOut) {
           return const NotesAll();
         } else if (state is AuthStateForgotPassword) {
-          return const ForgotPasswordView();
+          //return const ForgotPasswordView();
+          return const NotesAll();
         } else if (state is AuthStateRegistering) {
-          return const RegisterView();
+          return const NotesAll();
         } else if (state is AuthStateLogin) {
-          return const LoginView();
+          //return const LoginView();
+          return const NotesAll();
         } else {
           return const Scaffold(
-            body: CircularProgressIndicator(),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },

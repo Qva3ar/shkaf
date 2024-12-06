@@ -1,8 +1,18 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import 'package:mynotes/constants/app_colors.dart';
+import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
@@ -12,19 +22,12 @@ import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/register_view.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:crypto/crypto.dart';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mynotes/constants/app_colors.dart';
-import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
+
+
 
 void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -32,7 +35,7 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
   final _passwordController = TextEditingController();
 
   _scaffoldKey.currentState?.showBottomSheet(
-    (_) {
+    (contextLogin) {
       return BlocListener<AuthBloc, AuthState>(
         listener: (context, state) async {
           if (state is AuthStateLoggedIn) {
@@ -83,6 +86,7 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const SizedBox(height: 35),
+                    /*
                     Padding(
                       padding: const EdgeInsets.only(right: 29),
                       child: GestureDetector(
@@ -92,7 +96,7 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
                         child: SvgPicture.asset(
                             'assets/icons/back_arrow_icon.svg'),
                       ),
-                    ),
+                    ),*/
                     const SizedBox(height: 19),
                     emailTextField(_emailController),
                     const SizedBox(height: 10),
@@ -236,12 +240,14 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
       );
     },
     //elevation: 0,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(48)),
     ),
   );
 }
 
+
+/*
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -523,3 +529,4 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
+*/

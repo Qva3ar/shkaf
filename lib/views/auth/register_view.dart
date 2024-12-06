@@ -14,50 +14,52 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/views/auth/login_view.dart';
+import 'package:mynotes/views/auth/verify_email_view.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
 void registerScreen(
-    BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
+    BuildContext context1, GlobalKey<ScaffoldState> _scaffoldKey) {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _repeatPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   _scaffoldKey.currentState?.showBottomSheet(
-    (_) {
+    (contextRegister) {
       return BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) async {
+        listener: (context2, state) async {
           if (state is AuthStateNeedsVerification) {
-            Navigator.pushNamed(context, emailVerification);
+            //Navigator.pushNamed(context, emailVerification);
+            verifyEmailScreen(context1, _scaffoldKey);
           }
           if (state is AuthStateRegistering) {
             if (state.exception is WeakPasswordAuthException) {
               await showErrorDialog(
-                context,
-                context.loc.register_error_weak_password,
+                context2,
+                context2.loc.register_error_weak_password,
               );
             } else if (state.exception is EmailAlreadyInUseAuthException) {
               await showErrorDialog(
-                context,
-                context.loc.register_error_email_already_in_use,
+                context2,
+                context2.loc.register_error_email_already_in_use,
               );
             } else if (state.exception is GenericAuthException) {
               await showErrorDialog(
-                context,
-                context.loc.register_error_generic,
+                context2,
+                context2.loc.register_error_generic,
               );
             } else if (state.exception is InvalidEmailAuthException) {
               await showErrorDialog(
-                context,
-                context.loc.register_error_invalid_email,
+                context2,
+                context2.loc.register_error_invalid_email,
               );
             }
           }
         },
         child: Container(
-          height: MediaQuery.sizeOf(context).height - 240,
-          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context1).height - 240,
+          width: MediaQuery.sizeOf(context1).width,
           decoration: const BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.only(
@@ -91,7 +93,7 @@ void registerScreen(
                         _repeatPasswordController, 'Повторите пароль'),
                     const SizedBox(height: 40),
                     Container(
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery.of(context1).size.width,
                       height: 60,
                       child: ElevatedButton(
                         style: ButtonStyle(
@@ -113,18 +115,20 @@ void registerScreen(
                           final passwordCheck = _repeatPasswordController.text;
                           if (password != passwordCheck) {
                             await showErrorDialog(
-                              context,
+                              context1,
                               "Пароли не совпадают",
                             );
                             return;
                           }
 
-                          context.read<AuthBloc>().add(
+                          contextRegister.read<AuthBloc>().add(
                                 AuthEventRegister(
                                   email,
                                   password,
                                 ),
                               );
+                              
+                          
                         },
                         child: Text(
                           'Создать аккаунт',
@@ -139,7 +143,7 @@ void registerScreen(
                       children: [
                         GestureDetector(
                           onTap: () {
-                            loginScreen(context, _scaffoldKey);
+                            loginScreen(context1, _scaffoldKey);
                           },
                           child: const Text(
                             'Уже зарегистрированы? Войдите здесь',
@@ -158,12 +162,14 @@ void registerScreen(
       );
     },
     //elevation: 0,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(48)),
     ),
   );
 }
 
+
+/*
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
 
@@ -312,3 +318,4 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 }
+*/

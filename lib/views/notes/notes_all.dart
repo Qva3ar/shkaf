@@ -29,6 +29,9 @@ import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 
+
+
+
 extension Count<T extends Iterable> on Stream<T> {
   Stream<int> get getLength => map((event) => event.length);
 }
@@ -456,10 +459,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {},
-      builder: (context, state) {
+      builder: (context1, state) {
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: AppColors.white,
             elevation: 0,
             centerTitle: true,

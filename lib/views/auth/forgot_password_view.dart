@@ -7,9 +7,6 @@ import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/dialogs/password_reset_email_sent_dialog.dart';
 
-
-
-
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/views/auth/login_view.dart';
@@ -19,87 +16,117 @@ import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 void forgotPasswordScreen(
     BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
   final _emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   _scaffoldKey.currentState?.showBottomSheet(
     (_) {
-      return Container(
-        height: MediaQuery.sizeOf(context).height - 240,
-        width: MediaQuery.sizeOf(context).width,
-        decoration: const BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(47), topRight: Radius.circular(47)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const SizedBox(height: 30),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      return BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+        if (state is AuthStateForgotPassword) {
+          if (state.hasSentEmail) {
+            _emailController.clear();
+            await showPasswordResetSentDialog(context);
+          }
+          if (state.exception != null) {
+            await showErrorDialog(
+              context,
+              context.loc.forgot_password_view_generic_error,
+            );
+          }
+        }
+      },
+        child: Form(
+          key: _formKey,
+          child: Container(
+            height: MediaQuery.sizeOf(context).height - 240,
+            width: MediaQuery.sizeOf(context).width,
+            decoration: const BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(47), topRight: Radius.circular(47)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'Сброс пароля',
-                      style: AppTextStyles.s16w600,
+                    const SizedBox(height: 30),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Сброс пароля',
+                          style: AppTextStyles.s16w600,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 19),
-                emailTextField(_emailController),
-                const SizedBox(height: 40),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(AppColors.violet),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.0),
+                    const SizedBox(height: 19),
+                    emailTextField(_emailController),
+                    const SizedBox(height: 40),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 60,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(AppColors.violet),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
+                          final email = _emailController.text;
+                          context
+                              .read<AuthBloc>()
+                              .add(AuthEventForgotPassword(email: email));
+                        },
+                        child: Text(
+                          'Отправить',
+                          style: AppTextStyles.s16w600
+                              .copyWith(color: AppColors.white),
                         ),
                       ),
                     ),
-                    onPressed: () {},
-                    child: Text(
-                      'Отправить',
-                      style: AppTextStyles.s16w600
-                          .copyWith(color: AppColors.white),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            loginScreen(context, _scaffoldKey);
+                          },
+                          child: const Text(
+                            'Вернуться на страницу входа',
+                            style: AppTextStyles.s12w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        loginScreen(context, _scaffoldKey);
-                      },
-                      child: const Text(
-                        'Вернуться на страницу входа',
-                        style: AppTextStyles.s12w600,
-                      ),
-                    ),
+                    const SizedBox(height: 30),
                   ],
                 ),
-                const SizedBox(height: 30),
-              ],
+              ),
             ),
           ),
         ),
       );
     },
     //elevation: 0,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(48)),
     ),
   );
 }
 
+
+/*
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({Key? key}) : super(key: key);
 
@@ -189,3 +216,4 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     );
   }
 }
+*/
