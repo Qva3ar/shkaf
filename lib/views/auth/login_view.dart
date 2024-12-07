@@ -27,12 +27,47 @@ import 'package:mynotes/views/auth/register_view.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
-
-
 void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  String welcome = "Login with Google";
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  GoogleSignInAccount? googleUser;
+
+  FirebaseEvent.logScreenView('login');
+
+  googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+    googleUser = account;
+
+    if (googleUser != null) {
+      // Perform your action
+    }
+    googleSignIn.signInSilently();
+  });
+
+  Future<UserCredential> signInGoogle() async {
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    welcome = googleUser!.email;
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
   _scaffoldKey.currentState?.showBottomSheet(
     (contextLogin) {
@@ -127,30 +162,70 @@ void loginScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
                         ),
                         Row(
                           children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Color(0xFFF5EDED),
-                              ),
-                              child: Image.asset(
-                                'assets/icons/google_icon.png',
-                                width: 32,
-                                height: 32,
+                            GestureDetector(
+                              onTap: () {
+                                signInGoogle().then((user) {
+                                  context.read<AuthBloc>().add(
+                                        AuthEventLogIn(null, null, user),
+                                      );
+                                });
+                              },
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: Color(0xFFF5EDED),
+                                ),
+                                child: Image.asset(
+                                  'assets/icons/google_icon.png',
+                                  width: 32,
+                                  height: 32,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 24),
-                            Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: AppColors.black,
-                              ),
-                              child: const Icon(
-                                Icons.apple,
-                                color: Colors.white,
+                            GestureDetector(
+                              onTap: () async {
+                                final rawNonce = generateNonce();
+                                final nonce = sha256ofString(rawNonce);
+                                final credential =
+                                    await SignInWithApple.getAppleIDCredential(
+                                  scopes: [
+                                    AppleIDAuthorizationScopes.email,
+                                    AppleIDAuthorizationScopes.fullName,
+                                  ],
+
+                                  // TODO: Remove these if you have no need for them
+                                  nonce: nonce,
+                                  state: 'example-state',
+                                );
+
+                                final oauthCredential =
+                                    OAuthProvider("apple.com").credential(
+                                  idToken: credential.identityToken,
+                                  rawNonce: rawNonce,
+                                );
+
+                                final authResult = await FirebaseAuth.instance
+                                    .signInWithCredential(oauthCredential);
+                                if (authResult.user != null) {
+                                  context.read<AuthBloc>().add(
+                                        AuthEventLogIn(null, null, authResult),
+                                      );
+                                }
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: AppColors.black,
+                                ),
+                                child: const Icon(
+                                  Icons.apple,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 24),
@@ -529,4 +604,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
+
 */
