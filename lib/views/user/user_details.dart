@@ -60,35 +60,85 @@ class _UserDetailsState extends State<UserDetails> {
       appBar: AppBar(
         title: const Text("Мой профиль"),
       ),
-      body: Column(children: [
-        // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(userNotes);
-                },
-                child: const Text('Мои объявления')),
+      body: Container(
+        color: Color.fromARGB(0, 242, 242, 247),
+        width: double.infinity,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          SizedBox(height: 30),
+          Container(
+              height: 200,
+              width: 200,
+              child: CircleAvatar(
+                  backgroundImage:
+                      AssetImage('assets/images/img_placeholder.jpeg'))),
+          SizedBox(height: 20),
+          Text(
+            '$userDetails',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // Background color
-                ),
-                onPressed: () {
-                  _showPlatformDialog(context).then((value) {
-                    context.read<AuthBloc>().add(const AuthEventLogOut());
-                    Navigator.pushReplacementNamed(context, allNotes);
-                  });
-                },
-                child: const Text('Удалить аккаунт')),
+          SizedBox(height: 30),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: Icon(Icons.article),
+              title: Text('Мои объявления'),
+              trailing: Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.of(context).pushNamed(userNotes);
+              },
+            ),
           ),
-        )
-      ]),
+          SizedBox(height: 10),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: Icon(Icons.email),
+              title: Text('User e-mail'),
+              trailing: Icon(Icons.create),
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: Icon(Icons.lock),
+              title: Text('*********'),
+              trailing: Icon(Icons.create),
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: Icon(Icons.support_agent),
+              title: Text('Связаться с нами'),
+              trailing: Icon(Icons.arrow_forward_ios),
+            ),
+          ),
+          // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Background color
+                  ),
+                  onPressed: () {
+                    _showPlatformDialog(context).then((value) {
+                      context.read<AuthBloc>().add(const AuthEventLogOut());
+                      Navigator.pushReplacementNamed(context, allNotes);
+                    });
+                  },
+                  child: const Text('Удалить аккаунт')),
+            ),
+          )
+        ]),
+      ),
     );
   }
 }
