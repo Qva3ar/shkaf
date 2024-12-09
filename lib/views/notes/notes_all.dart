@@ -29,9 +29,6 @@ import '../../models/push_notification.dart';
 import '../../services/auth/bloc/auth_state.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 
-
-
-
 extension Count<T extends Iterable> on Stream<T> {
   Stream<int> get getLength => map((event) => event.length);
 }
@@ -260,16 +257,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   showModal() {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.transparent,
-      context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      useRootNavigator: false,
-      builder: (BuildContext context) {
-        return bottomDetailsSheet(openWithCategory, 1, true,
-            _notesService.categoryNameForSheet.value, onFeaturedClicked);
+    _scaffoldKey.currentState?.showBottomSheet(
+      (_) {
+        return Container(
+          height: MediaQuery.sizeOf(context).height - 240,
+          width: MediaQuery.sizeOf(context).width,
+          decoration: const BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(47), topRight: Radius.circular(47)),
+          ),
+          child: bottomDetailsSheet(openWithCategory, 1, true,
+              _notesService.categoryNameForSheet.value, onFeaturedClicked),
+        );
       },
     );
   }
@@ -453,7 +453,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -505,7 +504,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   Navigator.of(context).pushNamed('/favorites');
                   break;
                 case 1:
-                  showModal();
+                  Navigator.of(context).pushNamed(categoryScreen);
+                  //showModal();
                   break;
                 case 2:
                   if (state.user != null) {

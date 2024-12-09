@@ -16,6 +16,7 @@ import 'package:mynotes/views/add/add_screen.dart';
 
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/login_view.dart';
+import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
@@ -138,6 +139,10 @@ void main() async {
                 userNotes: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),
                       child: const UserNotesView(),
+                    ),
+                categoryScreen: (context) => BlocProvider<AuthBloc>(
+                      create: (context) => AuthBloc(FirebaseAuthProvider()),
+                      child: const CategoryScreen(),
                     ),
                 /*register: (context) => BlocProvider<AuthBloc>(
                       create: (context) => AuthBloc(FirebaseAuthProvider()),

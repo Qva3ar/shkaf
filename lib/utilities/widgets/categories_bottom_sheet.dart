@@ -20,19 +20,6 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
             children: [
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Container(
-                    height: 4,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: Padding(
                   padding: const EdgeInsets.all(7.0),
                   child: Card(
                     elevation: 0,

@@ -9,6 +9,7 @@ const register = '/register/';
 const forgotPassword = '/forgot-password/';
 const emailVerification = '/email-verification/';
 const addScreen = '/add-screen/';
+const categoryScreen = '/categories-Screen';
 
 class ListViewArguments {
   final int categoryId;

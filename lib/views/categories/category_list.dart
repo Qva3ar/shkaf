@@ -1,8 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:mynotes/constants/app_colors.dart';
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/widgets/featured_categories.dart';
 
 final List<Map<String, dynamic>> FEATURED = [
   {"id": 1, "name": "Услуги", "isMain": true},
@@ -210,6 +213,90 @@ final TURKEY = [
   {"id": 10, "name": "Стамбул"},
 ];
 
+class CategoryScreen extends StatelessWidget {
+  const CategoryScreen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 355,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                      ),
+                      Container(
+                        height: 100,
+                        width: 100,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                      ),
+                      Container(
+                        height: 100,
+                        width: 100,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return Card(
+                  color: const Color.fromARGB(255, 174, 235, 177),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      'Услуги',
+                      style: const TextStyle(
+                        fontFamily: 'Roboto', // Используем выбранный шрифт
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+                    // subtitle: Text(item['isMain'] ? "Main" : "Secondary"),
+                    leading: Icon(
+                      categoryIcons['Услуги'],
+                      color: Colors.blue,
+                    ),
+                    // trailing: Icon(
+                    //   item['isMain'] ? Icons.verified : Icons.arrow_forward_ios,
+                    //   color: item['isMain'] ? Colors.green : Colors.grey,
+                    // ),
+                  ),
+                );
+              },
+              childCount: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class CategoryList extends StatelessWidget {
   const CategoryList({Key? key}) : super(key: key);
 
@@ -226,25 +313,26 @@ class CategoryList extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: Column(children: [
             ListView(
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(2),
-                children: [
-                  ...CATEGORIES.map((u) => Column(children: [
-                        Card(
-                          child: ListTile(title: Text(u['name'].toString())),
-                        ),
-                        ...(u['sub_categories'] as List).map((e) => Padding(
-                              padding: const EdgeInsets.only(left: 10.0),
-                              child: Card(
-                                color: const Color.fromARGB(255, 244, 237, 196),
-                                child:
-                                    ListTile(title: Text(e['name'].toString())),
-                              ),
-                            ))
-                      ]))
-                ]),
+              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(2),
+              children: [
+                ...CATEGORIES.map((u) => Column(children: [
+                      Card(
+                        child: ListTile(title: Text(u['name'].toString())),
+                      ),
+                      ...(u['sub_categories'] as List).map((e) => Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Card(
+                              color: const Color.fromARGB(255, 244, 237, 196),
+                              child:
+                                  ListTile(title: Text(e['name'].toString())),
+                            ),
+                          ))
+                    ]))
+              ],
+            ),
             ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushNamed(allNotes);
