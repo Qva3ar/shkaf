@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/services/auth/firebase_auth_provider.dart';
-
-import '../../services/auth/bloc/auth_bloc.dart';
-import '../../services/auth/bloc/auth_event.dart';
 
 class UserDetails extends StatefulWidget {
   const UserDetails({Key? key}) : super(key: key);
@@ -17,41 +12,48 @@ class UserDetails extends StatefulWidget {
 class _UserDetailsState extends State<UserDetails> {
   final currentUser = AuthService.firebase().currentUser;
 
-  final provider = FirebaseAuthProvider();
-
-  Future<bool> deleteAcc(context) async {
-    return await provider.deleteUser().then((value) => Future.value(true));
+  Future<bool> deleteAccount(BuildContext context) async {
+    try {
+      await AuthService.firebase().deleteAccount();
+      return true;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при удалении аккаунта: ${e.toString()}')),
+      );
+      return false;
+    }
   }
 
-  Future<void> _showPlatformDialog(contextt) async {
-    return showDialog<void>(
-      context: contextt,
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Вы уверены что хотите удалить свой аккаунт?'),
-          content: GestureDetector(
-            onTap: () {},
-            child: Container(),
-          ),
+          title: const Text('Вы уверены, что хотите удалить свой аккаунт?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Удалить'),
               onPressed: () async {
-                var result = await deleteAcc(context);
-                Navigator.pop(contextt, result);
+                final result = await deleteAccount(context);
+                Navigator.of(context).pop(result);
               },
             ),
             TextButton(
               child: const Text('Отмена'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
             ),
           ],
         );
       },
     );
+
+    if (shouldDelete ?? false) {
+      await AuthService.firebase().logout();
+      Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (_) => false);
+    }
   }
 
   @override
@@ -60,35 +62,73 @@ class _UserDetailsState extends State<UserDetails> {
       appBar: AppBar(
         title: const Text("Мой профиль"),
       ),
-      body: Column(children: [
-        // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(userNotes);
-                },
-                child: const Text('Мои объявления')),
+      body: Container(
+        color: const Color.fromARGB(0, 242, 242, 247),
+        width: double.infinity,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          const SizedBox(height: 30),
+          const SizedBox(
+              height: 200,
+              width: 200,
+              child: const CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/img_placeholder.jpeg'))),
+          const SizedBox(height: 20),
+          Text(
+            currentUser?.email ?? '',
+            style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // Background color
-                ),
-                onPressed: () {
-                  _showPlatformDialog(context).then((value) {
-                    context.read<AuthBloc>().add(const AuthEventLogOut());
-                    Navigator.pushReplacementNamed(context, allNotes);
-                  });
-                },
-                child: const Text('Удалить аккаунт')),
+          const SizedBox(height: 30),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: const Icon(Icons.article),
+              title: const Text('Мои объявления'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.of(context).pushNamed(userNotes);
+              },
+            ),
           ),
-        )
-      ]),
+          const SizedBox(height: 10),
+          // Container(
+          //   color: Colors.white,
+          //   width: double.infinity,
+          //   child: ListTile(
+          //     leading: Icon(Icons.lock),
+          //     title: Text('*********'),
+          //     trailing: Icon(Icons.create),
+          //   ),
+          // ),
+          // SizedBox(height: 10),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: const ListTile(
+              leading: Icon(Icons.support_agent),
+              title: Text('Связаться с нами'),
+              trailing: Icon(Icons.arrow_forward_ios),
+            ),
+          ),
+          // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Background color
+                  ),
+                  onPressed: () {
+                    _showDeleteAccountDialog(context).then((value) {
+                      Navigator.pushReplacementNamed(context, allNotes);
+                    });
+                  },
+                  child: const Text('Удалить аккаунт')),
+            ),
+          )
+        ]),
+      ),
     );
   }
 }

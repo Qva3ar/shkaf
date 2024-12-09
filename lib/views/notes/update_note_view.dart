@@ -66,7 +66,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   List<String> imagesUrls = [];
   @override
   void initState() {
-    currentUser = AuthService?.firebase().currentUser;
+    currentUser = AuthService().currentUser;
     _notesService = FirebaseCloudStorage();
     _phoneController = TextEditingController();
     _textController = TextEditingController();

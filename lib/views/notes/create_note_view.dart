@@ -14,7 +14,6 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 class CreateNoteView extends StatefulWidget {
   const CreateNoteView({Key? key}) : super(key: key);
 
@@ -27,11 +26,10 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
   late final FirebaseCloudStorage _notesService;
   late final TextEditingController _textController;
   late final TextEditingController _descController;
-  final currentUser = AuthService.firebase().currentUser!;
+  final currentUser = AuthService().currentUser;
   bool isNewImages = false;
 
-  final imagePlaceholderPath =
-      const Image(image: AssetImage('images/img_placeholder.png'));
+  final imagePlaceholderPath = const Image(image: AssetImage('images/img_placeholder.png'));
 
   final ImagePicker imgpicker = ImagePicker();
   List<XFile>? imagefiles = [];
@@ -68,14 +66,13 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
   }
 
   Future<List<String>> uploadFiles(List<XFile> images) async {
-    var imageUrls =
-        await Future.wait(images.map((image) => uploadFile(image)));
+    var imageUrls = await Future.wait(images.map((image) => uploadFile(image)));
 
     return imageUrls;
   }
 
   Future<String> uploadFile(XFile image) async {
-    var id = currentUser.id;
+    var id = currentUser?.uid;
     final firebaseStorage = FirebaseStorage.instance;
 
     var snapshot = await firebaseStorage
@@ -209,8 +206,7 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
                           aspectRatio: 16 / 9,
                           viewportFraction: 0.8,
                         ),
-                        itemBuilder: (BuildContext context, int itemIndex,
-                                int pageViewIndex) =>
+                        itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
                             Builder(
                               builder: (BuildContext context) {
                                 return SizedBox(
@@ -218,8 +214,7 @@ class _CreateUpdateNoteViewState extends State<CreateNoteView> {
                                     // margin: EdgeInsets.symmetric(horizontal: 5.0),
                                     // decoration:BoxDecoration(color: Colors.amber),
                                     child: imagesUrls.isNotEmpty
-                                        ? Image.file(
-                                            File(imagesUrls[itemIndex]))
+                                        ? Image.file(File(imagesUrls[itemIndex]))
                                         : null);
                               },
                             )),

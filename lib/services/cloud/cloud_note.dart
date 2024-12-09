@@ -18,6 +18,7 @@ class CloudNote {
   String? phone;
   String? url;
   String? telegramId;
+  bool isFavorite;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<String>? imagesUrls;
@@ -37,6 +38,7 @@ class CloudNote {
     this.phone,
     this.imagesUrls,
     this.url,
+    this.isFavorite = false,
     this.telegramId,
     this.reports,
     this.updatedAt,
@@ -44,38 +46,13 @@ class CloudNote {
     required this.shortAdd,
   });
 
-  CloudNote.fromSnapshot(
-    QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
-  )   : documentId = snapshot.id,
-        ownerUserId = snapshot.data()[ownerUserIdFieldName],
-        text = snapshot.data()[textFieldName] as String,
-        desc = snapshot.data()[descFieldName] ?? '',
-        phone = snapshot.data()[phoneFieldName] ?? '',
-        url = snapshot.data()[urlFieldName] ?? '',
-        telegramId = snapshot.data()[telegramIdFieldName] ?? '',
-        price = snapshot.data()[priceFieldName] ?? 0,
-        shortAdd = snapshot.data()[shortAddFieldName] ?? false,
-        categoryId = snapshot.data()[categoryIdFieldName] ?? 0,
-        mainCategoryId = snapshot.data()[mainCategoryIdFieldName] ?? 0,
-        cityId = snapshot.data()[cityIdFieldName] ?? 0,
-        views = snapshot.data()[viewsFieldName] ?? 0,
-        createdAt =
-            Jiffy.parseFromDateTime((snapshot.data()[createdAtFieldName] as Timestamp).toDate())
-                .dateTime,
-        updatedAt = snapshot.data()[updatedAtFieldName] != null
-            ? Jiffy.parseFromDateTime((snapshot.data()[updatedAtFieldName] as Timestamp).toDate())
-                .dateTime
-            : null,
-        imagesUrls = snapshot.data()['imageUrls'] != null
-            ? (snapshot.data()['imageUrls'] as List<dynamic>).map((e) => e.toString()).toList()
-            : [],
-        reports = snapshot.data()['reports'] != null
-            ? (snapshot.data()['reports'] as List<dynamic>).map((e) => e.toString()).toList()
-            : [];
+  static String removePrefix(String input) {
+    return input.replaceFirst('notes/', '');
+  }
 
   factory CloudNote.fromHit(Map<String, dynamic> hit) {
     var note = CloudNote(
-      documentId: hit['objectID'] ?? '',
+      documentId: removePrefix(hit['path']) ?? '',
       ownerUserId: hit['user_id'] ?? '',
       text: hit['text'] ?? '',
       desc: hit['desc'] ?? '',
@@ -86,6 +63,7 @@ class CloudNote {
       cityId: hit['city_id'],
       phone: hit['phone'],
       url: hit['url'],
+      isFavorite: hit['isFavorite'] ?? false,
       telegramId: hit['telegramId'],
       imagesUrls: (hit['imageUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
       reports: (hit['reports'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
@@ -95,6 +73,48 @@ class CloudNote {
       shortAdd: hit['short_add'] ?? false,
     );
     return note;
+  }
+
+  CloudNote copyWith({
+    String? documentId,
+    String? ownerUserId,
+    String? text,
+    String? desc,
+    int? price,
+    int? views,
+    int? categoryId,
+    int? mainCategoryId,
+    int? cityId,
+    String? phone,
+    String? url,
+    String? telegramId,
+    List<String>? imagesUrls,
+    List<String>? reports,
+    DateTime? updatedAt,
+    DateTime? createdAt,
+    bool? shortAdd,
+    bool? isFavorite,
+  }) {
+    return CloudNote(
+      documentId: documentId ?? this.documentId,
+      ownerUserId: ownerUserId ?? this.ownerUserId,
+      text: text ?? this.text,
+      desc: desc ?? this.desc,
+      price: price ?? this.price,
+      views: views ?? this.views,
+      categoryId: categoryId ?? this.categoryId,
+      mainCategoryId: mainCategoryId ?? this.mainCategoryId,
+      cityId: cityId ?? this.cityId,
+      phone: phone ?? this.phone,
+      url: url ?? this.url,
+      telegramId: telegramId ?? this.telegramId,
+      imagesUrls: imagesUrls ?? this.imagesUrls,
+      reports: reports ?? this.reports,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdAt: createdAt ?? this.createdAt,
+      shortAdd: shortAdd ?? this.shortAdd,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
   }
 }
 

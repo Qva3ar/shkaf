@@ -1,32 +1,20 @@
-import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/helpers/loading/loading_screen.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_event.dart';
-import 'package:mynotes/services/auth/bloc/auth_state.dart';
-import 'package:mynotes/services/auth/firebase_auth_provider.dart';
+import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/shared_preferences_service.dart';
-import 'package:mynotes/services/user_service.dart';
-import 'package:mynotes/views/forgot_password_view.dart';
-import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/auth/forgot_password_view.dart';
+import 'package:mynotes/views/auth/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
-import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/user/user_details.dart';
-import 'package:mynotes/views/verify_email_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'firebase_options.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:upgrader/upgrader.dart';
 
+import 'services/auth/auth_service.dart';
 import 'services/notification_service.dart';
 
 void main() async {
@@ -34,13 +22,14 @@ void main() async {
 
   await SharedPreferencesService().init();
 
-  NotificationService().initialize((PushNotification notification) {
-    print('Notification received: ${notification.title}');
-  });
-
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final authService = AuthService().initialize();
+
+  NotificationService().initialize((PushNotification notification) {
+    print('Notification received: ${notification.title}');
+  });
 
   // MobileAds.instance.initialize();
   // final UserService userService = UserService();
@@ -88,72 +77,42 @@ void main() async {
   await SentryFlutter.init((options) {
     options.dsn =
         'https://0c73491e5beb4ed086eca37c648a3183@o4504716753174528.ingest.sentry.io/4504716754092032';
-    // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-    // We recommend adjusting this value in production.
     options.tracesSampleRate = 1.0;
-  },
-      appRunner: () => runApp(
-            MaterialApp(
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              title: 'Flutter Demo',
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                  primaryColor: Colors.white,
-                  fontFamily: 'Montserrat',
-                  appBarTheme: const AppBarTheme(
-                      backgroundColor: Colors.white, foregroundColor: Colors.black),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 104, 136, 164),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black54)),
-              home: firebase != null
-                  ? BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: UpgradeAlert(
-                        upgrader: Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
-                        child: const HomePage(),
-                      ),
-                    )
-                  : Container(),
-              // home: const NotesAll(),
-              routes: {
-                createNoteRoute: (context) => const UpdateNoteView(),
-                updateNoteRoute: (context) => const UpdateNoteView(),
-                login: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const LoginView(),
-                    ),
-                allNotes: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const NotesAll(),
-                    ),
-                userDetails: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const UserDetails(),
-                    ),
-                userNotes: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const UserNotesView(),
-                    ),
-                register: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const RegisterView(),
-                    ),
-                forgotPassword: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const ForgotPasswordView(),
-                    ),
-                emailVerification: (context) => BlocProvider<AuthBloc>(
-                      create: (context) => AuthBloc(FirebaseAuthProvider()),
-                      child: const VerifyEmailView(),
-                    ),
-              },
+  }, appRunner: () {
+    runApp(
+      MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.white,
+          fontFamily: 'Montserrat',
+          appBarTheme:
+              const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 104, 136, 164),
+              foregroundColor: Colors.white,
             ),
-          ));
+          ),
+          bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black54),
+        ),
+        home: const HomePage(),
+        routes: {
+          createNoteRoute: (context) => const UpdateNoteView(),
+          updateNoteRoute: (context) => const UpdateNoteView(),
+          login: (context) => const LoginView(),
+          allNotes: (context) => const NotesAll(),
+          userDetails: (context) => UserDetails(),
+          userNotes: (context) => const UserNotesView(),
+          // register: (context) => const RegisterView(),
+          forgotPassword: (context) => ForgotPasswordView(),
+          // emailVerification: (context) => const VerifyEmailView(),
+        },
+      ),
+    );
+  });
 }
 
 class HomePage extends StatelessWidget {
@@ -161,35 +120,43 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state.isLoading) {
-          LoadingScreen().show(
-            context: context,
-            text: state.loadingText ?? 'Please wait a moment',
+    return StreamBuilder<AuthState>(
+      stream: AuthService().authState,
+      builder: (context, snapshot) {
+        final state = snapshot.data;
+
+        if (state == null || state.isLoading) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  if (state?.loadingText != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(state!.loadingText!),
+                    ),
+                ],
+              ),
+            ),
           );
-        } else {
-          LoadingScreen().hide();
         }
-      },
-      builder: (context, state) {
-        if (state is AuthStateLoggedIn) {
-          return const NotesAll();
-        } else if (state is AuthStateNeedsVerification) {
-          return const VerifyEmailView();
-        } else if (state is AuthStateLoggedOut) {
-          return const NotesAll();
-        } else if (state is AuthStateForgotPassword) {
-          return const ForgotPasswordView();
-        } else if (state is AuthStateRegistering) {
-          return const RegisterView();
-        } else if (state is AuthStateLogin) {
-          return const LoginView();
-        } else {
-          return const Scaffold(
-            body: CircularProgressIndicator(),
-          );
+
+        switch (state.status) {
+          case AuthStatus.loggedIn:
+            return const NotesAll();
+          case AuthStatus.needsVerification:
+          // return const VerifyEmailView();
+          case AuthStatus.loggedOut:
+            return const LoginView();
+          case AuthStatus.forgotPassword:
+            return ForgotPasswordView();
+          case AuthStatus.registering:
+          // return const RegisterView();
+          case AuthStatus.login:
+          default:
+            return const LoginView();
         }
       },
     );

@@ -5,20 +5,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/typography.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/user_service.dart';
 import 'package:mynotes/views/widgets/dynamic_contact_btns.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
 import 'package:mynotes/views/categories/category_list.dart';
-import 'package:mynotes/views/notes/notes_list_view.dart';
 import 'package:mynotes/views/shared/gallery.dart';
 
 import '../../services/analytics_route_obs.dart';
@@ -64,7 +64,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     }
   }
 
-  String? get userId => AuthService.firebase().currentUser?.id;
+  String? get userId => AuthService().currentUser?.uid;
 
   removeNote(CloudNote note) async {
     await _notesService.deleteNote(documentId: note.documentId);
@@ -235,47 +235,73 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         borderRadius: BorderRadius.circular(9),
                       ),
                       child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
-                          ? CarouselSlider.builder(
-                              itemCount: note.imagesUrls?.length,
-                              carouselController: controller,
-                              options: CarouselOptions(
-                                enlargeCenterPage: true,
-                                enableInfiniteScroll: false,
-                                height: 200,
-                                aspectRatio: 16 / 9,
-                                viewportFraction: 1,
-                                onPageChanged: (index, reason) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                },
-                              ),
-                              itemBuilder:
-                                  (BuildContext context, int itemIndex, int pageViewIndex) =>
-                                      Builder(
-                                        builder: (BuildContext context) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) => GalleryWidget(
-                                                          imageUrls: note.imagesUrls ?? [])));
-                                            },
-                                            child: Container(
-                                              width: MediaQuery.of(context).size.width,
-                                              height: 100,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(9),
-                                                image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: NetworkImage(note.imagesUrls![itemIndex]),
+                          ? Stack(
+                              children: [
+                                CarouselSlider.builder(
+                                    itemCount: note.imagesUrls?.length,
+                                    carouselController: controller,
+                                    options: CarouselOptions(
+                                      enlargeCenterPage: true,
+                                      enableInfiniteScroll: false,
+                                      height: 200,
+                                      aspectRatio: 16 / 9,
+                                      viewportFraction: 1,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          _current = index;
+                                        });
+                                      },
+                                    ),
+                                    itemBuilder: (BuildContext context, int itemIndex,
+                                            int pageViewIndex) =>
+                                        Builder(
+                                          builder: (BuildContext context) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => GalleryWidget(
+                                                            imageUrls: note.imagesUrls ?? [])));
+                                              },
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width,
+                                                height: 100,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(9),
+                                                  image: DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image:
+                                                        NetworkImage(note.imagesUrls![itemIndex]),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      ))
+                                            );
+                                          },
+                                        )),
+                                Positioned(
+                                  bottom: 8,
+                                  right: 12,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Логика для добавления в избранное
+                                    },
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                      ),
+                                      child: const Icon(
+                                        Icons.favorite_border,
+                                        size: 25,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                           : Image.asset('assets/images/img_placeholder.jpeg')),
                   const SizedBox(
                     height: 10,
@@ -368,7 +394,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         const Text("Описание",
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: FontWeight.w500,
                             )),
                         Text(note.desc,

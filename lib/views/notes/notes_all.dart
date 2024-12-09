@@ -6,30 +6,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/models/search_metadata.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_event.dart';
+import 'package:mynotes/services/auth/auth_state.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
+import 'package:mynotes/services/favorites_services.dart';
 import 'package:mynotes/services/notification_service.dart';
 import 'package:mynotes/services/shared_preferences_service.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
-import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/dialogs/platform_dialog.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
 import 'package:mynotes/views/notes/search_and_city_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' show BlocConsumer, ReadContext;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../helpers/utils.dart';
-import '../../models/push_notification.dart';
-import '../../services/auth/bloc/auth_state.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 
 class NotesAll extends StatefulWidget {
@@ -42,6 +36,9 @@ class NotesAll extends StatefulWidget {
 class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late final FirebaseCloudStorage _notesService;
   late final FirebaseMessaging _messaging;
+
+  final FavoritesService favoritesService = FavoritesService();
+
   static const selectedCityKey = 'selectedCity';
 
   late BannerAd _bannerAd;
@@ -50,7 +47,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late int _totalNotifications;
   PushNotification? _notificationInfo;
 
-  int currentIndex = 0;
+  int currentIndex = 1;
 
   int? categoryId;
   int? mainCategoryId;
@@ -66,6 +63,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   bool _isLoading = false;
   bool _hasMore = true;
 
+  late List<String> favorites;
+
   SearchClient client = SearchClient(
     appId: 'XR4DEPQU93',
     apiKey: 'eb255f09f97a86c1c52540313c8761e6',
@@ -75,6 +74,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _streamController = StreamController();
+    getFavorites();
 
     _notesService = FirebaseCloudStorage();
     // _notesService.createInterstitialAd();
@@ -82,7 +82,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     _scrollController.addListener(_onScroll);
 
     initializeSpref();
-    _notesService.allNotes(false);
     // _loadBannerAd();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -101,6 +100,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       });
     });
     search();
+  }
+
+  getFavorites() async {
+    favorites = await favoritesService.getFavorites();
   }
 
   search() {
@@ -144,8 +147,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     final response = await client.searchIndex(request: query);
 
     if (response.hits.isNotEmpty) {
-      final List<CloudNote> newHits =
-          response.hits.map<CloudNote>((hit) => CloudNote.fromHit(hit)).toList();
+      final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
+        final note = CloudNote.fromHit(hit);
+        return note.copyWith(isFavorite: favorites.contains(note.documentId));
+      }).toList();
 
       setState(() {
         _isLoading = false;
@@ -213,46 +218,42 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     );
   }
 
-  licenseAlertDialog(BuildContext context) {
-    Widget okButton = TextButton(
-      child: const Text("Принимаю"),
-      onPressed: () async {
-        await SharedPreferencesService().setBool('isOldUser', true);
-      },
-    );
+  // licenseAlertDialog(BuildContext context) {
+  //   Widget okButton = TextButton(
+  //     child: const Text("Принимаю"),
+  //     onPressed: () async {
+  //       await SharedPreferencesService().setBool('isOldUser', true);
+  //     },
+  //   );
 
-    AlertDialog alert = AlertDialog(
-      title: const Text("Пользовательское соглашение"),
-      content: TextButton(
-        onPressed: openUrl(
-            'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
-        child: const Text(
-            'Регистрируясь на сервисе "Shkaf.in" вы принимаете Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.'),
-      ),
-      actions: [
-        okButton,
-      ],
-    );
+  //   AlertDialog alert = AlertDialog(
+  //     title: const Text("Пользовательское соглашение"),
+  //     content: TextButton(
+  //       onPressed: openUrl(
+  //           'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
+  //       child: const Text(
+  //           'Регистрируясь на сервисе "Shkaf.in" вы принимаете Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.'),
+  //     ),
+  //     actions: [
+  //       okButton,
+  //     ],
+  //   );
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
   initializeSpref() async {
     final cityId = SharedPreferencesService().getInt(selectedCityKey) ?? 1;
     setSelectedCity(cityId);
     FocusScope.of(context).unfocus();
-    context.read<AuthBloc>().add(const AuthEventInitialize());
   }
 
-  onSearch(String text) {
-    _notesService.setSearchStr(text);
-    _notesService.allNotes(false);
-  }
+  updateWithFaforite(String documentId) {}
 
   @override
   didChangeDependencies() {
@@ -273,7 +274,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   openWithCategory(ListViewArguments arg) {
     _notesService.setCategoryId(arg.categoryId);
     _notesService.setMainCategoryId(arg.mainCategoryId);
-    _notesService.allNotes(false);
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
@@ -301,8 +301,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         print("Difference in minutes: ${diff.inMinutes}");
 
         if (diff.inMinutes > 60) {
-          print("Fetching new notes");
-          _notesService.allNotes(false);
+          search();
           _notesService.getSettings().then((value) => setState(() {
                 _isBannerAdReady = true && _notesService.showAD;
               }));
@@ -322,26 +321,17 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       _notesService.setCategoryId(0);
       _notesService.setMainCategoryId(id);
       _notesService.categoryNameForSheet.add(name);
-      getAllNotes();
     } else {
       _notesService.setCategoryId(id);
       _notesService.setMainCategoryId(0);
       _notesService.categoryNameForSheet.add(name);
-
-      getAllNotes();
     }
+    search();
     _notesService.scrollManager.add(true);
     Navigator.pop(context);
   }
 
   late List<CloudNote> _allNotes = []; // Declare a state variable
-
-  void getAllNotes() {
-    // setState(() {
-    //   _allNotes = _notesService.allNotes(false); // Store the result
-    // });
-    search();
-  }
 
   void _loadBannerAd() {
     _bannerAd = BannerAd(
@@ -384,16 +374,18 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {},
-      builder: (context, state) {
+    return StreamBuilder<AuthState>(
+      stream: AuthService().authState, // Подключаем поток состояния аутентификации
+      builder: (context, authSnapshot) {
+        final authState = authSnapshot.data;
+
         return Scaffold(
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
             centerTitle: true,
             title: StreamBuilder(
-              stream: _notesService.movieStream,
+              stream: AuthService().authState,
               builder: (context, snapshot) {
                 return Image.asset(
                   'assets/icons/shkaf.png',
@@ -405,7 +397,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             actions: [
               IconButton(
                 onPressed: () {
-                  if (state.user != null) {
+                  if (authState?.status == AuthStatus.loggedIn) {
                     Navigator.of(context).pushNamed(userDetails);
                   } else {
                     Navigator.of(context).pushNamed(login);
@@ -418,45 +410,52 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               ),
             ],
           ),
-          bottomNavigationBar: CustomBottomNavigationBar(
-            currentIndex: currentIndex,
-            onTabSelected: (index) {
-              setState(() {
-                currentIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.of(context).pushNamed('/favorites');
-                  break;
-                case 1:
-                  showModal();
-                  break;
-                case 2:
-                  if (state.user != null) {
-                    Navigator.of(context).pushNamed('/createAd');
-                  } else {
-                    Navigator.of(context).pushNamed(login);
-                  }
-                  break;
-                default:
-                  break;
-              }
+          bottomNavigationBar: StreamBuilder<AuthState>(
+              stream: AuthService().authState.distinct(
+                  (prev, next) => prev == next), // Подключаем поток состояния аутентификации
+              builder: (context, snapshot) {
+                final authState = snapshot.data;
+
+                return CustomBottomNavigationBar(
+                  currentIndex: currentIndex,
+                  onTabSelected: (index) {
+                    switch (index) {
+                      case 0:
+                        Navigator.of(context).pushReplacementNamed(userNotes);
+                        break;
+                      case 1:
+                        // showModal();
+                        Navigator.of(context).pushReplacementNamed(allNotes);
+                        break;
+                      case 2:
+                        if (authState?.status == AuthStatus.loggedIn) {
+                          Navigator.of(context).pushNamed(createNoteRoute);
+                        } else {
+                          Navigator.of(context).pushNamed(login);
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  },
+                );
+              }),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showModal();
             },
+            backgroundColor: AppColors.violet,
+            child: const Icon(Icons.list),
           ),
           body: Column(
             children: [
               SearchAndCityBar(
                 onSearch: (text) {
-                  // _notesService.setSearchStr(text);
-                  // _notesService.allNotes(false);
                   _performSearch(text, isRefresh: true);
                 },
                 selectedCityId: _notesService.selectedCityStream.value,
                 onCityChanged: (cityId) async {
-                  // await setUserSelectedCity(cityId);
-
                   setSelectedCity(cityId);
-                  // _notesService.allNotes(false);
                 },
               ),
               const SizedBox(height: 8),
@@ -474,7 +473,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    await _performSearch('', isRefresh: true); // Обновление данных
+                    await _performSearch('', isRefresh: true);
                   },
                   child: StreamBuilder<List<CloudNote>>(
                     stream: _streamController.stream,
@@ -482,7 +481,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      if (!snapshot.hasData) {
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Center(
                           child: Text(
                             'Нет данных для отображения',
@@ -490,16 +489,12 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           ),
                         );
                       }
-                      // Get data from the theat
+
                       final notes = snapshot.data;
                       return NotesGridView(
                         notes: notes ?? [],
                         onTap: (note) {
                           _notesService.selectedNote.add(note);
-                          // Navigator.of(context).pushNamed(
-                          //   noteDetailsRoute,
-                          //   arguments: note,
-                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -508,6 +503,27 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                               ),
                             ),
                           );
+                        },
+                        onTapFavorite: (note) async {
+                          final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+
+                          // Добавляем или удаляем из избранного
+                          if (updatedNote.isFavorite) {
+                            await favoritesService.addToFavorites(note.documentId);
+                            favorites.add(note.documentId);
+                          } else {
+                            await favoritesService.removeFromFavorites(note.documentId);
+                            favorites.removeWhere((item) => item == note.documentId);
+                          }
+
+                          // Обновляем список
+                          setState(() {
+                            final index = _notes.indexWhere((n) => n.documentId == note.documentId);
+                            if (index != -1) {
+                              _notes[index] = updatedNote;
+                              _streamController.add(_notes); // Обновляем поток
+                            }
+                          });
                         },
                         onDeleteNote: (note) async {
                           await _notesService.deleteNote(documentId: note.documentId);

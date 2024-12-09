@@ -34,32 +34,33 @@ class _SearchAndCityBarState extends State<SearchAndCityBar> {
       width: double.infinity,
       height: 50,
       decoration: const BoxDecoration(color: AppColors.white),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 5, 14, 7),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: _isSearchFocused ? MediaQuery.of(context).size.width * 0.65 : 188,
-              child: SearchBarWidget(
-                searchcb: widget.onSearch,
-                onFocusChange: _onSearchFocusChange,
+      child: Container(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 5, 8, 7),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: _isSearchFocused ? MediaQuery.of(context).size.width * 0.65 : 188,
+                child: SearchBarWidget(
+                  searchcb: widget.onSearch,
+                  onFocusChange: _onSearchFocusChange,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: _isSearchFocused ? MediaQuery.of(context).size.width * 0.25 : 188,
-              child: CityDropdown(
-                selectedCityId: widget.selectedCityId,
-                onCityChanged: widget.onCityChanged,
+              const SizedBox(width: 8),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: _isSearchFocused ? MediaQuery.of(context).size.width * 0.25 : 188,
+                child: CityDropdown(
+                  selectedCityId: widget.selectedCityId,
+                  onCityChanged: widget.onCityChanged,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

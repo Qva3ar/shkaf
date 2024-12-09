@@ -26,14 +26,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-     
       padding: const EdgeInsets.symmetric(vertical: 4),
-      
       height: 67,
       decoration: const BoxDecoration(
-        color: Colors.white, 
+        color: Colors.white,
       ),
-      
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -41,13 +38,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
           NavItem(
             icon: Icons.favorite_rounded,
             label: 'Избранное', // "Favorites" in Russian
-            isSelected: currentIndex == 0, 
+            isSelected: currentIndex == 0,
             onTap: () => onTabSelected(0), // Notify parent widget when tapped
           ),
           // NavItem for Categories
           NavItem(
             icon: Icons.apps,
-            label: 'Категории', // "Categories" in Russian
+            label: 'Главная', // "Categories" in Russian
             isSelected: currentIndex == 1,
             onTap: () => onTabSelected(1),
           ),
@@ -56,7 +53,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             icon: Icons.add,
             label: 'Добавить', // "Add" in Russian
             isSelected: currentIndex == 2,
-            isAddButton: true, 
+            isAddButton: true,
             onTap: () => onTabSelected(2),
           ),
         ],

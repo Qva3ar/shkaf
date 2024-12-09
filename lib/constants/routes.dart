@@ -8,6 +8,7 @@ const userNotes = '/user-notes/';
 const register = '/register/';
 const forgotPassword = '/forgot-password/';
 const emailVerification = '/email-verification/';
+const addScreen = '/add-screen/';
 
 class ListViewArguments {
   final int categoryId;
