@@ -221,11 +221,19 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       child: CustomScrollView(
         slivers: [
           SliverAppBar(
+            bottom: PreferredSize(
+                preferredSize: Size.fromHeight(40), 
+                child: Container(
+                  height: 80,
+                  color: Colors.yellow,
+                ),
+            ),
             pinned: true,
-            expandedHeight: 355,
+            expandedHeight: 220,
             flexibleSpace: FlexibleSpaceBar(
               background: Column(
                 children: [

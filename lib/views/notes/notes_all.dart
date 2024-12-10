@@ -453,6 +453,15 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  
+  int _selectedTab = 0;
+
+  void onSelectedTab(int index) {
+    if (_selectedTab == index) return;
+    setState(() {
+        _selectedTab = index;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -466,15 +475,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             backgroundColor: AppColors.white,
             elevation: 0,
             centerTitle: true,
-            title: StreamBuilder(
-              stream: _notesService.movieStream,
-              builder: (context, snapshot) {
-                return Image.asset(
-                  'assets/icons/shkaf.png',
-                  width: 80,
-                  height: 32,
-                );
-              },
+            title: Column(
+              children: [
+                StreamBuilder(
+                  stream: _notesService.movieStream,
+                  builder: (context, snapshot) {
+                    return Image.asset(
+                      'assets/icons/shkaf.png',
+                      width: 80,
+                      height: 32,
+                    );
+                  },
+                ),
+              ],
             ),
             actions: [
               IconButton(
@@ -494,8 +507,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             ],
           ),
           bottomNavigationBar: CustomBottomNavigationBar(
-            currentIndex: currentIndex,
-            onTabSelected: (index) {
+            currentIndex: _selectedTab,
+            onTabSelected: onSelectedTab,
+            
+            /*onTabSelected: (index) {
               setState(() {
                 currentIndex = index;
               });
@@ -518,87 +533,93 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 default:
                   break;
               }
-            },
+            },*/
           ),
-          body: Column(
+          body: IndexedStack(
+            index: _selectedTab,
             children: [
-              SearchAndCityBar(
-                onSearch: (text) async {
-                  // _notesService.setSearchStr(text);
-                  // _notesService.allNotes(false);
-                  await _performSearch(text);
-                },
-                selectedCityId: _notesService.selectedCityStream.value,
-                onCityChanged: (cityId) async {
-                  await setUserSelectedCity(cityId);
-                  setSelectedCity(cityId);
-                  _notesService.allNotes(false);
-                },
-              ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Популярное',
-                    style:
-                        AppTextStyles.s16w600.copyWith(color: AppColors.black),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 9),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await _performSearch('',
-                        isRefresh: true); // Обновление данных
-                  },
-                  child: StreamBuilder<List<CloudNote>>(
-                    stream: _streamController.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'Нет данных для отображения',
-                            style: AppTextStyles.s14w500
-                                .copyWith(color: AppColors.grey),
-                          ),
-                        );
-                      }
-                      // Get data from the theat
-                      final notes = snapshot.data!;
-                      return NotesGridView(
-                        notes: notes,
-                        onTap: (note) {
-                          updateCounter(views);
-                          _notesService.selectedNote.add(note);
-                          // Navigator.of(context).pushNamed(
-                          //   noteDetailsRoute,
-                          //   arguments: note,
-                          // );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NoteDetailsView(
-                                note: note,
-                              ),
-                            ),
-                          );
-                        },
-                        onDeleteNote: (note) async {
-                          await _notesService.deleteNote(
-                              documentId: note.documentId);
-                        },
-                        scrollController: _scrollController,
-                      );
+              Column(
+                children: [
+                  SearchAndCityBar(
+                    onSearch: (text) async {
+                      // _notesService.setSearchStr(text);
+                      // _notesService.allNotes(false);
+                      await _performSearch(text);
+                    },
+                    selectedCityId: _notesService.selectedCityStream.value,
+                    onCityChanged: (cityId) async {
+                      await setUserSelectedCity(cityId);
+                      setSelectedCity(cityId);
+                      _notesService.allNotes(false);
                     },
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Популярное',
+                        style:
+                            AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 9),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        await _performSearch('',
+                            isRefresh: true); // Обновление данных
+                      },
+                      child: StreamBuilder<List<CloudNote>>(
+                        stream: _streamController.stream,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'Нет данных для отображения',
+                                style: AppTextStyles.s14w500
+                                    .copyWith(color: AppColors.grey),
+                              ),
+                            );
+                          }
+                          // Get data from the theat
+                          final notes = snapshot.data!;
+                          return NotesGridView(
+                            notes: notes,
+                            onTap: (note) {
+                              updateCounter(views);
+                              _notesService.selectedNote.add(note);
+                              // Navigator.of(context).pushNamed(
+                              //   noteDetailsRoute,
+                              //   arguments: note,
+                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NoteDetailsView(
+                                    note: note,
+                                  ),
+                                ),
+                              );
+                            },
+                            onDeleteNote: (note) async {
+                              await _notesService.deleteNote(
+                                  documentId: note.documentId);
+                            },
+                            scrollController: _scrollController,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
+              CategoryScreen(),
             ],
           ),
         );
