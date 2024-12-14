@@ -1,22 +1,13 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'package:flutter/material.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:mynotes/constants/app_colors.dart';
 
 class LoginView extends StatefulWidget {
@@ -78,7 +69,8 @@ class _LoginViewState extends State<LoginView> {
       await AuthService().signInWithGoogle();
       Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
     } catch (e) {
-      await showErrorDialog(context, 'Ошибка входа через Google: ${e.toString()}');
+      await showErrorDialog(
+          context, 'Ошибка входа через Google: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -95,7 +87,8 @@ class _LoginViewState extends State<LoginView> {
       await AuthService().signInWithApple();
       Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
     } catch (e) {
-      await showErrorDialog(context, 'Ошибка входа через Apple: ${e.toString()}');
+      await showErrorDialog(
+          context, 'Ошибка входа через Apple: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -118,7 +111,7 @@ class _LoginViewState extends State<LoginView> {
                 Align(
                   alignment: Alignment.topRight,
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => Navigator.pushNamed(context, allNotes),
                     child: const Icon(Icons.arrow_back, color: Colors.black),
                   ),
                 ),
@@ -128,7 +121,7 @@ class _LoginViewState extends State<LoginView> {
                 passwordTextField(_passwordController, 'Введите пароль'),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/forgot-password'),
+                  onTap: () => Navigator.pushNamed(context, forgotPassword),
                   child: const Text(
                     'Забыли пароль?',
                     style: TextStyle(
@@ -180,7 +173,9 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : () => Navigator.pushNamed(context, '/register'),
+                  onPressed: _isLoading
+                      ? null
+                      : () => Navigator.pushNamed(context, register),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 16),

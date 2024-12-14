@@ -6,6 +6,8 @@ import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/shared_preferences_service.dart';
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/login_view.dart';
+import 'package:mynotes/views/auth/register_view.dart';
+import 'package:mynotes/views/auth/verify_email_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
@@ -88,15 +90,16 @@ void main() async {
         theme: ThemeData(
           primaryColor: Colors.white,
           fontFamily: 'Montserrat',
-          appBarTheme:
-              const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black),
+          appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white, foregroundColor: Colors.black),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 104, 136, 164),
               foregroundColor: Colors.white,
             ),
           ),
-          bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black54),
+          bottomSheetTheme:
+              const BottomSheetThemeData(backgroundColor: Colors.black54),
         ),
         home: const HomePage(),
         routes: {
@@ -104,11 +107,11 @@ void main() async {
           updateNoteRoute: (context) => const UpdateNoteView(),
           login: (context) => const LoginView(),
           allNotes: (context) => const NotesAll(),
-          userDetails: (context) => UserDetails(),
+          userDetails: (context) => const UserDetails(),
           userNotes: (context) => const UserNotesView(),
-          // register: (context) => const RegisterView(),
-          forgotPassword: (context) => ForgotPasswordView(),
-          // emailVerification: (context) => const VerifyEmailView(),
+          register: (context) => const RegisterView(),
+          forgotPassword: (context) => const ForgotPasswordView(),
+          emailVerification: (context) => const VerifyEmailView(),
         },
       ),
     );
@@ -151,7 +154,7 @@ class HomePage extends StatelessWidget {
           case AuthStatus.loggedOut:
             return const LoginView();
           case AuthStatus.forgotPassword:
-            return ForgotPasswordView();
+            return const ForgotPasswordView();
           case AuthStatus.registering:
           // return const RegisterView();
           case AuthStatus.login:
