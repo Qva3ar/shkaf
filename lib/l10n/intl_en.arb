@@ -48,6 +48,7 @@
 
     "verify_email_view_prompt": "We've sent you an email verification. Please open it to verify your account. If you haven't received a verification email yet, press the button below!",
     "verify_email_send_email_verification": "Send email verification",
+    "errorSendingEmail": "Ошибка при отправке верификационного письма.",
 
     "notes_title": "{count, plural, =0{No notes yet} =1{1 note} other{{count} notes}}",
     "@notes_title": {

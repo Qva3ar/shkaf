@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
@@ -9,6 +14,8 @@ import 'package:mynotes/services/shared_preferences_service.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/login_view.dart';
+import 'package:mynotes/views/auth/register_view.dart';
+import 'package:mynotes/views/auth/verify_email_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
@@ -32,7 +39,7 @@ void main() async {
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
     // Для iOS используйте AppAttestProvider или DeviceCheckProvider
-    // appleProvider: AppleProvider.appAttest,
+    appleProvider: AppleProvider.appAttest,
   );
   final authService = AuthService().initialize();
 
@@ -40,7 +47,7 @@ void main() async {
     print('Notification received: ${notification.title}');
   });
 
-  // MobileAds.instance.initialize();
+  MobileAds.instance.initialize();
   // final UserService userService = UserService();
 
   // if (Platform.isIOS) {
@@ -60,28 +67,28 @@ void main() async {
   // });
 
   FirebaseEvent.logScreenView('main');
-  // if (!kIsWeb && Platform.isAndroid) {
-  //   InAppUpdate.checkForUpdate().then((updateInfo) {
-  //     if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-  //       if (updateInfo.immediateUpdateAllowed) {
-  //         // Perform immediate update
-  //         InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
-  //           if (appUpdateResult == AppUpdateResult.success) {
-  //             //App Update successful
-  //           }
-  //         });
-  //       } else if (updateInfo.flexibleUpdateAllowed) {
-  //         //Perform flexible update
-  //         InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
-  //           if (appUpdateResult == AppUpdateResult.success) {
-  //             //App Update successful
-  //             InAppUpdate.completeFlexibleUpdate();
-  //           }
-  //         });
-  //       }
-  //     }
-  //   });
-  // }
+  if (!kIsWeb && Platform.isAndroid) {
+    InAppUpdate.checkForUpdate().then((updateInfo) {
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (updateInfo.immediateUpdateAllowed) {
+          // Perform immediate update
+          InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+            }
+          });
+        } else if (updateInfo.flexibleUpdateAllowed) {
+          //Perform flexible update
+          InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+              InAppUpdate.completeFlexibleUpdate();
+            }
+          });
+        }
+      }
+    });
+  }
 
   await SentryFlutter.init((options) {
     options.dsn =
@@ -113,11 +120,11 @@ void main() async {
           updateNoteRoute: (context) => const UpdateNoteView(),
           login: (context) => const LoginView(),
           allNotes: (context) => const NotesAll(),
-          userDetails: (context) => UserDetails(),
+          userDetails: (context) => const UserDetails(),
           userNotes: (context) => UserNotesView(),
-          // register: (context) => const RegisterView(),
-          forgotPassword: (context) => ForgotPasswordView(),
-          // emailVerification: (context) => const VerifyEmailView(),
+          register: (context) => const RegisterView(),
+          forgotPassword: (context) => const ForgotPasswordView(),
+          emailVerification: (context) => const VerifyEmailView(),
         },
       ),
     );
