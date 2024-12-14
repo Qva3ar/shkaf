@@ -9,6 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/algolia_search.dart';
 import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
@@ -65,10 +66,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   late List<String> favorites;
 
-  SearchClient client = SearchClient(
-    appId: 'XR4DEPQU93',
-    apiKey: 'eb255f09f97a86c1c52540313c8761e6',
-  );
+  final algoliaService = AlgoliaService();
 
   @override
   void initState() {
@@ -144,7 +142,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     var query = SearchForHits(
         indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filtersString);
 
-    final response = await client.searchIndex(request: query);
+    final response = await algoliaService.client.searchIndex(request: query);
+    print(response.hits.length);
 
     if (response.hits.isNotEmpty) {
       final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
@@ -378,6 +377,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       stream: AuthService().authState, // Подключаем поток состояния аутентификации
       builder: (context, authSnapshot) {
         final authState = authSnapshot.data;
+        print("notes ALL APPBAR");
 
         return Scaffold(
           appBar: AppBar(
@@ -410,36 +410,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
               ),
             ],
           ),
-          bottomNavigationBar: StreamBuilder<AuthState>(
-              stream: AuthService().authState.distinct(
-                  (prev, next) => prev == next), // Подключаем поток состояния аутентификации
-              builder: (context, snapshot) {
-                final authState = snapshot.data;
-
-                return CustomBottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTabSelected: (index) {
-                    switch (index) {
-                      case 0:
-                        Navigator.of(context).pushReplacementNamed(userNotes);
-                        break;
-                      case 1:
-                        // showModal();
-                        Navigator.of(context).pushReplacementNamed(allNotes);
-                        break;
-                      case 2:
-                        if (authState?.status == AuthStatus.loggedIn) {
-                          Navigator.of(context).pushNamed(createNoteRoute);
-                        } else {
-                          Navigator.of(context).pushNamed(login);
-                        }
-                        break;
-                      default:
-                        break;
-                    }
-                  },
-                );
-              }),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               showModal();
@@ -459,6 +429,20 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 },
               ),
               const SizedBox(height: 8),
+              if (_isBannerAdReady)
+                Padding(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: _bannerAd.size.width.toDouble(),
+                        height: _bannerAd.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd),
+                      )
+                    ],
+                  ),
+                ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -506,6 +490,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         },
                         onTapFavorite: (note) async {
                           final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+                          final currentUser = AuthService().currentUser;
+
+                          // Проверяем, авторизован ли пользователь
+                          if (currentUser == null) {
+                            Navigator.of(context).pushNamed(login);
+                            return; // Прерываем выполнение
+                          }
 
                           // Добавляем или удаляем из избранного
                           if (updatedNote.isFavorite) {

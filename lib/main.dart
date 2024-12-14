@@ -1,9 +1,12 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
 import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/shared_preferences_service.dart';
+import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/login_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
@@ -24,6 +27,12 @@ void main() async {
 
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.playIntegrity,
+    // Для iOS используйте AppAttestProvider или DeviceCheckProvider
+    // appleProvider: AppleProvider.appAttest,
   );
   final authService = AuthService().initialize();
 
@@ -105,7 +114,7 @@ void main() async {
           login: (context) => const LoginView(),
           allNotes: (context) => const NotesAll(),
           userDetails: (context) => UserDetails(),
-          userNotes: (context) => const UserNotesView(),
+          userNotes: (context) => UserNotesView(),
           // register: (context) => const RegisterView(),
           forgotPassword: (context) => ForgotPasswordView(),
           // emailVerification: (context) => const VerifyEmailView(),
@@ -115,8 +124,16 @@ void main() async {
   });
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int currentIndex = 1;
+  String? _redirectRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -126,40 +143,79 @@ class HomePage extends StatelessWidget {
         final state = snapshot.data;
 
         if (state == null || state.isLoading) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  if (state?.loadingText != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(state!.loadingText!),
-                    ),
-                ],
-              ),
-            ),
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        switch (state.status) {
-          case AuthStatus.loggedIn:
-            return const NotesAll();
-          case AuthStatus.needsVerification:
-          // return const VerifyEmailView();
-          case AuthStatus.loggedOut:
-            return const LoginView();
-          case AuthStatus.forgotPassword:
-            return ForgotPasswordView();
-          case AuthStatus.registering:
-          // return const RegisterView();
-          case AuthStatus.login:
-          default:
-            return const LoginView();
+        // Если пользователь разлогинился, просто сбрасываем вкладку на главную
+        if (state.status == AuthStatus.loggedOut) {
+          // Можно вызвать setState, чтобы вернуть currentIndex на нужную вкладку
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                currentIndex = 1; // например, главная вкладка
+              });
+            }
+          });
         }
+
+        if (state.status == AuthStatus.loggedIn && _redirectRoute != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushReplacementNamed(_redirectRoute!);
+            _redirectRoute = null;
+          });
+        }
+
+        return Scaffold(
+          body: _getBody(state),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: (index) => _onTabSelected(index, state),
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: "Избранные"),
+              BottomNavigationBarItem(icon: Icon(Icons.apps), label: "Главная"),
+              BottomNavigationBarItem(icon: Icon(Icons.add), label: "Добавить"),
+            ],
+          ),
+        );
       },
     );
+  }
+
+  Widget _getBody(AuthState? state) {
+    // Здесь вы сами решаете, какие экраны показывать при loggedIn/loggedOut
+    switch (currentIndex) {
+      case 0:
+        return UserNotesView();
+      case 1:
+        return const NotesAll();
+      case 2:
+        if (state?.status == AuthStatus.loggedIn) {
+          return const Placeholder();
+        } else {
+          return const LoginView();
+        }
+      default:
+        return const NotesAll();
+    }
+  }
+
+  void _onTabSelected(int index, AuthState? state) {
+    if (index == 2) {
+      if (state?.status == AuthStatus.loggedIn) {
+        Navigator.of(context).pushNamed(createNoteRoute);
+      } else {
+        _redirectRoute = createNoteRoute;
+        setState(() {
+          currentIndex = 2;
+        });
+      }
+    } else {
+      setState(() {
+        currentIndex = index;
+      });
+    }
   }
 }
 

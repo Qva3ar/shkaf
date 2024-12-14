@@ -39,7 +39,7 @@ class DynamicContactButtons extends StatelessWidget {
     // Список доступных контактов
     final List<Map<String, dynamic>> contacts = [];
 
-    if (telegramId != '') {
+    if (telegramId != '' && telegramId != null) {
       contacts.add({
         'icon': Icons.telegram,
         'color': Colors.blue,
@@ -48,7 +48,7 @@ class DynamicContactButtons extends StatelessWidget {
       });
     }
 
-    if (phoneNumber != '') {
+    if (phoneNumber != '' && phoneNumber != null) {
       contacts.add({
         'icon': Icons.phone,
         'color': Colors.green,
@@ -57,7 +57,7 @@ class DynamicContactButtons extends StatelessWidget {
       });
     }
 
-    if (link != '') {
+    if (link != '' && link != null) {
       contacts.add({
         'icon': Icons.link,
         'color': Colors.orange,

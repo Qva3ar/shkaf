@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:algoliasearch/algoliasearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mynotes/services/algolia_search.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:mynotes/services/cloud/cloud_storage_exceptions.dart';
@@ -14,6 +16,7 @@ import 'package:rxdart/rxdart.dart';
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
   final settings = FirebaseFirestore.instance.collection('configs').doc('settings');
+  final algoliaService = AlgoliaService();
 
   late FirebaseRemoteConfig remoteConfig;
   InterstitialAd? interstitialAd;
@@ -152,8 +155,19 @@ class FirebaseCloudStorage {
 
   Future<void> deleteNote({required String documentId}) async {
     try {
+      // Удаление документа из коллекции
       await notes.doc(documentId).delete();
+      await algoliaService.client.deleteObject(
+        indexName: "notes",
+        objectID: documentId,
+      );
+    } on FirebaseException catch (e) {
+      // Логирование ошибки Firebase
+      print('FirebaseException: $e');
+      throw CouldNotDeleteNoteException();
     } catch (e) {
+      // Обработка других ошибок
+      print('Unexpected error: $e');
       throw CouldNotDeleteNoteException();
     }
   }

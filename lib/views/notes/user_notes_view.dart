@@ -7,6 +7,7 @@ import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
+import 'package:mynotes/services/algolia_search.dart';
 import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
@@ -22,7 +23,11 @@ extension Count<T extends Iterable> on Stream<T> {
 }
 
 class UserNotesView extends StatefulWidget {
-  const UserNotesView({Key? key}) : super(key: key);
+  final bool? showUserAds;
+  UserNotesView({
+    Key? key,
+    this.showUserAds = false,
+  }) : super(key: key);
 
   @override
   _UserNotesViewState createState() => _UserNotesViewState();
@@ -32,6 +37,7 @@ class _UserNotesViewState extends State<UserNotesView> {
   late final FirebaseCloudStorage _notesService;
   final FavoritesService favoritesService = FavoritesService();
   final ScrollController _scrollController = ScrollController();
+  final algoliaService = AlgoliaService();
 
   String get userId => AuthService.firebase().currentUser?.uid ?? "";
   String get email => AuthService.firebase().currentUser?.email ?? "";
@@ -43,11 +49,6 @@ class _UserNotesViewState extends State<UserNotesView> {
   int _page = 0;
   bool _isLoading = false;
   bool _hasMore = true;
-
-  SearchClient client = SearchClient(
-    appId: 'XR4DEPQU93',
-    apiKey: 'eb255f09f97a86c1c52540313c8761e6',
-  );
 
   @override
   void initState() {
@@ -94,12 +95,18 @@ class _UserNotesViewState extends State<UserNotesView> {
       _streamController.add([]);
     }
 
-    String filters = favorites.map((id) => 'objectID:"$id"').join(' OR ');
+    String filters;
 
+    if (widget.showUserAds ?? false) {
+      filters = 'user_id:${AuthService().currentUser?.uid}';
+      print(filters);
+    } else {
+      filters = favorites.map((id) => 'objectID:"$id"').join(' OR ');
+    }
     var query = SearchForHits(
         indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filters);
 
-    final response = await client.searchIndex(request: query);
+    final response = await algoliaService.client.searchIndex(request: query);
 
     if (response.hits.isNotEmpty) {
       final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
@@ -162,39 +169,39 @@ class _UserNotesViewState extends State<UserNotesView> {
               ),
             ],
           ),
-          bottomNavigationBar: StreamBuilder<AuthState>(
-              stream: AuthService().authState, // Подключаем поток состояния аутентификации
-              builder: (context, snapshot) {
-                final authState = snapshot.data;
+          // bottomNavigationBar: StreamBuilder<AuthState>(
+          //     stream: AuthService().authState, // Подключаем поток состояния аутентификации
+          //     builder: (context, snapshot) {
+          //       final authState = snapshot.data;
 
-                return CustomBottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTabSelected: (index) {
-                    setState(() {
-                      currentIndex = index;
-                    });
+          //       return CustomBottomNavigationBar(
+          //         currentIndex: currentIndex,
+          //         onTabSelected: (index) {
+          //           setState(() {
+          //             currentIndex = index;
+          //           });
 
-                    switch (index) {
-                      case 0:
-                        Navigator.of(context).pushReplacementNamed(userNotes);
-                        break;
-                      case 1:
-                        // showModal();
-                        Navigator.of(context).pushReplacementNamed(allNotes);
-                        break;
-                      case 2:
-                        if (authState?.status == AuthStatus.loggedIn) {
-                          Navigator.of(context).pushNamed(createNoteRoute);
-                        } else {
-                          Navigator.of(context).pushNamed(login);
-                        }
-                        break;
-                      default:
-                        break;
-                    }
-                  },
-                );
-              }),
+          //           switch (index) {
+          //             case 0:
+          //             // Navigator.of(context).pushReplacementNamed(userNotes);
+          //             // break;
+          //             case 1:
+          //               // showModal();
+          //               Navigator.of(context).pushReplacementNamed(allNotes);
+          //               break;
+          //             case 2:
+          //               if (authState?.status == AuthStatus.loggedIn) {
+          //                 Navigator.of(context).pushNamed(createNoteRoute);
+          //               } else {
+          //                 Navigator.of(context).pushNamed(login);
+          //               }
+          //               break;
+          //             default:
+          //               break;
+          //           }
+          //         },
+          //       );
+          //     }),
           body: Column(
             children: [
               // SearchAndCityBar(
@@ -249,6 +256,13 @@ class _UserNotesViewState extends State<UserNotesView> {
                         );
                       },
                       onTapFavorite: (note) async {
+                        final currentUser = AuthService().currentUser;
+
+                        // Проверяем, авторизован ли пользователь
+                        if (currentUser == null) {
+                          Navigator.of(context).pushNamed(login);
+                          return; // Прерываем выполнение
+                        }
                         final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
 
                         // Добавляем или удаляем из избранного

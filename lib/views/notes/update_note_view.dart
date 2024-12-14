@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
@@ -120,6 +121,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
           });
         } else {
           imageUrls = await uploadFiles(imagefiles!).catchError((e) {
+            print(e.toString());
             setState(() {
               isSaving = false;
             });
@@ -146,22 +148,25 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
             )
             .catchError((error, stackTrace) => {showSnackbar(context, error.toString())});
       } else {
-        await _notesService
-            .createNewNote(
-              ownerUserId: currentUser.id!,
-              text: _textController.text,
-              desc: _descController.text,
-              url: _urlController.text,
-              telegramId: _telegramIdController.text,
-              price: int.parse(_priceController.text),
-              phone: _phoneController.text,
-              categoryId: categoryId ?? 0,
-              mainCategoryId: mainCategoryId ?? 0,
-              cityId: cityId ?? 0,
-              imgUrls: isNewImages ? imageUrls : imagesUrls,
-              shortAdd: shortAdd,
-            )
-            .catchError((error, stackTrace) => showSnackbar(context, error.toString()));
+        try {
+          await _notesService.createNewNote(
+            ownerUserId: AuthService().currentUser!.uid,
+            text: _textController.text,
+            desc: _descController.text,
+            url: _urlController.text.isNotEmpty ? _urlController.text : null,
+            telegramId: _telegramIdController.text.isNotEmpty ? _telegramIdController.text : null,
+            price: int.tryParse(_priceController.text) ?? 0,
+            phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+            categoryId: categoryId ?? 0,
+            mainCategoryId: mainCategoryId ?? 0,
+            cityId: cityId ?? 0,
+            imgUrls: isNewImages ? imageUrls : imagesUrls,
+            shortAdd: shortAdd,
+          );
+        } catch (error) {
+          print(error);
+          showSnackbar(context, error.toString());
+        }
       }
       setState(() {
         isSaving = false;
@@ -198,7 +203,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   }
 
   Future<String> uploadFile(XFile image) async {
-    var id = currentUser.id;
+    var id = AuthService().currentUser?.uid;
     final firebaseStorage = FirebaseStorage.instance;
 
     var snapshot = await firebaseStorage
@@ -554,7 +559,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                 //       showModal();
                 //     },
                 //     child: Text("Изменить"))
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -563,13 +568,17 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       bottomSheet: Container(
         height: 50,
         width: MediaQuery.of(context).size.width,
-        color: Colors.transparent,
-        child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(40),
-            ),
-            onPressed: isSaving ? null : saveNote,
-            child: const Text("Сохранить")),
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.violet,
+                minimumSize: const Size.fromHeight(40),
+              ),
+              onPressed: saveNote,
+              child: const Text("Сохранить")),
+        ),
       ),
     );
   }

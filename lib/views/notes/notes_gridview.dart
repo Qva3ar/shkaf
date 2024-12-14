@@ -100,14 +100,14 @@ class NotesGridView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      note.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.s16w600.copyWith(
-                        color: AppColors.black,
-                      ),
-                    ),
+                    // Text(
+                    //   note.text,
+                    //   maxLines: 1,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   style: AppTextStyles.s16w600.copyWith(
+                    //     color: AppColors.black,
+                    //   ),
+                    // ),
                     // const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/views/notes/user_notes_view.dart';
 
 class UserDetails extends StatefulWidget {
   const UserDetails({Key? key}) : super(key: key);
@@ -86,28 +87,37 @@ class _UserDetailsState extends State<UserDetails> {
               title: const Text('Мои объявления'),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
-                Navigator.of(context).pushNamed(userNotes);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserNotesView(
+                      showUserAds: true, // Передача значения
+                    ),
+                  ),
+                );
               },
             ),
           ),
           const SizedBox(height: 10),
-          // Container(
-          //   color: Colors.white,
-          //   width: double.infinity,
-          //   child: ListTile(
-          //     leading: Icon(Icons.lock),
-          //     title: Text('*********'),
-          //     trailing: Icon(Icons.create),
-          //   ),
-          // ),
-          // SizedBox(height: 10),
           Container(
             color: Colors.white,
             width: double.infinity,
             child: const ListTile(
-              leading: Icon(Icons.support_agent),
+              leading: Icon(Icons.lock),
               title: Text('Связаться с нами'),
+              trailing: Icon(Icons.create),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: ListTile(
+              leading: Icon(Icons.support_agent),
+              title: Text('Выйти'),
               trailing: Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                AuthService().logout();
+              },
             ),
           ),
           // Text(currentUser.email.toString(), style: TextStyle(fontSize: 20, fontWeight: ),),

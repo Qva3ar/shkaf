@@ -9,6 +9,7 @@ import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/typography.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/user_service.dart';
+import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/widgets/dynamic_contact_btns.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -66,12 +67,22 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
 
   String? get userId => AuthService().currentUser?.uid;
 
-  removeNote(CloudNote note) async {
-    await _notesService.deleteNote(documentId: note.documentId);
-    if (note.imagesUrls!.isNotEmpty) {
-      await _notesService.removeImages(note.imagesUrls!);
+  Future<void> removeNote(CloudNote note) async {
+    try {
+      // Удаление документа из базы данных
+      await _notesService.deleteNote(documentId: note.documentId);
+
+      // Удаление изображений, если они существуют
+      if (note.imagesUrls != null && note.imagesUrls!.isNotEmpty) {
+        await _notesService.removeImages(note.imagesUrls!);
+      }
+
+      // Закрытие текущего экрана
+      Navigator.pop(context);
+    } catch (e) {
+      // Логирование и обработка ошибки
+      showSnackbar(context, 'Ошибка при удалении заметки: $e');
     }
-    Navigator.pop(context);
   }
 
   // Future<void> openUrl(String url) async {
