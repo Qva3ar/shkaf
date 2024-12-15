@@ -170,6 +170,7 @@ class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _password;
   late final TextEditingController _passwordCheck;
   String? _errorMessage;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -188,6 +189,9 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Future<void> _register() async {
+    setState(() {
+      isLoading = true;
+    });
     final email = _email.text;
     final password = _password.text;
     final passwordCheck = _passwordCheck.text;
@@ -205,6 +209,9 @@ class _RegisterViewState extends State<RegisterView> {
       // Если регистрация успешна, перенаправляем на страницу подтверждения
       _sendVerificationEmail();
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())), // Уведомление об ошибке
       );
@@ -429,9 +436,11 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     const SizedBox(height: 15),
                     TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, login);
-                      },
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              Navigator.pushNamed(context, login);
+                            },
                       child: const Text(
                         "Уже зарегистрированы? Войдите здесь",
                         style: TextStyle(color: Colors.black),

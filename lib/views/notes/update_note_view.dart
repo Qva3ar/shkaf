@@ -384,202 +384,210 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         ),
         actions: const [],
       ),
-      body: Form(
-        key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-            child: Column(
-              children: [
-                imagesUrls.isEmpty
-                    ? Image.asset('assets/images/img_placeholder.jpeg')
-                    : CarouselSlider.builder(
-                        itemCount: imagesUrls.length,
-                        options: CarouselOptions(
-                          enableInfiniteScroll: false,
-                          height: 200,
-                          aspectRatio: 16 / 9,
-                          viewportFraction: 0.8,
+      body: Stack(children: [
+        Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+              child: Column(
+                children: [
+                  imagesUrls.isEmpty
+                      ? Image.asset('assets/images/img_placeholder.jpeg')
+                      : CarouselSlider.builder(
+                          itemCount: imagesUrls.length,
+                          options: CarouselOptions(
+                            enableInfiniteScroll: false,
+                            height: 200,
+                            aspectRatio: 16 / 9,
+                            viewportFraction: 0.8,
+                          ),
+                          itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
+                              Builder(
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      // margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                      // decoration:BoxDecoration(color: Colors.amber),
+                                      child: isNewImages && !kIsWeb
+                                          ? Image.file(File(imagesUrls[itemIndex]))
+                                          : kIsWeb
+                                              ? Image.network(imagesUrls[itemIndex])
+                                              : Image.network(imagesUrls[itemIndex]));
+                                },
+                              )),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.violetLight,
+                      ),
+                      onPressed: () {
+                        openImages();
+                      },
+                      child: const Text("Выберите до 4 фото")),
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: const TextSpan(
+                      children: [
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Icon(Icons.error, size: 12),
                         ),
-                        itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
-                            Builder(
-                              builder: (BuildContext context) {
-                                return SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    // margin: EdgeInsets.symmetric(horizontal: 5.0),
-                                    // decoration:BoxDecoration(color: Colors.amber),
-                                    child: isNewImages && !kIsWeb
-                                        ? Image.file(File(imagesUrls[itemIndex]))
-                                        : kIsWeb
-                                            ? Image.network(imagesUrls[itemIndex])
-                                            : Image.network(imagesUrls[itemIndex]));
-                              },
-                            )),
-                ElevatedButton(
-                    onPressed: () {
-                      openImages();
-                    },
-                    child: const Text("Выберите до 4 фото")),
-                const SizedBox(height: 10),
-                RichText(
-                  text: const TextSpan(
+                        TextSpan(
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
+                          text: " Слова в заголовке будут использованы для поиска",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  TextFormField(
+                    maxLength: 45,
+                    onChanged: (text) => setState(() {}),
+                    controller: _textController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: titleValidator,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: getInputDecoration("Заголовок"),
+                  ),
+
+                  AppInheritedWidget(
+                      shortState: this,
+                      child: SwitchShortAdds(
+                        initialValue: _note?.shortAdd ?? false,
+                      )),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                      maxLength: 1000,
+                      onChanged: (text) => setState(() {}),
+                      validator: descValidator,
+                      controller: _descController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 5,
+                      decoration: getInputDecoration("Oписание")),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                      maxLength: 10,
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: getInputDecoration("Цена")),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                      controller: _urlController,
+                      keyboardType: TextInputType.text,
+                      decoration: getInputDecoration("Url")),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                      controller: _telegramIdController,
+                      keyboardType: TextInputType.text,
+                      decoration: getInputDecoration("@Telegram username")),
+                  const SizedBox(height: 10),
+
+                  TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: getInputDecoration("Номер телефона"),
+                  ),
+                  const SizedBox(height: 15),
+                  // getCategoryName(_note?.categoryId ?? 0)
+                  // TextFormField(
+                  //     // focusNode: focusNode,
+                  //     onChanged: (text) => setState(() {}),
+                  //     controller: _categoryController,
+                  //     validator: catValidator,
+                  //     decoration: getSelectDecorations(
+                  //         "Категория", "Выбрать", showModal)),
+                  Stack(
                     children: [
-                      WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: Icon(Icons.error, size: 12),
-                      ),
-                      TextSpan(
-                        style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
-                        text: " Слова в заголовке будут использованы для поиска",
-                      ),
+                      TextFormField(
+                          enabled: false,
+                          onChanged: (text) => setState(() {}),
+                          controller: _categoryController,
+                          validator: catValidator,
+                          decoration: getSelectDecorations("Категория", "Выбрать", showModal)),
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
+
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            child: const Text("Выбрать"),
+                            onPressed: () {
+                              showModal();
+                            },
+                          ),
+                        ),
+                      )
                     ],
                   ),
-                ),
-                const SizedBox(height: 5),
-                TextFormField(
-                  maxLength: 45,
-                  onChanged: (text) => setState(() {}),
-                  controller: _textController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: titleValidator,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: getInputDecoration("Заголовок"),
-                ),
+                  const SizedBox(height: 15),
+                  Stack(
+                    children: [
+                      TextFormField(
+                          enabled: false,
+                          onChanged: (text) => setState(() {}),
+                          controller: _cityController,
+                          validator: cityValidator,
+                          decoration: getSelectDecorations('Город', "Выбрать", showModal)),
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
 
-                AppInheritedWidget(
-                    shortState: this,
-                    child: SwitchShortAdds(
-                      initialValue: _note?.shortAdd ?? false,
-                    )),
-                const SizedBox(height: 10),
-                TextFormField(
-                    maxLength: 1000,
-                    onChanged: (text) => setState(() {}),
-                    validator: descValidator,
-                    controller: _descController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 5,
-                    decoration: getInputDecoration("Oписание")),
-                const SizedBox(height: 10),
-                TextFormField(
-                    maxLength: 10,
-                    controller: _priceController,
-                    keyboardType: TextInputType.number,
-                    decoration: getInputDecoration("Цена")),
-                const SizedBox(height: 10),
-                TextFormField(
-                    controller: _urlController,
-                    keyboardType: TextInputType.text,
-                    decoration: getInputDecoration("Url")),
-                const SizedBox(height: 10),
-                TextFormField(
-                    controller: _telegramIdController,
-                    keyboardType: TextInputType.text,
-                    decoration: getInputDecoration("@Telegram username")),
-                const SizedBox(height: 10),
-
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: getInputDecoration("Номер телефона"),
-                ),
-                const SizedBox(height: 15),
-                // getCategoryName(_note?.categoryId ?? 0)
-                // TextFormField(
-                //     // focusNode: focusNode,
-                //     onChanged: (text) => setState(() {}),
-                //     controller: _categoryController,
-                //     validator: catValidator,
-                //     decoration: getSelectDecorations(
-                //         "Категория", "Выбрать", showModal)),
-                Stack(
-                  children: [
-                    TextFormField(
-                        enabled: false,
-                        onChanged: (text) => setState(() {}),
-                        controller: _categoryController,
-                        validator: catValidator,
-                        decoration: getSelectDecorations("Категория", "Выбрать", showModal)),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
-
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(100, 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
+                            child: const Text("Выбрать"),
+                            onPressed: () {
+                              showCitiesModal();
+                            },
                           ),
-                          child: const Text("Выбрать"),
-                          onPressed: () {
-                            showModal();
-                          },
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 15),
-                Stack(
-                  children: [
-                    TextFormField(
-                        enabled: false,
-                        onChanged: (text) => setState(() {}),
-                        controller: _cityController,
-                        validator: cityValidator,
-                        decoration: getSelectDecorations('Город', "Выбрать", showModal)),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
+                      )
+                    ],
+                  ),
 
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(100, 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          child: const Text("Выбрать"),
-                          onPressed: () {
-                            showCitiesModal();
-                          },
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-
-                // ElevatedButton(
-                //     onPressed: () {
-                //       showModal();
-                //     },
-                //     child: Text("Изменить"))
-                const SizedBox(height: 30),
-              ],
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       showModal();
+                  //     },
+                  //     child: Text("Изменить"))
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomSheet: Container(
-        height: 50,
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.violet,
-                minimumSize: const Size.fromHeight(40),
-              ),
-              onPressed: saveNote,
-              child: const Text("Сохранить")),
-        ),
-      ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            color: AppColors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.violet,
+                    minimumSize: const Size.fromHeight(40),
+                  ),
+                  onPressed: saveNote,
+                  child: const Text("Сохранить")),
+            ),
+          ),
+        )
+      ]),
     );
   }
 }

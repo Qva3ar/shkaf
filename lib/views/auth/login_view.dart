@@ -1,13 +1,23 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'package:flutter/material.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
+import 'package:crypto/crypto.dart';
 import 'package:mynotes/constants/app_colors.dart';
 
 class LoginView extends StatefulWidget {
@@ -23,12 +33,23 @@ class _LoginViewState extends State<LoginView> {
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   bool _isLoading = false;
+  bool shouldShowAppleIdAuth = false;
 
   @override
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     super.initState();
+
+    isAuthWithAppleIdAvailable();
+  }
+
+  isAuthWithAppleIdAvailable() async {
+    if (Platform.isIOS && await SignInWithApple.isAvailable()) {
+      setState(() {
+        shouldShowAppleIdAuth = true;
+      });
+    }
   }
 
   @override
@@ -50,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
 
     try {
       await AuthService().loginWithEmailAndPassword(email, password);
-      Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
     } catch (e) {
       await showErrorDialog(context, 'Ошибка авторизации: ${e.toString()}');
     } finally {
@@ -67,10 +88,9 @@ class _LoginViewState extends State<LoginView> {
 
     try {
       await AuthService().signInWithGoogle();
-      Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
+      Navigator.pop(context);
     } catch (e) {
-      await showErrorDialog(
-          context, 'Ошибка входа через Google: ${e.toString()}');
+      await showErrorDialog(context, 'Ошибка входа через Google: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -87,8 +107,7 @@ class _LoginViewState extends State<LoginView> {
       await AuthService().signInWithApple();
       Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
     } catch (e) {
-      await showErrorDialog(
-          context, 'Ошибка входа через Apple: ${e.toString()}');
+      await showErrorDialog(context, 'Ошибка входа через Apple: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -99,6 +118,16 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Авторизация",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -107,21 +136,21 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 35),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, allNotes),
-                    child: const Icon(Icons.arrow_back, color: Colors.black),
-                  ),
-                ),
+                // const SizedBox(height: 35),
+                // Align(
+                //   alignment: Alignment.topRight,
+                //   child: GestureDetector(
+                //     onTap: () => Navigator.pop(context),
+                //     child: const Icon(Icons.arrow_back, color: Colors.black),
+                //   ),
+                // ),
                 const SizedBox(height: 19),
                 emailTextField(_emailController),
                 const SizedBox(height: 10),
                 passwordTextField(_passwordController, 'Введите пароль'),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, forgotPassword),
+                  onTap: () => Navigator.pushNamed(context, '/forgot-password'),
                   child: const Text(
                     'Забыли пароль?',
                     style: TextStyle(
@@ -133,8 +162,9 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 40),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Text("Войдите с помощью"),
                     GestureDetector(
                       onTap: _isLoading ? null : _signInWithGoogle,
                       child: Image.asset(
@@ -144,14 +174,16 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    GestureDetector(
-                      onTap: _isLoading ? null : _signInWithApple,
-                      child: const Icon(
-                        Icons.apple,
-                        size: 36,
-                        color: Colors.black,
-                      ),
-                    ),
+                    shouldShowAppleIdAuth
+                        ? GestureDetector(
+                            onTap: _isLoading ? null : _signInWithApple,
+                            child: const Icon(
+                              Icons.apple,
+                              size: 36,
+                              color: Colors.black,
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
                 const SizedBox(height: 60),
@@ -173,9 +205,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () => Navigator.pushNamed(context, register),
+                  onPressed: () => Navigator.pushNamed(context, register),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 16),

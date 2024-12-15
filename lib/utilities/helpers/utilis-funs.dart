@@ -47,4 +47,13 @@ class Utils {
   }
 
   static int randomInt(int max) => (max * (1 - Random().nextDouble())).toInt();
+
+  static openSupportUrl() async {
+    final suppotrUrl = Uri.parse("https://t.me/ShkafSupportTR");
+
+    if (!await launchUrl(suppotrUrl, mode: LaunchMode.externalApplication)) {
+      // <--
+      throw Exception('Could not launch $suppotrUrl');
+    }
+  }
 }

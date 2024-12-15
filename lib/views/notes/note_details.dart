@@ -42,8 +42,6 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
 
   bool _isVisible = false;
   int _current = 0;
-  final int _numInterstitialLoadAttempts = 0;
-  int maxFailedLoadAttempts = 3;
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
 
@@ -51,18 +49,6 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     setState(() {
       _isVisible = !_isVisible;
     });
-  }
-
-  void writeToTelegram() {
-    CloudNote? note = _notesService.selectedNote.stream.value;
-    if (note != null && note.telegramId!.isNotEmpty) {
-      // Проверяем и удаляем '@', если он первый символ
-      String telegramId = note.telegramId!;
-      if (telegramId.startsWith('@')) {
-        telegramId = telegramId.substring(1); // Удаляем первый символ
-      }
-      openUrl('https://t.me/$telegramId');
-    }
   }
 
   String? get userId => AuthService().currentUser?.uid;
@@ -84,14 +70,6 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       showSnackbar(context, 'Ошибка при удалении заметки: $e');
     }
   }
-
-  // Future<void> openUrl(String url) async {
-  //   final _url = Uri.parse(url);
-  //   if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
-  //     // <--
-  //     throw Exception('Could not launch $_url');
-  //   }
-  // }
 
   void _loadBannerAd() {
     _bannerAd = BannerAd(
@@ -131,7 +109,6 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        // _createInterstitialAd();
       },
     );
     _notesService.interstitialAd!.show();
@@ -146,17 +123,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
     FirebaseEvent.logScreenView('details');
     _notesService = FirebaseCloudStorage();
     userService = UserService();
-    // _loadBannerAd();
-    // _createInterstitialAd();
-    // _notesService.selectedNote.listen((value) {
-    //   log(value!.desc);
-    // });
-    // CloudNote? note = _notesService.selectedNote.stream.value;
+    _loadBannerAd();
 
-    // _views = _notesService.;
-    // _notesService.selectedNote.listen((value) {
-    //   log(value!.desc);
-    // });
     log(userId.toString());
 
     var views = note.views + 1;
@@ -229,11 +197,13 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
             actions: const [],
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: DynamicContactButtons(
-            telegramId: note.telegramId,
-            phoneNumber: note.phone, // Если нет номера телефона
-            link: note.url, // Если нет ссылки
-          ),
+          floatingActionButton: AuthService().currentUser != null
+              ? null
+              : DynamicContactButtons(
+                  telegramId: note.telegramId,
+                  phoneNumber: note.phone, // Если нет номера телефона
+                  link: note.url, // Если нет ссылки
+                ),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 75),
@@ -328,60 +298,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                           activeDotColor: Colors.black),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisSize: MainAxisSize.max,
-                  //   children: [
-                  //     Expanded(
-                  //       child: Text(
-                  //         getFormattedDate(note.createdAt),
-                  //         overflow: TextOverflow.ellipsis,
-                  //         style: const TextStyle(
-                  //           // fontWeight: FontWeight.bold,
-                  //           fontSize: 12,
-                  //           color: Colors.grey,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     const Icon(
-                  //       Icons.visibility,
-                  //       color: Colors.grey,
-                  //       size: 10.0,
-                  //     ),
-                  //     const SizedBox(
-                  //       width: 5,
-                  //     ),
-                  //     Text(
-                  //       note.views.toString(),
-                  //       style: const TextStyle(
-                  //         color: Colors.grey,
-                  //         fontSize: 12,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   const SizedBox(height: 10),
-                  // Row(
-                  //   children: [
-                  //     Card(
-                  //         elevation: 0,
-                  //         color: const Color.fromARGB(255, 144, 113, 229),
-                  //         child: Padding(
-                  //             padding: const EdgeInsets.all(3),
-                  //             child: Text(
-                  //               getMainCategoryName(note.mainCategoryId ?? 0),
-                  //               style: const TextStyle(
-                  //                   color: Colors.white, fontWeight: FontWeight.w500),
-                  //             ))),
-                  //     Card(
-                  //         elevation: 0,
-                  //         color: const Color.fromARGB(243, 77, 128, 147),
-                  //         child: Padding(
-                  //             padding: const EdgeInsets.all(3),
-                  //             child: Text(getCategoryName(note.categoryId ?? 0),
-                  //                 style: const TextStyle(
-                  //                     color: Colors.white, fontWeight: FontWeight.w500)))),
-                  //   ],
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -418,17 +335,18 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   ),
 
                   const SizedBox(height: 25),
-                  if (_isBannerAdReady && _notesService.showAD)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: _bannerAd.size.width.toDouble(),
-                          height: _bannerAd.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd),
-                        )
-                      ],
-                    ),
+                  if (_notesService.showAD)
+                    _isBannerAdReady
+                        ? Center(
+                            child: SizedBox(
+                              width: _bannerAd.size.width.toDouble(),
+                              height: _bannerAd.size.height.toDouble(),
+                              child: AdWidget(ad: _bannerAd),
+                            ),
+                          )
+                        : const SizedBox(
+                            height: 50, // Место под рекламу, если она ещё не загрузилась
+                          ),
                   const SizedBox(height: 25),
                   // note.phone!.isNotEmpty
                   //     ? Visibility(

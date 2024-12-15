@@ -3,9 +3,6 @@ import 'package:mynotes/views/categories/category_list.dart';
 
 Widget bottomCitiesSheet(Function fun, double initialSize) {
   return DraggableScrollableSheet(
-    initialChildSize: initialSize,
-    minChildSize: .1,
-    maxChildSize: 1,
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         color: Colors.white,

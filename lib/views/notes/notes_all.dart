@@ -36,17 +36,12 @@ class NotesAll extends StatefulWidget {
 
 class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   late final FirebaseCloudStorage _notesService;
-  late final FirebaseMessaging _messaging;
-
   final FavoritesService favoritesService = FavoritesService();
 
   static const selectedCityKey = 'selectedCity';
 
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
-
-  late int _totalNotifications;
-  PushNotification? _notificationInfo;
 
   int currentIndex = 1;
 
@@ -64,7 +59,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   bool _isLoading = false;
   bool _hasMore = true;
 
-  late List<String> favorites;
+  late List<String> favorites = [];
 
   final algoliaService = AlgoliaService();
 
@@ -75,12 +70,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     getFavorites();
 
     _notesService = FirebaseCloudStorage();
-    // _notesService.createInterstitialAd();
     _scrollController = ScrollController(); // Initialize the ScrollController
     _scrollController.addListener(_onScroll);
 
     initializeSpref();
-    // _loadBannerAd();
+    _loadBannerAd();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (kIsWeb && !kDebugMode && getSmartPhoneOrTablet() == androidType) {
@@ -90,7 +84,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     // WidgetsBinding.instance.addObserver(this);
     _notesService.getSettings();
-    registerNotification();
 
     _notesService.categoryNameForSheet.listen((value) {
       setState(() {
@@ -144,12 +137,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     final response = await algoliaService.client.searchIndex(request: query);
     print(response.hits.length);
-
+    List<CloudNote> newHits;
     if (response.hits.isNotEmpty) {
-      final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
-        final note = CloudNote.fromHit(hit);
-        return note.copyWith(isFavorite: favorites.contains(note.documentId));
-      }).toList();
+      if (favorites.isNotEmpty) {
+        newHits = response.hits.map<CloudNote>((hit) {
+          final note = CloudNote.fromHit(hit);
+          return note.copyWith(isFavorite: favorites.contains(note.documentId));
+        }).toList();
+      } else {
+        //почему то иногда favorites не проинициализирован
+        newHits = response.hits.map<CloudNote>((hit) {
+          return CloudNote.fromHit(hit);
+        }).toList();
+      }
 
       setState(() {
         _isLoading = false;
@@ -168,39 +168,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     }
   }
 
-  void registerNotification() async {
-    NotificationService().initialize((PushNotification notification) {
-      setState(() {
-        _notificationInfo = notification;
-        _totalNotifications++;
-      });
-
-      // Показываем диалог
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(notification.title ?? "No Title"),
-            content: Text(notification.body ?? "No Body"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }
-
   setSelectedCity(int id) async {
     await SharedPreferencesService().setInt(selectedCityKey, id);
     _notesService.setSelectedId(id);
     search();
   }
-
-  isOldUser() => SharedPreferencesService().getBool("isOldUser") ?? false;
 
   showModal() {
     showModalBottomSheet(
@@ -217,35 +189,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     );
   }
 
-  // licenseAlertDialog(BuildContext context) {
-  //   Widget okButton = TextButton(
-  //     child: const Text("Принимаю"),
-  //     onPressed: () async {
-  //       await SharedPreferencesService().setBool('isOldUser', true);
-  //     },
-  //   );
-
-  //   AlertDialog alert = AlertDialog(
-  //     title: const Text("Пользовательское соглашение"),
-  //     content: TextButton(
-  //       onPressed: openUrl(
-  //           'https://docs.google.com/document/d/16w4WSDrYcIrETM5_ERO4SbSc6yxRzXMOpyCf0p_vqj8/edit'),
-  //       child: const Text(
-  //           'Регистрируясь на сервисе "Shkaf.in" вы принимаете Пользовательское соглашение и соглашаетесь на обработку ваших персональных данных в соответствии с ним.'),
-  //     ),
-  //     actions: [
-  //       okButton,
-  //     ],
-  //   );
-
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alert;
-  //     },
-  //   );
-  // }
-
   initializeSpref() async {
     final cityId = SharedPreferencesService().getInt(selectedCityKey) ?? 1;
     setSelectedCity(cityId);
@@ -258,8 +201,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   didChangeDependencies() {
     super.didChangeDependencies();
     getArguments(context);
-
-    // _notesService.allNotes(false);
   }
 
   getArguments(context) {
@@ -301,9 +242,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
         if (diff.inMinutes > 60) {
           search();
-          _notesService.getSettings().then((value) => setState(() {
-                _isBannerAdReady = true && _notesService.showAD;
-              }));
+          _notesService.getSettings();
+          setState(() {});
         }
       }
 
@@ -429,20 +369,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 },
               ),
               const SizedBox(height: 8),
-              if (_isBannerAdReady)
-                Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: _bannerAd.size.width.toDouble(),
-                        height: _bannerAd.size.height.toDouble(),
-                        child: AdWidget(ad: _bannerAd),
+              if (_notesService.showAD)
+                _isBannerAdReady
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 0),
+                        child: SizedBox(
+                          width: _bannerAd.size.width.toDouble(),
+                          height: _bannerAd.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd),
+                        ),
                       )
-                    ],
-                  ),
-                ),
+                    : const SizedBox(
+                        height: 50, // Место под рекламу, если она ещё не загрузилась
+                      ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -453,7 +392,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              const SizedBox(height: 9),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {

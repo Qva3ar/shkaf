@@ -19,7 +19,7 @@ class CityDropdown extends StatelessWidget {
       value: selectedCityId,
       decoration: const InputDecoration(
         isDense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 7, horizontal: 9),
+        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 9),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.transparent),
           borderRadius: BorderRadius.all(Radius.circular(10.0)),

@@ -1,3 +1,4 @@
+import 'package:auto_height_grid_view/auto_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
@@ -26,17 +27,14 @@ class NotesGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: AutoHeightGridView(
         controller: scrollController,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Two items per row
-          mainAxisSpacing: 14, // Spacing between rows
-          crossAxisSpacing: 20, // Spacing between columns
-          childAspectRatio: 183 / 220, // Aspect ratio of each card
-        ),
+        shrinkWrap: true,
         itemCount: notes.length,
-        itemBuilder: (context, index) {
+        mainAxisSpacing: 8, // Расстояние между элементами по вертикали
+        crossAxisSpacing: 5, // Расстояние между элементами по горизонтали
+        builder: (context, index) {
           final note = notes[index]; // Current note
           return GestureDetector(
             onTap: () {
@@ -100,33 +98,36 @@ class NotesGridView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    // Text(
-                    //   note.text,
-                    //   maxLines: 1,
-                    //   overflow: TextOverflow.ellipsis,
-                    //   style: AppTextStyles.s16w600.copyWith(
-                    //     color: AppColors.black,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Display city name
-                        Text(
-                          getCityName(note.cityId ?? 0, TURKEY),
-                          style: AppTextStyles.s12w600.copyWith(
-                            color: AppColors.grey,
+                    Text(
+                      note.text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.s16w600.copyWith(
+                        color: AppColors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Display city name
+                          Text(
+                            getCityName(note.cityId ?? 0, TURKEY),
+                            style: AppTextStyles.s12w600.copyWith(
+                              color: AppColors.grey,
+                            ),
                           ),
-                        ),
-                        // Display formatted updatedAt
-                        Text(
-                          formatUpdatedAt(note.updatedAt), // Format the date
-                          style: AppTextStyles.s12w600.copyWith(
-                            color: AppColors.grey,
+                          // Display formatted updatedAt
+                          Text(
+                            formatUpdatedAt(note.updatedAt), // Format the date
+                            style: AppTextStyles.s12w600.copyWith(
+                              color: AppColors.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),

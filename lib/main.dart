@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -10,12 +11,14 @@ import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/analytics_route_obs.dart';
 import 'package:mynotes/services/auth/auth_state.dart';
+import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/services/shared_preferences_service.dart';
 import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/auth/forgot_password_view.dart';
 import 'package:mynotes/views/auth/login_view.dart';
 import 'package:mynotes/views/auth/register_view.dart';
 import 'package:mynotes/views/auth/verify_email_view.dart';
+import 'package:mynotes/views/notes/favorites_view.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/notes/notes_all.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
@@ -35,19 +38,19 @@ void main() async {
   FirebaseApp firebase = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseAnalytics.instanceFor(app: firebase);
 
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
     // Для iOS используйте AppAttestProvider или DeviceCheckProvider
-    appleProvider: AppleProvider.appAttest,
+    // appleProvider: AppleProvider.appAttest,
   );
-  final authService = AuthService().initialize();
-
-  NotificationService().initialize((PushNotification notification) {
-    print('Notification received: ${notification.title}');
-  });
+  AuthService().initialize();
 
   MobileAds.instance.initialize();
+  FirebaseCloudStorage notesService = FirebaseCloudStorage();
+  notesService.createInterstitialAd();
+
   // final UserService userService = UserService();
 
   // if (Platform.isIOS) {
@@ -143,6 +146,28 @@ class _HomePageState extends State<HomePage> {
   String? _redirectRoute;
 
   @override
+  void initState() {
+    super.initState();
+    NotificationService().initialize((PushNotification notification) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(notification.title ?? "Новое уведомление"),
+            content: Text(notification.body ?? "Нет содержимого"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("ОК"),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
       stream: AuthService().authState,
@@ -156,16 +181,15 @@ class _HomePageState extends State<HomePage> {
         }
 
         // Если пользователь разлогинился, просто сбрасываем вкладку на главную
-        if (state.status == AuthStatus.loggedOut) {
-          // Можно вызвать setState, чтобы вернуть currentIndex на нужную вкладку
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                currentIndex = 1; // например, главная вкладка
-              });
-            }
-          });
-        }
+        // if (state.status == AuthStatus.loggedOut) {
+        //   WidgetsBinding.instance.addPostFrameCallback((_) {
+        //     if (mounted && currentIndex != 1) {
+        //       setState(() {
+        //         currentIndex = 1;
+        //       });
+        //     }
+        //   });
+        // }
 
         if (state.status == AuthStatus.loggedIn && _redirectRoute != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -194,7 +218,7 @@ class _HomePageState extends State<HomePage> {
     // Здесь вы сами решаете, какие экраны показывать при loggedIn/loggedOut
     switch (currentIndex) {
       case 0:
-        return UserNotesView();
+        return AuthService().currentUser != null ? FavoritesView() : const LoginView();
       case 1:
         return const NotesAll();
       case 2:

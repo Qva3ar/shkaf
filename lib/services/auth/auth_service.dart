@@ -19,8 +19,7 @@ class AuthService {
   static AuthService firebase() => _instance;
 
   // Контроллер для потока состояния аутентификации
-  final BehaviorSubject<AuthState> _authStateController =
-      BehaviorSubject<AuthState>();
+  final BehaviorSubject<AuthState> _authStateController = BehaviorSubject<AuthState>();
 
   // Поток состояния аутентификации
   Stream<AuthState> get authState => _authStateController.stream;
@@ -29,9 +28,7 @@ class AuthService {
   void initialize() {
     _updateState(
       AuthState(
-        status: _firebaseAuth.currentUser != null
-            ? AuthStatus.loggedIn
-            : AuthStatus.loggedOut,
+        status: _firebaseAuth.currentUser != null ? AuthStatus.loggedIn : AuthStatus.loggedOut,
         user: _firebaseAuth.currentUser != null
             ? AuthUser.fromFirebase(_firebaseAuth.currentUser!)
             : null,
@@ -86,8 +83,7 @@ class AuthService {
     }
   }
 
-  Future<void> registerWithEmailAndPassword(
-      String email, String password) async {
+  Future<void> registerWithEmailAndPassword(String email, String password) async {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
@@ -140,15 +136,19 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
     if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      _updateState(AuthState(
+        status: AuthStatus.loggedIn,
+        user: AuthUser.fromFirebase(userCredential.user!),
+      ));
     }
   }
 

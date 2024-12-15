@@ -5,6 +5,7 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color grey = Color(0xFF9E9E9E);
   static const Color violet = Color(0xff8D72E4);
+  static const Color violetLight = Color.fromARGB(255, 175, 150, 255);
   static const Color red = Color.fromARGB(255, 175, 5, 5);
   static const Color unselectedTextGrey = Color(0xff999999);
   static const Color unselectedTapGrey = Color(0xff7590A6);

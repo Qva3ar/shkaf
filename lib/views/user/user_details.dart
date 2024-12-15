@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/views/notes/user_notes_view.dart';
 
 class UserDetails extends StatefulWidget {
@@ -89,9 +90,7 @@ class _UserDetailsState extends State<UserDetails> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => UserNotesView(
-                      showUserAds: true, // Передача значения
-                    ),
+                    builder: (context) => UserNotesView(),
                   ),
                 );
               },
@@ -101,10 +100,13 @@ class _UserDetailsState extends State<UserDetails> {
           Container(
             color: Colors.white,
             width: double.infinity,
-            child: const ListTile(
+            child: ListTile(
               leading: Icon(Icons.lock),
               title: Text('Связаться с нами'),
               trailing: Icon(Icons.create),
+              onTap: () {
+                Utils.openSupportUrl();
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -117,6 +119,7 @@ class _UserDetailsState extends State<UserDetails> {
               trailing: Icon(Icons.arrow_forward_ios),
               onTap: () {
                 AuthService().logout();
+                Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
               },
             ),
           ),

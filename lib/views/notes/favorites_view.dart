@@ -22,16 +22,16 @@ extension Count<T extends Iterable> on Stream<T> {
   Stream<int> get getLength => map((event) => event.length);
 }
 
-class UserNotesView extends StatefulWidget {
-  const UserNotesView({
+class FavoritesView extends StatefulWidget {
+  const FavoritesView({
     Key? key,
   }) : super(key: key);
 
   @override
-  _UserNotesViewState createState() => _UserNotesViewState();
+  _FavoritesViewState createState() => _FavoritesViewState();
 }
 
-class _UserNotesViewState extends State<UserNotesView> {
+class _FavoritesViewState extends State<FavoritesView> {
   late final FirebaseCloudStorage _notesService;
   final FavoritesService favoritesService = FavoritesService();
   final ScrollController _scrollController = ScrollController();
@@ -93,36 +93,34 @@ class _UserNotesViewState extends State<UserNotesView> {
       _streamController.add([]);
     }
 
-    final filters = 'user_id:${AuthService().currentUser?.uid}';
+    String filters;
+
+    filters = favorites.map((id) => 'objectID:"$id"').join(' OR ');
     var query = SearchForHits(
-        indexName: 'notes', hitsPerPage: 20, page: _page, query: "", filters: filters);
+        indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filters);
 
-    try {
-      final response = await algoliaService.client.searchIndex(request: query);
+    final response = await algoliaService.client.searchIndex(request: query);
 
-      if (response.hits.isNotEmpty) {
-        final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
-          final note = CloudNote.fromHit(hit);
-          return note.copyWith(isFavorite: favorites.contains(note.documentId));
-        }).toList();
+    if (response.hits.isNotEmpty) {
+      final List<CloudNote> newHits = response.hits.map<CloudNote>((hit) {
+        final note = CloudNote.fromHit(hit);
+        return note.copyWith(isFavorite: favorites.contains(note.documentId));
+      }).toList();
 
-        setState(() {
-          _isLoading = false;
-          if (newHits.length < 20) {
-            _hasMore = false;
-          }
-          _page++;
-          _notes.addAll(newHits);
-          _streamController.add(_notes);
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
+      setState(() {
+        _isLoading = false;
+        if (newHits.length < 20) {
           _hasMore = false;
-        });
-      }
-    } catch (e) {
-      print(e);
+        }
+        _page++;
+        _notes.addAll(newHits);
+        _streamController.add(_notes);
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+        _hasMore = false;
+      });
     }
   }
 
@@ -214,7 +212,7 @@ class _UserNotesViewState extends State<UserNotesView> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Ваши объявления',
+                    'Избранное',
                     style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
                   ),
                 ),

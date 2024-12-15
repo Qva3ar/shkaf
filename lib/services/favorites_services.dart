@@ -29,7 +29,7 @@ class FavoritesService {
 
   Future<List<String>> getFavorites() async {
     final user = _auth.currentUser;
-    if (user == null) throw Exception("User not authenticated");
+    if (user == null) return [];
 
     final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
