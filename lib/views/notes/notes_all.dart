@@ -142,7 +142,11 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     String filtersString = filters.join(' AND ');
 
     var query = SearchForHits(
-        indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filtersString);
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+        query: text,
+        filters: filtersString);
 
     final response = await client.searchIndex(request: query);
 
@@ -212,8 +216,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isDismissible: true,
       useRootNavigator: false,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(
-            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(openWithCategory, 1, true,
+            _notesService.categoryNameForSheet.value, onFeaturedClicked);
       },
     );
   }
@@ -265,7 +269,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   getArguments(context) {
     if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
+      ListViewArguments args =
+          ModalRoute.of(context)!.settings.arguments as ListViewArguments;
       categoryId = args.categoryId;
       mainCategoryId = args.mainCategoryId;
     }
@@ -277,7 +282,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
     var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
     if (arg.categoryId != 0) {
-      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
+      selectedCatLabel =
+          "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
     }
     _notesService.categoryNameForSheet.add(selectedCatLabel);
     _notesService.loadingManager.add(true);
@@ -292,7 +298,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = SharedPreferencesService().getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now()
+            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -309,8 +316,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var currentTime = DateTime.now();
-      await SharedPreferencesService()
-          .setString('last_used', currentTime.millisecondsSinceEpoch.toString());
+      await SharedPreferencesService().setString(
+          'last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -355,7 +362,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
         !_isLoading &&
         _hasMore) {
       _performSearch('');
@@ -375,7 +383,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
-      stream: AuthService().authState, // Подключаем поток состояния аутентификации
+      stream:
+          AuthService().authState, // Подключаем поток состояния аутентификации
       builder: (context, authSnapshot) {
         final authState = authSnapshot.data;
 
@@ -411,8 +420,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             ],
           ),
           bottomNavigationBar: StreamBuilder<AuthState>(
-              stream: AuthService().authState.distinct(
-                  (prev, next) => prev == next), // Подключаем поток состояния аутентификации
+              stream: AuthService().authState.distinct((prev, next) =>
+                  prev == next), // Подключаем поток состояния аутентификации
               builder: (context, snapshot) {
                 final authState = snapshot.data;
 
@@ -465,7 +474,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     'Популярное',
-                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                    style:
+                        AppTextStyles.s16w600.copyWith(color: AppColors.black),
                   ),
                 ),
               ),
@@ -485,7 +495,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         return Center(
                           child: Text(
                             'Нет данных для отображения',
-                            style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                            style: AppTextStyles.s14w500
+                                .copyWith(color: AppColors.grey),
                           ),
                         );
                       }
@@ -505,20 +516,25 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           );
                         },
                         onTapFavorite: (note) async {
-                          final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+                          final updatedNote =
+                              note.copyWith(isFavorite: !note.isFavorite);
 
                           // Добавляем или удаляем из избранного
                           if (updatedNote.isFavorite) {
-                            await favoritesService.addToFavorites(note.documentId);
+                            await favoritesService
+                                .addToFavorites(note.documentId);
                             favorites.add(note.documentId);
                           } else {
-                            await favoritesService.removeFromFavorites(note.documentId);
-                            favorites.removeWhere((item) => item == note.documentId);
+                            await favoritesService
+                                .removeFromFavorites(note.documentId);
+                            favorites
+                                .removeWhere((item) => item == note.documentId);
                           }
 
                           // Обновляем список
                           setState(() {
-                            final index = _notes.indexWhere((n) => n.documentId == note.documentId);
+                            final index = _notes.indexWhere(
+                                (n) => n.documentId == note.documentId);
                             if (index != -1) {
                               _notes[index] = updatedNote;
                               _streamController.add(_notes); // Обновляем поток
@@ -526,7 +542,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           });
                         },
                         onDeleteNote: (note) async {
-                          await _notesService.deleteNote(documentId: note.documentId);
+                          await _notesService.deleteNote(
+                              documentId: note.documentId);
                         },
                         scrollController: _scrollController,
                       );

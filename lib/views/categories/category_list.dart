@@ -5,16 +5,42 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 
 final List<Map<String, dynamic>> FEATURED = [
-  {"id": 1, "name": "Услуги", "isMain": true},
-  {"id": 9, "name": "Аренда квартир", "isMain": false},
+  {
+    "id": 1,
+    "name": "Услуги",
+    "image": 'assets/images/services.jpg',
+    "isMain": true
+  },
+  {
+    "id": 9,
+    "name": "Аренда квартир",
+    "image": 'assets/images/rent.jpg',
+    "isMain": false
+  },
   {
     "id": 17,
     "name": "Работа",
+    "image": 'assets/images/work.jpg',
     "isMain": true,
   },
-  {"id": 26, "name": "Аренда Машины", "isMain": false},
-  {"id": 31, "name": "Мебель и техника", "isMain": true},
-  {"id": 12, "name": "Электроника", "isMain": true},
+  {
+    "id": 26,
+    "name": "Аренда Машины",
+    "image": 'assets/images/car_rent.jpg',
+    "isMain": false
+  },
+  {
+    "id": 31,
+    "name": "Мебель и техника",
+    "image": 'assets/images/furniture.jpg',
+    "isMain": true
+  },
+  {
+    "id": 12,
+    "name": "Электроника",
+    "image": 'assets/images/electronics.jpg',
+    "isMain": true
+  },
 ];
 
 final CATEGORIES = [

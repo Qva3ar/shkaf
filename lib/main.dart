@@ -88,6 +88,7 @@ void main() async {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          dividerColor: Colors.transparent,
           primaryColor: Colors.white,
           fontFamily: 'Montserrat',
           appBarTheme: const AppBarTheme(

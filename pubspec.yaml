@@ -107,6 +107,13 @@ flutter:
    - assets/icons/google_icon.png
    - assets/icons/googleplay.png
    - assets/icons/shkaf.png
+   - assets/images/img_placeholder.jpeg
+   - assets/images/services.jpg
+   - assets/images/rent.jpg
+   - assets/images/work.jpg
+   - assets/images/car_rent.jpg
+   - assets/images/furniture.jpg
+   - assets/images/electronics.jpg
 
   generate: true
 
