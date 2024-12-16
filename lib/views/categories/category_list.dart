@@ -52,22 +52,27 @@ final CATEGORIES = [
       {
         "id": 2,
         "name": "Красота",
+        "icon": "assets/category_icons/beautiful_icon.svg",
       },
       {
         "id": 3,
         "name": "Ремонт",
+        "icon": "assets/category_icons/repair_icon.svg",
       },
       {
         "id": 5,
         "name": "Уборка",
+        "icon": "assets/category_icons/mop_icon.svg",
       },
       {
         "id": 29,
         "name": "Здоровье",
+        "icon": "assets/category_icons/health_icon.svg",
       },
       {
         "id": 6,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -78,18 +83,22 @@ final CATEGORIES = [
       {
         "id": 8,
         "name": "Продажа квартир",
+        "icon": "assets/category_icons/apartment_icon.svg",
       },
       {
         "id": 9,
         "name": "Аренда Квартир",
+        "icon": "assets/category_icons/hotel-key_icon.svg",
       },
       {
         "id": 10,
         "name": "Земля",
+        "icon": "assets/category_icons/plant_icon.svg",
       },
       {
         "id": 11,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -100,18 +109,22 @@ final CATEGORIES = [
       {
         "id": 13,
         "name": "Телефоны",
+        "icon": "assets/category_icons/mobilephone_icon.svg",
       },
       {
         "id": 14,
         "name": "Компьютеры",
+        "icon": "assets/category_icons/laptop_icon.svg",
       },
       {
         "id": 15,
         "name": "Бытовая техника",
+        "icon": "assets/category_icons/kettle_icon.svg",
       },
       {
         "id": 16,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -122,26 +135,32 @@ final CATEGORIES = [
       {
         "id": 18,
         "name": "Образование",
+        "icon": "assets/category_icons/book_icon.svg",
       },
       {
         "id": 19,
         "name": "Красота/фитнес",
+        "icon": "assets/category_icons/gym_icon.svg",
       },
       {
         "id": 20,
         "name": "Логистика",
+        "icon": "assets/category_icons/logistic_icon.svg",
       },
       {
         "id": 21,
         "name": "Торговля",
+        "icon": "assets/category_icons/shopping-cart_icon.svg",
       },
       {
         "id": 22,
         "name": "Домашний персонал/Сервис и быт",
+        "icon": "assets/category_icons/home-service_icon.svg",
       },
       {
         "id": 23,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -152,22 +171,27 @@ final CATEGORIES = [
       {
         "id": 25,
         "name": "Трансфер",
+        "icon": "assets/category_icons/pickup-car_icon.svg",
       },
       {
         "id": 26,
         "name": "Аренда",
+        "icon": "assets/category_icons/car-key_icon.svg",
       },
       {
         "id": 27,
         "name": "Продажа",
+        "icon": "assets/category_icons/car_icon.svg",
       },
       {
         "id": 30,
         "name": "Ремонт",
+        "icon": "assets/category_icons/car-repair_icon.svg",
       },
       {
         "id": 28,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -178,14 +202,17 @@ final CATEGORIES = [
       {
         "id": 32,
         "name": "Мебель",
+        "icon": "assets/category_icons/furniture_icon.svg",
       },
       {
         "id": 33,
         "name": "Бытовая техника",
+        "icon": "assets/category_icons/kettle_icon.svg",
       },
       {
         "id": 34,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -196,14 +223,17 @@ final CATEGORIES = [
       {
         "id": 36,
         "name": "На заказ",
+        "icon": "assets/category_icons/chiken_icon.svg",
       },
       {
         "id": 37,
         "name": "Мясо",
+        "icon": "assets/category_icons/steak_icon.svg",
       },
       {
         "id": 38,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   },
@@ -214,18 +244,22 @@ final CATEGORIES = [
       {
         "id": 40,
         "name": "Спорт",
+        "icon": "assets/category_icons/tennis_icon.svg",
       },
       {
         "id": 41,
         "name": "Вещи",
+        "icon": "assets/category_icons/socks_icon.svg",
       },
       {
         "id": 42,
         "name": "Инструменты",
+        "icon": "assets/category_icons/drill_icon.svg",
       },
       {
         "id": 43,
         "name": "Прочее",
+        "icon": "assets/category_icons/other_icon.svg",
       },
     ]
   }

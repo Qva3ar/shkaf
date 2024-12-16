@@ -104,6 +104,7 @@ flutter:
    - assets/images/
    - assets/json/
    - assets/icons/
+   - assets/category_icons/
    - assets/icons/google_icon.png
    - assets/icons/googleplay.png
    - assets/icons/shkaf.png
