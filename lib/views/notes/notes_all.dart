@@ -90,7 +90,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         selectedCategory = value;
       });
     });
-    search();
   }
 
   getFavorites() async {
@@ -171,7 +170,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   setSelectedCity(int id) async {
     await SharedPreferencesService().setInt(selectedCityKey, id);
     _notesService.setSelectedId(id);
-    search();
+    await search();
   }
 
   showModal() {
@@ -191,7 +190,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   initializeSpref() async {
     final cityId = SharedPreferencesService().getInt(selectedCityKey) ?? 1;
-    setSelectedCity(cityId);
+    await setSelectedCity(cityId);
     FocusScope.of(context).unfocus();
   }
 
@@ -400,7 +399,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                   child: StreamBuilder<List<CloudNote>>(
                     stream: _streamController.stream,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting || _isLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {

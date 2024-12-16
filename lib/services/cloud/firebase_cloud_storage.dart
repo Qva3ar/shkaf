@@ -27,7 +27,6 @@ class FirebaseCloudStorage {
   String searchStr = '';
   bool isSearching = false;
   bool isSearchingEnded = false;
-  bool isCategorySet = false;
 
   bool showAD = false;
   int maxViewsWithoutAD = 5;
@@ -118,7 +117,6 @@ class FirebaseCloudStorage {
   }
 
   setSelectedId(int id) {
-    isCategorySet = true;
     selectedCityStream.add(id);
   }
 
@@ -127,7 +125,6 @@ class FirebaseCloudStorage {
   }
 
   setCategoryId(int id) {
-    isCategorySet = true;
     categoryIdStream.add(id);
   }
 
@@ -145,7 +142,6 @@ class FirebaseCloudStorage {
   }
 
   setMainCategoryId(int id) {
-    isCategorySet = true;
     mainCategoryIdStream.add(id);
   }
 
