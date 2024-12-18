@@ -5,17 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 
 final List<Map<String, dynamic>> FEATURED = [
-  {
-    "id": 1,
-    "name": "Услуги",
-    "image": 'assets/images/services.jpg',
-    "isMain": true
-  },
+  {"id": 1, "name": "Услуги", "image": 'assets/images/services.jpg', "isMain": true},
   {
     "id": 9,
     "name": "Аренда квартир",
     "image": 'assets/images/rent.jpg',
-    "isMain": false
+    "isMain": false,
+    "mainCatId": 7,
   },
   {
     "id": 17,
@@ -27,20 +23,11 @@ final List<Map<String, dynamic>> FEATURED = [
     "id": 26,
     "name": "Аренда Машины",
     "image": 'assets/images/car_rent.jpg',
-    "isMain": false
+    "isMain": false,
+    "mainCatId": 24,
   },
-  {
-    "id": 31,
-    "name": "Мебель и техника",
-    "image": 'assets/images/furniture.jpg',
-    "isMain": true
-  },
-  {
-    "id": 12,
-    "name": "Электроника",
-    "image": 'assets/images/electronics.jpg',
-    "isMain": true
-  },
+  {"id": 31, "name": "Мебель и техника", "image": 'assets/images/furniture.jpg', "isMain": true},
+  {"id": 12, "name": "Электроника", "image": 'assets/images/electronics.jpg', "isMain": true},
 ];
 
 final CATEGORIES = [
@@ -265,8 +252,7 @@ class CategoryList extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 10.0),
                               child: Card(
                                 color: const Color.fromARGB(255, 244, 237, 196),
-                                child:
-                                    ListTile(title: Text(e['name'].toString())),
+                                child: ListTile(title: Text(e['name'].toString())),
                               ),
                             ))
                       ]))

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
+import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 
 import '../../views/categories/category_list.dart';
 
@@ -20,39 +21,42 @@ Map<String, IconData> categoryIcons = {
   "Всё остальное": Icons.auto_awesome,
 };
 
-Widget featuredList(Function? fun) {
+Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isCreation = false}) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
     child: Column(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-            color: AppColors.lightGrey,
-            child: ListTile(
-              title: Text('Все категории',
-                  style:
-                      (AppTextStyles.s16w600.copyWith(color: AppColors.black))),
-              leading: Container(
-                width: 30.0,
-                height: 30.0,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.violet,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.category,
-                    color: AppColors.white,
-                    size: 16,
+        !isCreation
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  color: AppColors.lightGrey,
+                  child: ListTile(
+                    title: Text('Все категории',
+                        style: (AppTextStyles.s16w600.copyWith(color: AppColors.black))),
+                    leading: Container(
+                      width: 30.0,
+                      height: 30.0,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.violet,
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.category,
+                          color: AppColors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      fun!(0, true, 'Все категории');
+                    },
                   ),
                 ),
-              ),
-              onTap: () => fun!(0, true, 'Все категории'),
-            ),
-          ),
-        ),
+              )
+            : Container(),
         const SizedBox(height: 10),
         Column(
           children: CATEGORIES
@@ -70,15 +74,13 @@ Widget featuredList(Function? fun) {
                   child: Column(
                     children: [
                       Theme(
-                        data: ThemeData()
-                            .copyWith(dividerColor: Colors.transparent),
+                        data: ThemeData().copyWith(dividerColor: Colors.transparent),
                         child: ExpansionTile(
                           collapsedBackgroundColor: AppColors.lightGrey,
                           title: ListTile(
                             title: Text(
                               item['name'].toString(),
-                              style: (AppTextStyles.s16w600
-                                  .copyWith(color: AppColors.black)),
+                              style: (AppTextStyles.s16w600.copyWith(color: AppColors.black)),
                             ),
                             leading: Container(
                               width: 30.0,
@@ -96,16 +98,15 @@ Widget featuredList(Function? fun) {
                               ),
                             ),
                           ),
-                          children: (item['sub_categories'] as List?)!
-                              .map<Widget>((subcategory) {
+                          children: (item['sub_categories'] as List?)!.map<Widget>((subcategory) {
                             return Container(
                               padding: EdgeInsets.only(left: 17),
                               height: 50,
                               child: ListTile(
-                                title: Text(subcategory['name']),
-                                onTap: () => fun!(subcategory['id'], false,
-                                    subcategory['name']),
-                              ),
+                                  title: Text(subcategory['name']),
+                                  onTap: () {
+                                    fun!(subcategory['id'], false, item['id']);
+                                  }),
                             );
                           }).toList(),
                         ),
@@ -183,8 +184,7 @@ Widget featuredGrid(
     padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
     child: GridView.builder(
       physics: const NeverScrollableScrollPhysics(), // Отключаем прокрутку
-      shrinkWrap:
-          true, // Позволяем GridView занимать только необходимое пространство
+      shrinkWrap: true, // Позволяем GridView занимать только необходимое пространство
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3, // 3 колонки
         childAspectRatio: 1.3, // Соотношение сторон
@@ -194,7 +194,7 @@ Widget featuredGrid(
         final category = FEATURED[index];
         return GestureDetector(
           onTap: () {
-            fun!(category['id'], category['isMain'], category['name']);
+            fun!(category['id'], category['isMain'], category['mainCatId']);
           },
           child: Card(
             shape: RoundedRectangleBorder(

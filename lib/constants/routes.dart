@@ -10,9 +10,8 @@ const forgotPassword = '/forgot-password/';
 const emailVerification = '/email-verification/';
 const addScreen = '/add-screen/';
 
-class ListViewArguments {
-  final int categoryId;
-  final int mainCategoryId;
+class DetailsViewAuguments {
+  final String documentId;
 
-  ListViewArguments(this.categoryId, this.mainCategoryId);
+  DetailsViewAuguments(this.documentId);
 }

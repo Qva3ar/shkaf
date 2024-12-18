@@ -103,7 +103,7 @@ class AuthService {
   }
 
   Future<void> signInWithApple() async {
-    final rawNonce = Utils.generateNonce();
+    final rawNonce = generateNonce();
     final nonce = Utils.sha256OfString(rawNonce);
 
     final credential = await SignInWithApple.getAppleIDCredential(
@@ -119,7 +119,11 @@ class AuthService {
       rawNonce: rawNonce,
     );
 
-    await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+    _updateState(AuthState(
+      status: AuthStatus.loggedIn,
+      user: AuthUser.fromFirebase(userCredential.user!),
+    ));
   }
 
   // Метод для сброса пароля
@@ -133,22 +137,26 @@ class AuthService {
 
   Future<void> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
-      _updateState(AuthState(
-        status: AuthStatus.loggedIn,
-        user: AuthUser.fromFirebase(userCredential.user!),
-      ));
+        _updateState(AuthState(
+          status: AuthStatus.loggedIn,
+          user: AuthUser.fromFirebase(userCredential.user!),
+        ));
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

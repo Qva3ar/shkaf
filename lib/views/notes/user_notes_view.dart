@@ -148,66 +148,9 @@ class _UserNotesViewState extends State<UserNotesView> {
                 );
               },
             ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  if (authState?.status == AuthStatus.loggedIn) {
-                    Navigator.of(context).pushNamed(userDetails);
-                  } else {
-                    Navigator.of(context).pushNamed(login);
-                  }
-                },
-                icon: const Icon(
-                  Icons.person_rounded,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
           ),
-          // bottomNavigationBar: StreamBuilder<AuthState>(
-          //     stream: AuthService().authState, // Подключаем поток состояния аутентификации
-          //     builder: (context, snapshot) {
-          //       final authState = snapshot.data;
-
-          //       return CustomBottomNavigationBar(
-          //         currentIndex: currentIndex,
-          //         onTabSelected: (index) {
-          //           setState(() {
-          //             currentIndex = index;
-          //           });
-
-          //           switch (index) {
-          //             case 0:
-          //             // Navigator.of(context).pushReplacementNamed(userNotes);
-          //             // break;
-          //             case 1:
-          //               // showModal();
-          //               Navigator.of(context).pushReplacementNamed(allNotes);
-          //               break;
-          //             case 2:
-          //               if (authState?.status == AuthStatus.loggedIn) {
-          //                 Navigator.of(context).pushNamed(createNoteRoute);
-          //               } else {
-          //                 Navigator.of(context).pushNamed(login);
-          //               }
-          //               break;
-          //             default:
-          //               break;
-          //           }
-          //         },
-          //       );
-          //     }),
           body: Column(
             children: [
-              // SearchAndCityBar(
-              //   onSearch: (text) {
-              //     _performSearch(text, isRefresh: true);
-              //   },
-              //   selectedCityId: _notesService.selectedCityStream.value,
-              //   onCityChanged: (cityId) async {
-              //     setSelectedCity(cityId);
-              //   },
-              // ),
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,
@@ -239,9 +182,9 @@ class _UserNotesViewState extends State<UserNotesView> {
                     final notes = snapshot.data;
                     return NotesGridView(
                       notes: notes ?? [],
-                      onTap: (note) {
+                      onTap: (note) async {
                         _notesService.selectedNote.add(note);
-                        Navigator.push(
+                        final DetailsViewAuguments args = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => NoteDetailsView(
@@ -249,6 +192,15 @@ class _UserNotesViewState extends State<UserNotesView> {
                             ),
                           ),
                         );
+                        if (args.documentId != null) {
+                          setState(() {
+                            // Удаляем элемент
+                            _notes.removeWhere((note) => note.documentId == args.documentId);
+
+                            // Обновляем поток
+                            _streamController.add(_notes);
+                          });
+                        }
                       },
                       onTapFavorite: (note) async {
                         final currentUser = AuthService().currentUser;

@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:crypto/crypto.dart';
 
 Future<String> loadJsonData(path) async {
   return await rootBundle.loadString(path);
@@ -32,8 +33,6 @@ class Debounce {
 }
 
 class Utils {
-  static get sha256 => null;
-
   static String generateNonce([int length = 32]) {
     const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();

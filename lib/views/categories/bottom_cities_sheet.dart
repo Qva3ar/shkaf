@@ -5,25 +5,14 @@ Widget bottomCitiesSheet(Function fun, double initialSize) {
   return DraggableScrollableSheet(
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
-        color: Colors.white,
+        padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius:
+                BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0))),
         child: ListView(
           controller: scrollController,
           children: [
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Card(
-                  child: Text(
-                    "Выберите город",
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        backgroundColor: Color.fromARGB(255, 82, 99, 255),
-                        color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
             ...TURKEY.map((u) => Column(children: [
                   Center(
                       child: Padding(

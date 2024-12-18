@@ -45,8 +45,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   int currentIndex = 1;
 
-  int? categoryId;
-  int? mainCategoryId;
   int views = 0;
   String selectedCategory = "";
   DraggableScrollableController controller = DraggableScrollableController();
@@ -58,6 +56,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   int _page = 0;
   bool _isLoading = false;
   bool _hasMore = true;
+  String searchText = "";
 
   late List<String> favorites = [];
 
@@ -70,7 +69,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     getFavorites();
 
     _notesService = FirebaseCloudStorage();
-    _scrollController = ScrollController(); // Initialize the ScrollController
+    _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
     initializeSpref();
@@ -82,7 +81,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
     });
 
-    // WidgetsBinding.instance.addObserver(this);
     _notesService.getSettings();
 
     _notesService.categoryNameForSheet.listen((value) {
@@ -97,10 +95,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   search() {
-    _performSearch("", isRefresh: true);
+    _performSearch(isRefresh: true);
   }
 
-  Future<void> _performSearch(String? text, {bool isRefresh = false}) async {
+  Future<void> _performSearch({bool isRefresh = false}) async {
     if (_isLoading) return;
 
     setState(() {
@@ -132,7 +130,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     String filtersString = filters.join(' AND ');
 
     var query = SearchForHits(
-        indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filtersString);
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+        query: searchText,
+        filters: filtersString);
+    print("page $query");
+    // print("page $_page");
+    // print("search text $searchText");
 
     final response = await algoliaService.client.searchIndex(request: query);
     print(response.hits.length);
@@ -155,6 +160,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         if (newHits.length < 20) {
           _hasMore = false;
         }
+        print("has more $_hasMore");
         _page++;
         _notes.addAll(newHits);
         _streamController.add(_notes);
@@ -182,8 +188,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       isDismissible: true,
       useRootNavigator: false,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(
-            openWithCategory, 1, true, _notesService.categoryNameForSheet.value, onFeaturedClicked);
+        return bottomDetailsSheet(onFeaturedClicked);
       },
     );
   }
@@ -192,34 +197,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     final cityId = SharedPreferencesService().getInt(selectedCityKey) ?? 1;
     await setSelectedCity(cityId);
     FocusScope.of(context).unfocus();
-  }
-
-  updateWithFaforite(String documentId) {}
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-    getArguments(context);
-  }
-
-  getArguments(context) {
-    if (ModalRoute.of(context)!.settings.arguments != null) {
-      ListViewArguments args = ModalRoute.of(context)!.settings.arguments as ListViewArguments;
-      categoryId = args.categoryId;
-      mainCategoryId = args.mainCategoryId;
-    }
-  }
-
-  openWithCategory(ListViewArguments arg) {
-    _notesService.setCategoryId(arg.categoryId);
-    _notesService.setMainCategoryId(arg.mainCategoryId);
-
-    var selectedCatLabel = getMainCategoryName(arg.mainCategoryId);
-    if (arg.categoryId != 0) {
-      selectedCatLabel = "$selectedCatLabel - ${getCategoryName(arg.categoryId)}";
-    }
-    _notesService.categoryNameForSheet.add(selectedCatLabel);
-    _notesService.loadingManager.add(true);
   }
 
   @override
@@ -254,18 +231,15 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     }
   }
 
-  void onFeaturedClicked(id, isMain, name) {
+  void onFeaturedClicked(id, isMain, mainCatId) {
     if (isMain) {
       _notesService.setCategoryId(0);
       _notesService.setMainCategoryId(id);
-      _notesService.categoryNameForSheet.add(name);
     } else {
       _notesService.setCategoryId(id);
-      _notesService.setMainCategoryId(0);
-      _notesService.categoryNameForSheet.add(name);
+      _notesService.setMainCategoryId(mainCatId);
     }
     search();
-    _notesService.scrollManager.add(true);
     Navigator.pop(context);
   }
 
@@ -293,10 +267,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
-        !_isLoading &&
-        _hasMore) {
-      _performSearch('');
+    var nextPageTrigger = 0.8 * _scrollController.position.maxScrollExtent;
+
+    if (_scrollController.position.pixels > nextPageTrigger) {
+      _performSearch();
     }
   }
 
@@ -333,21 +307,6 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                 );
               },
             ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  if (authState?.status == AuthStatus.loggedIn) {
-                    Navigator.of(context).pushNamed(userDetails);
-                  } else {
-                    Navigator.of(context).pushNamed(login);
-                  }
-                },
-                icon: const Icon(
-                  Icons.person_rounded,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -360,7 +319,10 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
             children: [
               SearchAndCityBar(
                 onSearch: (text) {
-                  _performSearch(text, isRefresh: true);
+                  setState(() {
+                    searchText = text;
+                  });
+                  _performSearch(isRefresh: true);
                 },
                 selectedCityId: _notesService.selectedCityStream.value,
                 onCityChanged: (cityId) async {
@@ -381,25 +343,63 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                     : const SizedBox(
                         height: 50, // Место под рекламу, если она ещё не загрузилась
                       ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Популярное',
-                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    _notesService.mainCategoryIdStream.value != null
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
+                            decoration: BoxDecoration(
+                              color:
+                                  AppColors.violet, // Фон контейнера (можно заменить на любой цвет)
+                              borderRadius: BorderRadius.circular(8), // Закругленные углы
+                            ),
+                            child: Text(
+                              getMainCategoryName(_notesService.mainCategoryIdStream.value),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.white, // Цвет текста
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    _notesService.categoryIdStream.value != 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
+                            decoration: BoxDecoration(
+                              color: AppColors
+                                  .violetLight, // Фон контейнера (можно заменить на любой цвет)
+                              borderRadius: BorderRadius.circular(8), // Закругленные углы
+                            ),
+                            child: Text(
+                              getCategoryName(_notesService.categoryIdStream.value),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.white, // Цвет текста
+                              ),
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
               ),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    await _performSearch('', isRefresh: true);
+                    await _performSearch(isRefresh: true);
                   },
                   child: StreamBuilder<List<CloudNote>>(
                     stream: _streamController.stream,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting || _isLoading) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {

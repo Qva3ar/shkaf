@@ -28,7 +28,8 @@ enum ReportCause { category, forbidden, obscene, fraud, spam, other }
 
 class NoteDetailsView extends StatefulWidget {
   final CloudNote note;
-  const NoteDetailsView({Key? key, required this.note}) : super(key: key);
+  BuildContext? context;
+  NoteDetailsView({Key? key, required this.note, BuildContext? context}) : super(key: key);
 
   @override
   _NoteDetailsViewState createState() => _NoteDetailsViewState();
@@ -64,7 +65,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       }
 
       // Закрытие текущего экрана
-      Navigator.pop(context);
+      Navigator.pop(widget.context ?? context, DetailsViewAuguments(note.documentId));
     } catch (e) {
       // Логирование и обработка ошибки
       showSnackbar(context, 'Ошибка при удалении заметки: $e');
@@ -210,6 +211,54 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      note.mainCategoryId != null
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
+                              decoration: BoxDecoration(
+                                color: AppColors
+                                    .violet, // Фон контейнера (можно заменить на любой цвет)
+                                borderRadius: BorderRadius.circular(8), // Закругленные углы
+                              ),
+                              child: Text(
+                                getMainCategoryName(note.mainCategoryId!),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Размер текста
+                                  color: Colors.white, // Цвет текста
+                                ),
+                              ),
+                            )
+                          : Container(),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      note.categoryId != null
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
+                              decoration: BoxDecoration(
+                                color: AppColors
+                                    .violetLight, // Фон контейнера (можно заменить на любой цвет)
+                                borderRadius: BorderRadius.circular(8), // Закругленные углы
+                              ),
+                              child: Text(
+                                getCategoryName(note.categoryId!),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Размер текста
+                                  color: Colors.white, // Цвет текста
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   Container(
                       decoration: BoxDecoration(
                         // color: const Color.fromARGB(255, 228, 228, 228),
@@ -287,17 +336,19 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Center(
-                    child: AnimatedSmoothIndicator(
-                      activeIndex: _current,
-                      count: note.imagesUrls?.length ?? 1,
-                      effect: const WormEffect(
-                          dotHeight: 7,
-                          dotWidth: 7,
-                          dotColor: Colors.grey,
-                          activeDotColor: Colors.black),
-                    ),
-                  ),
+                  note.imagesUrls != null && note.imagesUrls!.isNotEmpty
+                      ? Center(
+                          child: AnimatedSmoothIndicator(
+                            activeIndex: _current,
+                            count: note.imagesUrls?.length ?? 1,
+                            effect: const WormEffect(
+                                dotHeight: 7,
+                                dotWidth: 7,
+                                dotColor: Colors.grey,
+                                activeDotColor: Colors.black),
+                          ),
+                        )
+                      : Container(),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -526,7 +577,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   //     onPressed: () {
                   //       saveNote();
                   //     },
-                  //     child: const Text("Save"))
+                  //     child: const Text("Save"))ππ
                 ],
               ),
             ),

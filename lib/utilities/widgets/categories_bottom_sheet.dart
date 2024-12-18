@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/constants/app_colors.dart';
 import 'featured_categories.dart';
 
-Widget bottomDetailsSheet(Function fun, double initialSize,
-    bool isMainSelectable, String selectedCat, Function? onFeaturedSelected) {
+Widget bottomDetailsSheet(Function? onFeaturedSelected, {bool isCreation = false}) {
   return DraggableScrollableSheet(
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40.0),
-                topRight: Radius.circular(40.0))),
+            borderRadius:
+                BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0))),
         child: Container(
           padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
           child: ListView(
@@ -47,11 +44,11 @@ Widget bottomDetailsSheet(Function fun, double initialSize,
               //         color: AppColors.white,
               //       )),
               // ),
-              onFeaturedSelected != null
+              onFeaturedSelected != null && !isCreation
                   ? featuredGrid(onFeaturedSelected)
                   : Container(),
               onFeaturedSelected != null
-                  ? featuredList(onFeaturedSelected)
+                  ? featuredList(onFeaturedSelected, isCreation: isCreation)
                   : Container(),
 
               // старые категории

@@ -90,24 +90,6 @@ class FirebaseCloudStorage {
     // print(allData);
   }
 
-  Future<void> initConfig() async {
-    log("ini");
-    remoteConfig = FirebaseRemoteConfig.instance;
-    // await remoteConfig.ensureInitialized();
-    // await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    //   fetchTimeout: Duration(minutes: 1),
-    //   minimumFetchInterval: Duration(seconds: 0),
-    // ));
-
-    _fetchConfig();
-  }
-
-  void _fetchConfig() async {
-    log("fetch config");
-
-    remoteConfig.fetchAndActivate();
-  }
-
   incrimentRecordViewCounter() {
     recordViewCounter.add(recordViewCounter.value + 1);
   }

@@ -315,16 +315,16 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     }
   }
 
-  selectCategory(ListViewArguments arg) {
-    _note?.categoryId = arg.categoryId;
+  selectCategory(id, isMain, mainCatId) {
+    _note?.categoryId = id;
 
     setState(() {
-      categoryId = arg.categoryId;
+      categoryId = id;
       _note = _note;
-      mainCategoryId = arg.mainCategoryId;
+      mainCategoryId = mainCatId;
     });
-    _categoryController.text = getCategoryName(arg.categoryId);
-    // Navigator.pop(context);
+    _categoryController.text = "${getMainCategoryName(mainCatId)} ${getCategoryName(id)}";
+    Navigator.pop(context);
   }
 
   selectCity(int city) {
@@ -355,7 +355,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       isScrollControlled: true,
       isDismissible: true,
       builder: (BuildContext context) {
-        return bottomDetailsSheet(selectCategory, 1, false, "Категории", null);
+        return bottomDetailsSheet(selectCategory, isCreation: true);
       },
     );
   }
@@ -394,7 +394,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               child: Column(
                 children: [
                   imagesUrls.isEmpty
-                      ? Image.asset('assets/images/img_placeholder.jpeg')
+                      ? Image.asset('assets/images/placeholder.png')
                       : CarouselSlider.builder(
                           itemCount: imagesUrls.length,
                           options: CarouselOptions(

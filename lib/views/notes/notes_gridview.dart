@@ -27,7 +27,7 @@ class NotesGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: AutoHeightGridView(
         controller: scrollController,
         shrinkWrap: true,
@@ -65,14 +65,14 @@ class NotesGridView extends StatelessWidget {
                           alignment: Alignment.center,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              note.imagesUrls != null && note.imagesUrls!.isNotEmpty
-                                  ? '${note.imagesUrls![0]}_160x160'
-                                  : 'https://via.placeholder.com/150',
-                              width: 175,
-                              height: 160,
-                              fit: BoxFit.cover,
-                            ),
+                            child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
+                                ? Image.network(
+                                    '${note.imagesUrls![0]}_160x160',
+                                    width: 175,
+                                    height: 160,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset('assets/images/placeholder.png'),
                           ),
                         ),
                         Positioned(

@@ -146,66 +146,9 @@ class _FavoritesViewState extends State<FavoritesView> {
                 );
               },
             ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  if (authState?.status == AuthStatus.loggedIn) {
-                    Navigator.of(context).pushNamed(userDetails);
-                  } else {
-                    Navigator.of(context).pushNamed(login);
-                  }
-                },
-                icon: const Icon(
-                  Icons.person_rounded,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
           ),
-          // bottomNavigationBar: StreamBuilder<AuthState>(
-          //     stream: AuthService().authState, // Подключаем поток состояния аутентификации
-          //     builder: (context, snapshot) {
-          //       final authState = snapshot.data;
-
-          //       return CustomBottomNavigationBar(
-          //         currentIndex: currentIndex,
-          //         onTabSelected: (index) {
-          //           setState(() {
-          //             currentIndex = index;
-          //           });
-
-          //           switch (index) {
-          //             case 0:
-          //             // Navigator.of(context).pushReplacementNamed(userNotes);
-          //             // break;
-          //             case 1:
-          //               // showModal();
-          //               Navigator.of(context).pushReplacementNamed(allNotes);
-          //               break;
-          //             case 2:
-          //               if (authState?.status == AuthStatus.loggedIn) {
-          //                 Navigator.of(context).pushNamed(createNoteRoute);
-          //               } else {
-          //                 Navigator.of(context).pushNamed(login);
-          //               }
-          //               break;
-          //             default:
-          //               break;
-          //           }
-          //         },
-          //       );
-          //     }),
           body: Column(
             children: [
-              // SearchAndCityBar(
-              //   onSearch: (text) {
-              //     _performSearch(text, isRefresh: true);
-              //   },
-              //   selectedCityId: _notesService.selectedCityStream.value,
-              //   onCityChanged: (cityId) async {
-              //     setSelectedCity(cityId);
-              //   },
-              // ),
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,

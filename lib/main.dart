@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
 
         if (state.status == AuthStatus.loggedIn && _redirectRoute != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pushReplacementNamed(_redirectRoute!);
+            Navigator.of(context).pushNamed(_redirectRoute!);
             _redirectRoute = null;
           });
         }
@@ -202,12 +202,14 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           body: _getBody(state),
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,
             onTap: (index) => _onTabSelected(index, state),
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: "Избранные"),
               BottomNavigationBarItem(icon: Icon(Icons.apps), label: "Главная"),
               BottomNavigationBarItem(icon: Icon(Icons.add), label: "Добавить"),
+              BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Профиль"),
             ],
           ),
         );
@@ -224,10 +226,12 @@ class _HomePageState extends State<HomePage> {
         return const NotesAll();
       case 2:
         if (state?.status == AuthStatus.loggedIn) {
-          return const Placeholder();
+          return const NotesAll();
         } else {
           return const LoginView();
         }
+      case 3:
+        return AuthService().currentUser != null ? UserDetails() : const LoginView();
       default:
         return const NotesAll();
     }
@@ -244,8 +248,10 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } else {
-      setState(() {
-        currentIndex = index;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          currentIndex = index;
+        });
       });
     }
   }

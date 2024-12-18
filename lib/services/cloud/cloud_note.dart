@@ -59,7 +59,7 @@ class CloudNote {
       price: hit['price'] ?? 0,
       views: hit['views'] ?? 0,
       categoryId: hit['category_id'],
-      mainCategoryId: hit['main_ategory_id'],
+      mainCategoryId: hit['main_category_id'],
       cityId: hit['city_id'],
       phone: hit['phone'],
       url: hit['url'],

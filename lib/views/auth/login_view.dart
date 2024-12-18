@@ -1,23 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'package:flutter/material.dart';
 import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
 import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:mynotes/constants/app_colors.dart';
 
 class LoginView extends StatefulWidget {
@@ -88,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
 
     try {
       await AuthService().signInWithGoogle();
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (e) {
       await showErrorDialog(context, 'Ошибка входа через Google: ${e.toString()}');
     } finally {
@@ -160,7 +153,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -174,16 +167,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    shouldShowAppleIdAuth
-                        ? GestureDetector(
-                            onTap: _isLoading ? null : _signInWithApple,
-                            child: const Icon(
-                              Icons.apple,
-                              size: 36,
-                              color: Colors.black,
-                            ),
-                          )
-                        : Container(),
                   ],
                 ),
                 const SizedBox(height: 60),
@@ -203,7 +186,16 @@ class _LoginViewState extends State<LoginView> {
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
+                shouldShowAppleIdAuth
+                    ? SignInWithAppleButton(
+                        height: 55,
+                        text: "Войти с помощью Apple",
+                        onPressed: _signInWithApple,
+                      )
+                    : Container(),
+                const SizedBox(height: 40),
+
                 ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, register),
                   style: ElevatedButton.styleFrom(
