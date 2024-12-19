@@ -208,7 +208,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
       var usedLast = SharedPreferencesService().getString('last_used');
       if (usedLast != null) {
-        var threshold = DateTime.now().subtract(const Duration(minutes: 2)); // Порог в 60 минут
+        var threshold = DateTime.now()
+            .subtract(const Duration(minutes: 2)); // Порог в 60 минут
         DateTime dt1 = DateTime.fromMillisecondsSinceEpoch(int.parse(usedLast));
 
         Duration diff = threshold.difference(dt1); // Изменено порядок сравнения
@@ -224,8 +225,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
       }
 
       var currentTime = DateTime.now();
-      await SharedPreferencesService()
-          .setString('last_used', currentTime.millisecondsSinceEpoch.toString());
+      await SharedPreferencesService().setString(
+          'last_used', currentTime.millisecondsSinceEpoch.toString());
 
       print("Current time: ${currentTime.toString()}");
     }
@@ -287,12 +288,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
-      stream: AuthService().authState, // Подключаем поток состояния аутентификации
+      stream:
+          AuthService().authState, // Подключаем поток состояния аутентификации
       builder: (context, authSnapshot) {
         final authState = authSnapshot.data;
         print("notes ALL APPBAR");
 
         return Scaffold(
+          backgroundColor: AppColors.lightGrey,
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
@@ -341,28 +344,21 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         ),
                       )
                     : const SizedBox(
-                        height: 50, // Место под рекламу, если она ещё не загрузилась
+                        height:
+                            50, // Место под рекламу, если она ещё не загрузилась
                       ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     _notesService.mainCategoryIdStream.value != null
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                            decoration: BoxDecoration(
-                              color:
-                                  AppColors.violet, // Фон контейнера (можно заменить на любой цвет)
-                              borderRadius: BorderRadius.circular(8), // Закругленные углы
-                            ),
-                            child: Text(
-                              getMainCategoryName(_notesService.mainCategoryIdStream.value),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14, // Размер текста
-                                color: Colors.white, // Цвет текста
-                              ),
+                        ? Text(
+                            getMainCategoryName(
+                                _notesService.mainCategoryIdStream.value),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14, // Размер текста
+                              color: AppColors.grey, // Цвет текста
                             ),
                           )
                         : Container(),
@@ -370,21 +366,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       width: 8,
                     ),
                     _notesService.categoryIdStream.value != 0
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                            decoration: BoxDecoration(
-                              color: AppColors
-                                  .violetLight, // Фон контейнера (можно заменить на любой цвет)
-                              borderRadius: BorderRadius.circular(8), // Закругленные углы
-                            ),
-                            child: Text(
-                              getCategoryName(_notesService.categoryIdStream.value),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14, // Размер текста
-                                color: Colors.white, // Цвет текста
-                              ),
+                        ? Text(
+                            getCategoryName(
+                                _notesService.categoryIdStream.value),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14, // Размер текста
+                              color: Colors.grey, // Цвет текста
                             ),
                           )
                         : Container(),
@@ -406,7 +394,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                         return Center(
                           child: Text(
                             'Нет данных для отображения',
-                            style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                            style: AppTextStyles.s14w500
+                                .copyWith(color: AppColors.grey),
                           ),
                         );
                       }
@@ -426,7 +415,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           );
                         },
                         onTapFavorite: (note) async {
-                          final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+                          final updatedNote =
+                              note.copyWith(isFavorite: !note.isFavorite);
                           final currentUser = AuthService().currentUser;
 
                           // Проверяем, авторизован ли пользователь
@@ -437,16 +427,20 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
                           // Добавляем или удаляем из избранного
                           if (updatedNote.isFavorite) {
-                            await favoritesService.addToFavorites(note.documentId);
+                            await favoritesService
+                                .addToFavorites(note.documentId);
                             favorites.add(note.documentId);
                           } else {
-                            await favoritesService.removeFromFavorites(note.documentId);
-                            favorites.removeWhere((item) => item == note.documentId);
+                            await favoritesService
+                                .removeFromFavorites(note.documentId);
+                            favorites
+                                .removeWhere((item) => item == note.documentId);
                           }
 
                           // Обновляем список
                           setState(() {
-                            final index = _notes.indexWhere((n) => n.documentId == note.documentId);
+                            final index = _notes.indexWhere(
+                                (n) => n.documentId == note.documentId);
                             if (index != -1) {
                               _notes[index] = updatedNote;
                               _streamController.add(_notes); // Обновляем поток
@@ -454,7 +448,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                           });
                         },
                         onDeleteNote: (note) async {
-                          await _notesService.deleteNote(documentId: note.documentId);
+                          await _notesService.deleteNote(
+                              documentId: note.documentId);
                         },
                         scrollController: _scrollController,
                       );

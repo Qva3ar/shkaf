@@ -29,7 +29,8 @@ enum ReportCause { category, forbidden, obscene, fraud, spam, other }
 class NoteDetailsView extends StatefulWidget {
   final CloudNote note;
   BuildContext? context;
-  NoteDetailsView({Key? key, required this.note, BuildContext? context}) : super(key: key);
+  NoteDetailsView({Key? key, required this.note, BuildContext? context})
+      : super(key: key);
 
   @override
   _NoteDetailsViewState createState() => _NoteDetailsViewState();
@@ -65,7 +66,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       }
 
       // Закрытие текущего экрана
-      Navigator.pop(widget.context ?? context, DetailsViewAuguments(note.documentId));
+      Navigator.pop(
+          widget.context ?? context, DetailsViewAuguments(note.documentId));
     } catch (e) {
       // Логирование и обработка ошибки
       showSnackbar(context, 'Ошибка при удалении заметки: $e');
@@ -98,8 +100,10 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
       print('Warning: attempt to show interstitial before loaded.');
       return;
     }
-    _notesService.interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) => print('ad onAdShowedFullScreenContent.'),
+    _notesService.interstitialAd!.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
@@ -197,7 +201,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
             title: const Text("ШКАФ"),
             actions: const [],
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           floatingActionButton: AuthService().currentUser != null
               ? null
               : DynamicContactButtons(
@@ -214,21 +219,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                   Row(
                     children: [
                       note.mainCategoryId != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                              decoration: BoxDecoration(
-                                color: AppColors
-                                    .violet, // Фон контейнера (можно заменить на любой цвет)
-                                borderRadius: BorderRadius.circular(8), // Закругленные углы
-                              ),
-                              child: Text(
-                                getMainCategoryName(note.mainCategoryId!),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14, // Размер текста
-                                  color: Colors.white, // Цвет текста
-                                ),
+                          ? Text(
+                              getMainCategoryName(note.mainCategoryId!),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.grey, // Цвет текста
                               ),
                             )
                           : Container(),
@@ -236,21 +232,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         width: 8,
                       ),
                       note.categoryId != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                              decoration: BoxDecoration(
-                                color: AppColors
-                                    .violetLight, // Фон контейнера (можно заменить на любой цвет)
-                                borderRadius: BorderRadius.circular(8), // Закругленные углы
-                              ),
-                              child: Text(
-                                getCategoryName(note.categoryId!),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14, // Размер текста
-                                  color: Colors.white, // Цвет текста
-                                ),
+                          ? Text(
+                              getCategoryName(note.categoryId!),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.grey, // Цвет текста
                               ),
                             )
                           : Container(),
@@ -264,7 +251,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         // color: const Color.fromARGB(255, 228, 228, 228),
                         borderRadius: BorderRadius.circular(9),
                       ),
-                      child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
+                      child: note.imagesUrls != null &&
+                              note.imagesUrls!.isNotEmpty
                           ? Stack(
                               children: [
                                 CarouselSlider.builder(
@@ -282,8 +270,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                         });
                                       },
                                     ),
-                                    itemBuilder: (BuildContext context, int itemIndex,
-                                            int pageViewIndex) =>
+                                    itemBuilder: (BuildContext context,
+                                            int itemIndex, int pageViewIndex) =>
                                         Builder(
                                           builder: (BuildContext context) {
                                             return GestureDetector(
@@ -291,18 +279,25 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder: (context) => GalleryWidget(
-                                                            imageUrls: note.imagesUrls ?? [])));
+                                                        builder: (context) =>
+                                                            GalleryWidget(
+                                                                imageUrls:
+                                                                    note.imagesUrls ??
+                                                                        [])));
                                               },
                                               child: Container(
-                                                width: MediaQuery.of(context).size.width,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
                                                 height: 100,
                                                 decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(9),
+                                                  borderRadius:
+                                                      BorderRadius.circular(9),
                                                   image: DecorationImage(
                                                     fit: BoxFit.cover,
-                                                    image:
-                                                        NetworkImage(note.imagesUrls![itemIndex]),
+                                                    image: NetworkImage(
+                                                        note.imagesUrls![
+                                                            itemIndex]),
                                                   ),
                                                 ),
                                               ),
@@ -396,7 +391,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                             ),
                           )
                         : const SizedBox(
-                            height: 50, // Место под рекламу, если она ещё не загрузилась
+                            height:
+                                50, // Место под рекламу, если она ещё не загрузилась
                           ),
                   const SizedBox(height: 25),
                   // note.phone!.isNotEmpty
@@ -430,8 +426,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                               'Выберите причину',
                               style: TextStyle(color: Colors.red),
                             ),
-                            content: StatefulBuilder(
-                                builder: (BuildContext context, StateSetter setState) {
+                            content: StatefulBuilder(builder:
+                                (BuildContext context, StateSetter setState) {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -442,7 +438,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             _report = ReportCause.category;
                                           });
                                         },
-                                        child: const Text('Неверная категория')),
+                                        child:
+                                            const Text('Неверная категория')),
                                     leading: Radio<ReportCause>(
                                       value: ReportCause.category,
                                       groupValue: _report,
@@ -478,7 +475,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                             _report = ReportCause.obscene;
                                           });
                                         },
-                                        child: const Text('Непристойное содержание')),
+                                        child: const Text(
+                                            'Непристойное содержание')),
                                     leading: Radio<ReportCause>(
                                       value: ReportCause.obscene,
                                       groupValue: _report,
@@ -548,7 +546,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                             }),
                             actions: <Widget>[
                               TextButton(
-                                onPressed: () => Navigator.pop(context, 'false'),
+                                onPressed: () =>
+                                    Navigator.pop(context, 'false'),
                                 child: const Text('Отмена'),
                               ),
                               TextButton(
@@ -596,10 +595,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                 children: [
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
                                       child: ElevatedButton(
                                           onPressed: () {
-                                            Navigator.popAndPushNamed(context, updateNoteRoute,
+                                            Navigator.popAndPushNamed(
+                                                context, updateNoteRoute,
                                                 arguments: note);
                                           },
                                           child: const Text("Редактировать")),
@@ -607,14 +608,17 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   ),
                                   Expanded(
                                       child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
                                     child: ElevatedButton(
                                         style: ButtonStyle(
                                           backgroundColor:
-                                              WidgetStateProperty.all<Color>(Colors.red),
+                                              WidgetStateProperty.all<Color>(
+                                                  Colors.red),
                                         ),
                                         onPressed: () async {
-                                          final shouldDelete = await showDeleteDialog(context);
+                                          final shouldDelete =
+                                              await showDeleteDialog(context);
                                           if (shouldDelete) {
                                             removeNote(note);
                                           }

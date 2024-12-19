@@ -65,14 +65,20 @@ class NotesGridView extends StatelessWidget {
                           alignment: Alignment.center,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
-                            child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
+                            child: note.imagesUrls != null &&
+                                    note.imagesUrls!.isNotEmpty
                                 ? Image.network(
                                     '${note.imagesUrls![0]}_160x160',
                                     width: 175,
                                     height: 160,
                                     fit: BoxFit.cover,
                                   )
-                                : Image.asset('assets/images/placeholder.png'),
+                                : Image.asset(
+                                    'assets/images/img_placeholder.jpeg',
+                                    width: 175,
+                                    height: 160,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                         ),
                         Positioned(
@@ -89,7 +95,8 @@ class NotesGridView extends StatelessWidget {
                                 color: Colors.transparent,
                               ),
                               child: note.isFavorite
-                                  ? const Icon(Icons.favorite, size: 16, color: AppColors.red)
+                                  ? const Icon(Icons.favorite,
+                                      size: 16, color: AppColors.red)
                                   : const Icon(Icons.favorite_border,
                                       size: 16, color: AppColors.white),
                             ),
