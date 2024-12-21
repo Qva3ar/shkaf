@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
@@ -100,10 +101,11 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
                           ),
                           children: (item['sub_categories'] as List?)!.map<Widget>((subcategory) {
                             return Container(
-                              padding: EdgeInsets.only(left: 17),
+                              padding: EdgeInsets.only(left: 18),
                               height: 50,
                               child: ListTile(
                                   title: Text(subcategory['name']),
+                                  leading: SvgPicture.asset(subcategory['icon']),
                                   onTap: () {
                                     fun!(subcategory['id'], false, item['id']);
                                   }),
