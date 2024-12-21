@@ -53,7 +53,7 @@ class DynamicContactButtons extends StatelessWidget {
         'icon': Icons.phone,
         'color': Colors.green,
         'action': () => callPhone(phoneNumber!),
-        'label': 'Call',
+        'label': 'Позвонить',
       });
     }
 
@@ -62,41 +62,49 @@ class DynamicContactButtons extends StatelessWidget {
         'icon': Icons.link,
         'color': Colors.orange,
         'action': () => openUrl(link!),
-        'label': 'Link',
+        'label': 'Ссылка',
       });
     }
 
     return Container(
       color: AppColors.purple,
-      child: Card(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: contacts.length == 1
-              ? [
-                  // Растянутая кнопка с текстом
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: contacts[0]['action'],
-                        icon: Icon(contacts[0]['icon'], color: contacts[0]['color']),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Card(
+          elevation: 0,
+          color: AppColors.darkGrey,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: contacts.length == 1
+                ? [
+                    // Растянутая кнопка с текстом
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: contacts[0]['action'],
+                          icon: Icon(contacts[0]['icon'], color: contacts[0]['color']),
 
-                        // style: ElevatedButton.styleFrom(
-                        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        // ),
-                      ),
-                      Text(contacts[0]['label'])
-                    ],
-                  ),
-                ]
-              : contacts.map((contact) {
-                  // Кнопки с иконками
-                  return IconButton(
-                    onPressed: contact['action'],
-                    icon: Icon(contact['icon'], color: contact['color']),
-                    iconSize: 32.0,
-                  );
-                }).toList(),
+                          // style: ElevatedButton.styleFrom(
+                          //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          // ),
+                        ),
+                        Text(
+                          contacts[0]['label'],
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                  ]
+                : contacts.map((contact) {
+                    // Кнопки с иконками
+                    return IconButton(
+                      onPressed: contact['action'],
+                      icon: Icon(contact['icon'], color: contact['color']),
+                      iconSize: 32.0,
+                    );
+                  }).toList(),
+          ),
         ),
       ),
     );

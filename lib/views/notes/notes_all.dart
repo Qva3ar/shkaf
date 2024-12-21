@@ -293,6 +293,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         print("notes ALL APPBAR");
 
         return Scaffold(
+          backgroundColor: AppColors.lightGrey,
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
@@ -343,26 +344,18 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                     : const SizedBox(
                         height: 50, // Место под рекламу, если она ещё не загрузилась
                       ),
+              const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     _notesService.mainCategoryIdStream.value != null
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                            decoration: BoxDecoration(
-                              color:
-                                  AppColors.violet, // Фон контейнера (можно заменить на любой цвет)
-                              borderRadius: BorderRadius.circular(8), // Закругленные углы
-                            ),
-                            child: Text(
-                              getMainCategoryName(_notesService.mainCategoryIdStream.value),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14, // Размер текста
-                                color: Colors.white, // Цвет текста
-                              ),
+                        ? Text(
+                            getMainCategoryName(_notesService.mainCategoryIdStream.value),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14, // Размер текста
+                              color: AppColors.grey, // Цвет текста
                             ),
                           )
                         : Container(),
@@ -370,27 +363,19 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       width: 8,
                     ),
                     _notesService.categoryIdStream.value != 0
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                            decoration: BoxDecoration(
-                              color: AppColors
-                                  .violetLight, // Фон контейнера (можно заменить на любой цвет)
-                              borderRadius: BorderRadius.circular(8), // Закругленные углы
-                            ),
-                            child: Text(
-                              getCategoryName(_notesService.categoryIdStream.value),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14, // Размер текста
-                                color: Colors.white, // Цвет текста
-                              ),
+                        ? Text(
+                            getCategoryName(_notesService.categoryIdStream.value),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14, // Размер текста
+                              color: Colors.grey, // Цвет текста
                             ),
                           )
                         : Container(),
                   ],
                 ),
               ),
+              const SizedBox(height: 4),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {

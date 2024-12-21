@@ -49,13 +49,13 @@ class NotesGridView extends StatelessWidget {
             child: Container(
               width: 183,
               // height: 220,
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 6),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.5),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -72,7 +72,12 @@ class NotesGridView extends StatelessWidget {
                                     height: 160,
                                     fit: BoxFit.cover,
                                   )
-                                : Image.asset('assets/images/placeholder.png'),
+                                : Image.asset(
+                                    'assets/images/img_placeholder.jpeg',
+                                    width: 175,
+                                    height: 160,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                         ),
                         Positioned(

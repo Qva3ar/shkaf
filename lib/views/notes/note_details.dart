@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/typography.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/favorites_services.dart';
 import 'package:mynotes/services/user_service.dart';
 import 'package:mynotes/views/notes/update_note_view.dart';
 import 'package:mynotes/views/widgets/dynamic_contact_btns.dart';
@@ -38,6 +39,9 @@ class NoteDetailsView extends StatefulWidget {
 class _NoteDetailsViewState extends State<NoteDetailsView> {
   late CloudNote note;
   ReportCause? _report = ReportCause.category;
+
+  final FavoritesService favoritesService = FavoritesService();
+
   late final FirebaseCloudStorage _notesService;
   late final UserService userService;
 
@@ -198,7 +202,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
             actions: const [],
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: AuthService().currentUser != null
+          floatingActionButton: note.ownerUserId == userService.currentUser?.uid
               ? null
               : DynamicContactButtons(
                   telegramId: note.telegramId,
@@ -207,28 +211,19 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                 ),
           body: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 75),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 80),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       note.mainCategoryId != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                              decoration: BoxDecoration(
-                                color: AppColors
-                                    .violet, // Фон контейнера (можно заменить на любой цвет)
-                                borderRadius: BorderRadius.circular(8), // Закругленные углы
-                              ),
-                              child: Text(
-                                getMainCategoryName(note.mainCategoryId!),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14, // Размер текста
-                                  color: Colors.white, // Цвет текста
-                                ),
+                          ? Text(
+                              getMainCategoryName(note.mainCategoryId!),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.grey, // Цвет текста
                               ),
                             )
                           : Container(),
@@ -236,21 +231,12 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         width: 8,
                       ),
                       note.categoryId != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4), // Внутренние отступы для текста
-                              decoration: BoxDecoration(
-                                color: AppColors
-                                    .violetLight, // Фон контейнера (можно заменить на любой цвет)
-                                borderRadius: BorderRadius.circular(8), // Закругленные углы
-                              ),
-                              child: Text(
-                                getCategoryName(note.categoryId!),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14, // Размер текста
-                                  color: Colors.white, // Цвет текста
-                                ),
+                          ? Text(
+                              getCategoryName(note.categoryId!),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Размер текста
+                                color: Colors.grey, // Цвет текста
                               ),
                             )
                           : Container(),
@@ -313,8 +299,28 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                   bottom: 8,
                                   right: 12,
                                   child: GestureDetector(
-                                    onTap: () {
-                                      // Логика для добавления в избранное
+                                    onTap: () async {
+                                      final updatedNote =
+                                          note.copyWith(isFavorite: !note.isFavorite);
+                                      final currentUser = AuthService().currentUser;
+
+                                      // Проверяем, авторизован ли пользователь
+                                      if (currentUser == null) {
+                                        Navigator.of(context).pushNamed(login);
+                                        return; // Прерываем выполнение
+                                      }
+
+                                      // Добавляем или удаляем из избранного
+                                      if (updatedNote.isFavorite) {
+                                        await favoritesService.addToFavorites(note.documentId);
+                                      } else {
+                                        await favoritesService.removeFromFavorites(note.documentId);
+                                      }
+
+                                      // Обновляем список
+                                      setState(() {
+                                        note = updatedNote;
+                                      });
                                     },
                                     child: Container(
                                       width: 25,
@@ -322,11 +328,11 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                       decoration: const BoxDecoration(
                                         color: Colors.transparent,
                                       ),
-                                      child: const Icon(
-                                        Icons.favorite_border,
-                                        size: 25,
-                                        color: AppColors.white,
-                                      ),
+                                      child: note.isFavorite
+                                          ? const Icon(Icons.favorite,
+                                              size: 25, color: AppColors.red)
+                                          : const Icon(Icons.favorite_border,
+                                              size: 25, color: AppColors.white),
                                     ),
                                   ),
                                 ),
@@ -398,7 +404,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                         : const SizedBox(
                             height: 50, // Место под рекламу, если она ещё не загрузилась
                           ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 24),
                   // note.phone!.isNotEmpty
                   //     ? Visibility(
                   //         visible: !_isVisible,

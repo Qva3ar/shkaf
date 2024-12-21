@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/app_colors.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -22,7 +23,9 @@ class _GalleryWidgetState extends State<GalleryWidget> {
   Widget build(BuildContext context) {
     log(widget.imageUrls.toString());
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: AppColors.black,
+      ),
       body: Stack(
         fit: StackFit.passthrough,
         children: <Widget>[
