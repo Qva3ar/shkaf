@@ -394,7 +394,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               child: Column(
                 children: [
                   imagesUrls.isEmpty
-                      ? Image.asset('assets/images/placeholder.png')
+                      ? Image.asset('assets/images/img_placeholder.jpeg')
                       : CarouselSlider.builder(
                           itemCount: imagesUrls.length,
                           options: CarouselOptions(
@@ -582,7 +582,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                     backgroundColor: AppColors.violet,
                     minimumSize: const Size.fromHeight(40),
                   ),
-                  onPressed: saveNote,
+                  onPressed: isSaving ? null : saveNote,
                   child: const Text("Сохранить")),
             ),
           ),

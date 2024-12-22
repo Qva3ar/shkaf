@@ -28,7 +28,8 @@ import '../../helpers/utils.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 
 class NotesAll extends StatefulWidget {
-  const NotesAll({Key? key}) : super(key: key);
+  final Function(int)? onFavoriteTap;
+  const NotesAll({Key? key, this.onFavoriteTap}) : super(key: key);
 
   @override
   State<NotesAll> createState() => _NotesViewState();
@@ -416,7 +417,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
                           // Проверяем, авторизован ли пользователь
                           if (currentUser == null) {
-                            Navigator.of(context).pushNamed(login);
+                            // Navigator.of(context).pushNamed(login);
+                            widget.onFavoriteTap!(3);
                             return; // Прерываем выполнение
                           }
 

@@ -68,13 +68,13 @@ class NotesGridView extends StatelessWidget {
                             child: note.imagesUrls != null && note.imagesUrls!.isNotEmpty
                                 ? Image.network(
                                     '${note.imagesUrls![0]}_160x160',
-                                    width: 175,
+                                    width: 180,
                                     height: 160,
                                     fit: BoxFit.cover,
                                   )
                                 : Image.asset(
                                     'assets/images/img_placeholder.jpeg',
-                                    width: 175,
+                                    width: 180,
                                     height: 160,
                                     fit: BoxFit.cover,
                                   ),
@@ -88,15 +88,15 @@ class NotesGridView extends StatelessWidget {
                               onTapFavorite(note);
                             },
                             child: Container(
-                              width: 16,
-                              height: 14.63,
+                              width: 25,
+                              height: 25,
                               decoration: const BoxDecoration(
                                 color: Colors.transparent,
                               ),
                               child: note.isFavorite
-                                  ? const Icon(Icons.favorite, size: 16, color: AppColors.red)
+                                  ? const Icon(Icons.favorite, size: 25, color: AppColors.red)
                                   : const Icon(Icons.favorite_border,
-                                      size: 16, color: AppColors.white),
+                                      size: 25, color: AppColors.white),
                             ),
                           ),
                         ),

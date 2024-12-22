@@ -40,6 +40,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       await AuthService().sendPasswordResetEmail(email);
       await showPasswordResetSentDialog(context);
       _emailController.clear();
+      Navigator.pop(context);
     } catch (e) {
       await showErrorDialog(context, 'Ошибка при отправке email.');
     } finally {
@@ -52,6 +53,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -81,8 +83,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   height: 60,
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor:
-                          WidgetStateProperty.all(AppColors.violet),
+                      backgroundColor: WidgetStateProperty.all(AppColors.violet),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0),
@@ -91,12 +92,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     ),
                     onPressed: _isLoading ? null : _sendPasswordResetEmail,
                     child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: AppColors.white)
+                        ? const CircularProgressIndicator(color: AppColors.white)
                         : Text(
                             'Отправить',
-                            style: AppTextStyles.s16w600
-                                .copyWith(color: AppColors.white),
+                            style: AppTextStyles.s16w600.copyWith(color: AppColors.white),
                           ),
                   ),
                 ),

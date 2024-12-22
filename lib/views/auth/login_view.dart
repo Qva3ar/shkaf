@@ -14,7 +14,7 @@ import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 import 'package:mynotes/constants/app_colors.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key);
+  LoginView({Key? key}) : super(key: key);
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -27,6 +27,7 @@ class _LoginViewState extends State<LoginView> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   bool _isLoading = false;
   bool shouldShowAppleIdAuth = false;
+  bool isFromDetails = false;
 
   @override
   void initState() {
@@ -42,6 +43,18 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         shouldShowAppleIdAuth = true;
       });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('isFromDetailsView')) {
+      final isFromDetailsView = args['isFromDetailsView'] as bool?;
+      // Логика обработки параметра
+      print('isFromDetailsView: $isFromDetailsView');
+      isFromDetails = isFromDetailsView ?? false;
     }
   }
 
@@ -64,7 +77,10 @@ class _LoginViewState extends State<LoginView> {
 
     try {
       await AuthService().loginWithEmailAndPassword(email, password);
-      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      // Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      if (isFromDetails) {
+        Navigator.pop(context);
+      }
     } catch (e) {
       await showErrorDialog(context, 'Ошибка авторизации: ${e.toString()}');
     } finally {
@@ -82,6 +98,9 @@ class _LoginViewState extends State<LoginView> {
     try {
       await AuthService().signInWithGoogle();
       // Navigator.pop(context);
+      if (isFromDetails) {
+        Navigator.pop(context);
+      }
     } catch (e) {
       await showErrorDialog(context, 'Ошибка входа через Google: ${e.toString()}');
     } finally {
@@ -98,7 +117,10 @@ class _LoginViewState extends State<LoginView> {
 
     try {
       await AuthService().signInWithApple();
-      Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
+      if (isFromDetails) {
+        Navigator.pop(context);
+      }
+      // Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
     } catch (e) {
       await showErrorDialog(context, 'Ошибка входа через Apple: ${e.toString()}');
     } finally {
@@ -143,7 +165,7 @@ class _LoginViewState extends State<LoginView> {
                 passwordTextField(_passwordController, 'Введите пароль'),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/forgot-password'),
+                  onTap: () => Navigator.pushNamed(context, forgotPassword),
                   child: const Text(
                     'Забыли пароль?',
                     style: TextStyle(

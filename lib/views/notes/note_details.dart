@@ -306,7 +306,10 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
 
                                       // Проверяем, авторизован ли пользователь
                                       if (currentUser == null) {
-                                        Navigator.of(context).pushNamed(login);
+                                        Navigator.of(context).pushNamed(
+                                          login,
+                                          arguments: {'isFromDetailsView': true},
+                                        );
                                         return; // Прерываем выполнение
                                       }
 

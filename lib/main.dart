@@ -108,22 +108,21 @@ void main() async {
           dividerColor: Colors.transparent,
           primaryColor: Colors.white,
           fontFamily: 'Montserrat',
-          appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white, foregroundColor: Colors.black),
+          appBarTheme:
+              const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 104, 136, 164),
               foregroundColor: Colors.white,
             ),
           ),
-          bottomSheetTheme:
-              const BottomSheetThemeData(backgroundColor: Colors.black54),
+          bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black54),
         ),
         home: const HomePage(),
         routes: {
           createNoteRoute: (context) => const UpdateNoteView(),
           updateNoteRoute: (context) => const UpdateNoteView(),
-          login: (context) => const LoginView(),
+          login: (context) => LoginView(),
           allNotes: (context) => const NotesAll(),
           userDetails: (context) => const UserDetails(),
           userNotes: (context) => UserNotesView(),
@@ -146,6 +145,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 1;
   String? _redirectRoute;
+
+  onFavoriteTaped(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -207,12 +212,10 @@ class _HomePageState extends State<HomePage> {
             currentIndex: currentIndex,
             onTap: (index) => _onTabSelected(index, state),
             items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite_rounded), label: "Избранные"),
+              BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: "Избранные"),
               BottomNavigationBarItem(icon: Icon(Icons.apps), label: "Главная"),
               BottomNavigationBarItem(icon: Icon(Icons.add), label: "Добавить"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person_rounded), label: "Профиль"),
+              BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Профиль"),
             ],
           ),
         );
@@ -224,23 +227,19 @@ class _HomePageState extends State<HomePage> {
     // Здесь вы сами решаете, какие экраны показывать при loggedIn/loggedOut
     switch (currentIndex) {
       case 0:
-        return AuthService().currentUser != null
-            ? FavoritesView()
-            : const LoginView();
+        return AuthService().currentUser != null ? FavoritesView() : LoginView();
       case 1:
-        return const NotesAll();
+        return NotesAll(onFavoriteTap: onFavoriteTaped);
       case 2:
         if (state?.status == AuthStatus.loggedIn) {
-          return const NotesAll();
+          return NotesAll(onFavoriteTap: onFavoriteTaped);
         } else {
-          return const LoginView();
+          return LoginView();
         }
       case 3:
-        return AuthService().currentUser != null
-            ? UserDetails()
-            : const LoginView();
+        return AuthService().currentUser != null ? UserDetails() : LoginView();
       default:
-        return const NotesAll();
+        return NotesAll(onFavoriteTap: onFavoriteTaped);
     }
   }
 
