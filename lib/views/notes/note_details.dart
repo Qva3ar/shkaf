@@ -326,8 +326,8 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
                                       });
                                     },
                                     child: Container(
-                                      width: 25,
-                                      height: 25,
+                                      width: 40,
+                                      height: 40,
                                       decoration: const BoxDecoration(
                                         color: Colors.transparent,
                                       ),
