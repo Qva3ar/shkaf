@@ -203,6 +203,7 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           body: _getBody(state),
           bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: AppColors.white,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,
             onTap: (index) => _onTabSelected(index, state),

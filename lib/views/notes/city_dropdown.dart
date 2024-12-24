@@ -16,6 +16,7 @@ class CityDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
+      dropdownColor: AppColors.lightGrey,
       value: selectedCityId,
       decoration: const InputDecoration(
         isDense: true,
@@ -40,7 +41,8 @@ class CityDropdown extends StatelessWidget {
                 value: city['id'] as int,
                 child: Text(
                   city['name'] as String,
-                  style: AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
+                  style: AppTextStyles.s17w400
+                      .copyWith(color: AppColors.unselectedTextGrey),
                 ),
               ))
           .toList(),

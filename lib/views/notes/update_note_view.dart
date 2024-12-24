@@ -146,7 +146,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               shortAdd: shortAdd,
               views: _note?.views ?? 0,
             )
-            .catchError((error, stackTrace) => {showSnackbar(context, error.toString())});
+            .catchError((error, stackTrace) =>
+                {showSnackbar(context, error.toString())});
       } else {
         try {
           await _notesService.createNewNote(
@@ -154,9 +155,12 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
             text: _textController.text,
             desc: _descController.text,
             url: _urlController.text.isNotEmpty ? _urlController.text : null,
-            telegramId: _telegramIdController.text.isNotEmpty ? _telegramIdController.text : null,
+            telegramId: _telegramIdController.text.isNotEmpty
+                ? _telegramIdController.text
+                : null,
             price: int.tryParse(_priceController.text) ?? 0,
-            phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+            phone:
+                _phoneController.text.isNotEmpty ? _phoneController.text : null,
             categoryId: categoryId ?? 0,
             mainCategoryId: mainCategoryId ?? 0,
             cityId: cityId ?? 0,
@@ -177,7 +181,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   }
 
   Future<List<String>> uploadFilesWEB(List<XFile> images) async {
-    var imageUrls = await Future.wait(images.map((image) => uploadFileWEB(image)));
+    var imageUrls =
+        await Future.wait(images.map((image) => uploadFileWEB(image)));
 
     return imageUrls;
   }
@@ -323,7 +328,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       _note = _note;
       mainCategoryId = mainCatId;
     });
-    _categoryController.text = "${getMainCategoryName(mainCatId)} ${getCategoryName(id)}";
+    _categoryController.text =
+        "${getMainCategoryName(mainCatId)} ${getCategoryName(id)}";
     Navigator.pop(context);
   }
 
@@ -377,6 +383,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     createOrGetExistingNote(context);
 
     return Scaffold(
+      backgroundColor: AppColors.lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
@@ -403,7 +410,8 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                             aspectRatio: 16 / 9,
                             viewportFraction: 0.8,
                           ),
-                          itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
+                          itemBuilder: (BuildContext context, int itemIndex,
+                                  int pageViewIndex) =>
                               Builder(
                                 builder: (BuildContext context) {
                                   return SizedBox(
@@ -411,10 +419,13 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                                       // margin: EdgeInsets.symmetric(horizontal: 5.0),
                                       // decoration:BoxDecoration(color: Colors.amber),
                                       child: isNewImages && !kIsWeb
-                                          ? Image.file(File(imagesUrls[itemIndex]))
+                                          ? Image.file(
+                                              File(imagesUrls[itemIndex]))
                                           : kIsWeb
-                                              ? Image.network(imagesUrls[itemIndex])
-                                              : Image.network(imagesUrls[itemIndex]));
+                                              ? Image.network(
+                                                  imagesUrls[itemIndex])
+                                              : Image.network(
+                                                  imagesUrls[itemIndex]));
                                 },
                               )),
                   ElevatedButton(
@@ -434,8 +445,11 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                           child: Icon(Icons.error, size: 12),
                         ),
                         TextSpan(
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
-                          text: " Слова в заголовке будут использованы для поиска",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 95, 95, 95)),
+                          text:
+                              " Слова в заголовке будут использованы для поиска",
                         ),
                       ],
                     ),
@@ -505,9 +519,11 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                           onChanged: (text) => setState(() {}),
                           controller: _categoryController,
                           validator: catValidator,
-                          decoration: getSelectDecorations("Категория", "Выбрать", showModal)),
+                          decoration: getSelectDecorations(
+                              "Категория", "Выбрать", showModal)),
                       Align(
-                        alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
+                        alignment:
+                            AlignmentDirectional.centerEnd, // <-- SEE HERE
 
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -535,9 +551,11 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                           onChanged: (text) => setState(() {}),
                           controller: _cityController,
                           validator: cityValidator,
-                          decoration: getSelectDecorations('Город', "Выбрать", showModal)),
+                          decoration: getSelectDecorations(
+                              'Город', "Выбрать", showModal)),
                       Align(
-                        alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
+                        alignment:
+                            AlignmentDirectional.centerEnd, // <-- SEE HERE
 
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -599,7 +617,8 @@ InputDecoration getInputDecoration(String title) {
         borderSide: BorderSide(color: Colors.blueAccent, width: 1.0),
       ),
       enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Color.fromARGB(255, 171, 171, 171), width: 1.0),
+        borderSide:
+            BorderSide(color: Color.fromARGB(255, 171, 171, 171), width: 1.0),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -648,7 +667,8 @@ showSnackbar(context, message) {
       padding: const EdgeInsets.all(16),
       height: 90,
       decoration: const BoxDecoration(
-          color: Color(0xFFC72C41), borderRadius: BorderRadius.all(Radius.circular(20))),
+          color: Color(0xFFC72C41),
+          borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Text(message),
     ),
   );
@@ -657,7 +677,8 @@ showSnackbar(context, message) {
 
 class SwitchShortAdds extends StatefulWidget {
   final bool initialValue;
-  const SwitchShortAdds({required this.initialValue, Key? key}) : super(key: key);
+  const SwitchShortAdds({required this.initialValue, Key? key})
+      : super(key: key);
 
   @override
   State<SwitchShortAdds> createState() => _SwitchShortAddsState();
@@ -701,7 +722,8 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
 class AppInheritedWidget extends InheritedWidget {
   final _CreateUpdateNoteViewState shortState;
 
-  const AppInheritedWidget({Key? key, required Widget child, required this.shortState})
+  const AppInheritedWidget(
+      {Key? key, required Widget child, required this.shortState})
       : super(key: key, child: child);
 
   @override

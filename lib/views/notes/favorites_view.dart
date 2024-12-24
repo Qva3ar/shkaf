@@ -97,7 +97,11 @@ class _FavoritesViewState extends State<FavoritesView> {
 
     filters = favorites.map((id) => 'objectID:"$id"').join(' OR ');
     var query = SearchForHits(
-        indexName: 'notes', hitsPerPage: 20, page: _page, query: text, filters: filters);
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+        query: text,
+        filters: filters);
 
     final response = await algoliaService.client.searchIndex(request: query);
 
@@ -127,11 +131,13 @@ class _FavoritesViewState extends State<FavoritesView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
-      stream: AuthService().authState, // Подключаем поток состояния аутентификации
+      stream:
+          AuthService().authState, // Подключаем поток состояния аутентификации
       builder: (context, authSnapshot) {
         final authState = authSnapshot.data;
 
         return Scaffold(
+          backgroundColor: AppColors.lightGrey,
           appBar: AppBar(
             backgroundColor: AppColors.white,
             elevation: 0,
@@ -156,7 +162,8 @@ class _FavoritesViewState extends State<FavoritesView> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     'Избранное',
-                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                    style:
+                        AppTextStyles.s16w600.copyWith(color: AppColors.black),
                   ),
                 ),
               ),
@@ -172,7 +179,8 @@ class _FavoritesViewState extends State<FavoritesView> {
                       return Center(
                         child: Text(
                           'Нет данных для отображения',
-                          style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                          style: AppTextStyles.s14w500
+                              .copyWith(color: AppColors.grey),
                         ),
                       );
                     }
@@ -199,20 +207,25 @@ class _FavoritesViewState extends State<FavoritesView> {
                           Navigator.of(context).pushNamed(login);
                           return; // Прерываем выполнение
                         }
-                        final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+                        final updatedNote =
+                            note.copyWith(isFavorite: !note.isFavorite);
 
                         // Добавляем или удаляем из избранного
                         if (updatedNote.isFavorite) {
-                          await favoritesService.addToFavorites(note.documentId);
+                          await favoritesService
+                              .addToFavorites(note.documentId);
                           favorites.add(note.documentId);
                         } else {
-                          await favoritesService.removeFromFavorites(note.documentId);
-                          favorites.removeWhere((item) => item == note.documentId);
+                          await favoritesService
+                              .removeFromFavorites(note.documentId);
+                          favorites
+                              .removeWhere((item) => item == note.documentId);
                         }
 
                         // Обновляем список
                         setState(() {
-                          final index = _notes.indexWhere((n) => n.documentId == note.documentId);
+                          final index = _notes.indexWhere(
+                              (n) => n.documentId == note.documentId);
                           if (index != -1) {
                             _notes[index] = updatedNote;
                             _streamController.add(_notes); // Обновляем поток
@@ -220,7 +233,8 @@ class _FavoritesViewState extends State<FavoritesView> {
                         });
                       },
                       onDeleteNote: (note) async {
-                        await _notesService.deleteNote(documentId: note.documentId);
+                        await _notesService.deleteNote(
+                            documentId: note.documentId);
                       },
                       scrollController: _scrollController,
                     );

@@ -48,7 +48,7 @@ class NotesGridView extends StatelessWidget {
             },
             child: Container(
               width: 183,
-              // height: 220,
+              height: 257,
               padding: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: AppColors.white,
@@ -58,6 +58,7 @@ class NotesGridView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8.5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Stack(
                       children: [
@@ -105,12 +106,15 @@ class NotesGridView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      note.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.s16w600.copyWith(
-                        color: AppColors.black,
+                    Container(
+                      height: 46,
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        note.text,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.s15w500
+                            .copyWith(color: AppColors.black),
                       ),
                     ),
                     const SizedBox(height: 4),

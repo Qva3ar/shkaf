@@ -197,6 +197,7 @@ class _NoteDetailsViewState extends State<NoteDetailsView> {
         }
       },
       child: Scaffold(
+          backgroundColor: AppColors.lightGrey,
           appBar: AppBar(
             title: const Text("ШКАФ"),
             actions: const [],

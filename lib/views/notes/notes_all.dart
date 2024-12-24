@@ -371,11 +371,22 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                                 _notesService.categoryIdStream.value),
                             style: const TextStyle(
                               fontWeight: FontWeight.w500,
-                              fontSize: 14, // Размер текста
-                              color: Colors.grey, // Цвет текста
+                              fontSize: 14,
+                              color: Colors.grey,
                             ),
                           )
                         : Container(),
+                    Container(
+                      height: 18,
+                      child: IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.clear,
+                            size: 20,
+                            color: AppColors.grey,
+                          )),
+                    )
                   ],
                 ),
               ),
