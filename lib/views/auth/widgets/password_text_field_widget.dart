@@ -14,7 +14,7 @@ Widget passwordTextField(TextEditingController controller, String hintText) {
       fillColor: AppColors.lightGrey,
       focusColor: AppColors.lightGrey,
       hoverColor: AppColors.lightGrey,
-      errorBorder: OutlineInputBorder(
+      errorBorder: const OutlineInputBorder(
         borderSide: BorderSide(
           color: AppColors.lightGrey,
         ),

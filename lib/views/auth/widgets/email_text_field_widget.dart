@@ -21,30 +21,30 @@ Widget emailTextField(TextEditingController controller) {
         ),
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      focusedErrorBorder: const OutlineInputBorder(
+      focusedErrorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: AppColors.lightGrey,
         ),
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      enabledBorder: const OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: AppColors.lightGrey,
         ),
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      focusedBorder: const OutlineInputBorder(
+      focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: AppColors.lightGrey,
         ),
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      contentPadding: const EdgeInsets.only(
+      contentPadding: EdgeInsets.only(
         left: 10,
         right: 10,
       ),
       hintText: 'Введите email',
-      hintStyle: const TextStyle(
+      hintStyle: TextStyle(
         fontSize: 16,
         color: AppColors.hintTextColor,
         fontWeight: FontWeight.w500,

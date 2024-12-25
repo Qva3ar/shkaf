@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/constants/app_colors.dart';
 import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/enums/menu_action.dart';
-import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/algolia_search.dart';
 import 'package:mynotes/services/auth/auth_state.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
@@ -14,7 +12,6 @@ import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/services/favorites_services.dart';
 import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
-import 'package:mynotes/utilities/widgets/custom_bottom_navigation_bar.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
 

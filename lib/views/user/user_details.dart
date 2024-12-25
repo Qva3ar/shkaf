@@ -76,7 +76,7 @@ class _UserDetailsState extends State<UserDetails> {
           const SizedBox(
               height: 200,
               width: 200,
-              child: const CircleAvatar(
+              child: CircleAvatar(
                   backgroundImage:
                       AssetImage('assets/images/img_placeholder.jpeg'))),
           const SizedBox(height: 20),
@@ -98,7 +98,7 @@ class _UserDetailsState extends State<UserDetails> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => UserNotesView(),
+                    builder: (context) => const UserNotesView(),
                   ),
                 );
               },
@@ -109,9 +109,9 @@ class _UserDetailsState extends State<UserDetails> {
             color: Colors.white,
             width: double.infinity,
             child: ListTile(
-              leading: Icon(Icons.support_agent),
-              title: Text('Связаться с нами'),
-              trailing: Icon(Icons.create),
+              leading: const Icon(Icons.support_agent),
+              title: const Text('Связаться с нами'),
+              trailing: const Icon(Icons.create),
               onTap: () {
                 Utils.openSupportUrl();
               },
@@ -122,9 +122,9 @@ class _UserDetailsState extends State<UserDetails> {
             color: Colors.white,
             width: double.infinity,
             child: ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Выйти'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.logout),
+              title: const Text('Выйти'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 AuthService().logout();
                 Navigator.of(context)

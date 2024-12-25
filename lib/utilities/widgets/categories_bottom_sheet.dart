@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'featured_categories.dart';
 
-Widget bottomDetailsSheet(Function? onFeaturedSelected, {bool isCreation = false}) {
+Widget bottomDetailsSheet(Function? onFeaturedSelected,
+    {bool isCreation = false}) {
   return DraggableScrollableSheet(
     builder: (BuildContext context, ScrollController scrollController) {
       return Container(
         decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius:
-                BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0))),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40.0),
+                topRight: Radius.circular(40.0))),
         child: Container(
-          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
           child: ListView(
             controller: scrollController,
             children: [

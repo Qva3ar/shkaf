@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mynotes/constants/app_colors.dart';
-import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
@@ -19,7 +18,6 @@ import 'package:mynotes/views/categories/bottom_cities_sheet.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/notes/validators/validators.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '/views/notes/notes_all.dart';
 
 class UpdateNoteView extends StatefulWidget {
   const UpdateNoteView({Key? key}) : super(key: key);

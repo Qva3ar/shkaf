@@ -113,7 +113,7 @@ class NotesGridView extends StatelessWidget {
                         note.text,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.s15w500
+                        style: AppTextStyles.s14w500
                             .copyWith(color: AppColors.black),
                       ),
                     ),

@@ -21,7 +21,8 @@ Map<String, IconData> categoryIcons = {
   "Всё остальное": Icons.auto_awesome,
 };
 
-Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isCreation = false}) {
+Widget featuredList(Function? fun,
+    {FirebaseCloudStorage? notesService, bool isCreation = false}) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
     child: Column(
@@ -30,11 +31,12 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                   color: AppColors.lightGrey,
                   child: ListTile(
                     title: Text('Все категории',
-                        style: (AppTextStyles.s16w600.copyWith(color: AppColors.black))),
+                        style: (AppTextStyles.s16w600
+                            .copyWith(color: AppColors.black))),
                     leading: Container(
                       width: 30.0,
                       height: 30.0,
@@ -74,13 +76,15 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
                   child: Column(
                     children: [
                       Theme(
-                        data: ThemeData().copyWith(dividerColor: Colors.transparent),
+                        data: ThemeData()
+                            .copyWith(dividerColor: Colors.transparent),
                         child: ExpansionTile(
                           collapsedBackgroundColor: AppColors.lightGrey,
                           title: ListTile(
                             title: Text(
                               item['name'].toString(),
-                              style: (AppTextStyles.s16w600.copyWith(color: AppColors.black)),
+                              style: (AppTextStyles.s16w600
+                                  .copyWith(color: AppColors.black)),
                             ),
                             leading: Container(
                               width: 30.0,
@@ -98,9 +102,10 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
                               ),
                             ),
                           ),
-                          children: (item['sub_categories'] as List?)!.map<Widget>((subcategory) {
+                          children: (item['sub_categories'] as List?)!
+                              .map<Widget>((subcategory) {
                             return Container(
-                              padding: EdgeInsets.only(left: 17),
+                              padding: const EdgeInsets.only(left: 17),
                               height: 50,
                               child: ListTile(
                                   title: Text(subcategory['name']),
@@ -184,7 +189,8 @@ Widget featuredGrid(
     padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
     child: GridView.builder(
       physics: const NeverScrollableScrollPhysics(), // Отключаем прокрутку
-      shrinkWrap: true, // Позволяем GridView занимать только необходимое пространство
+      shrinkWrap:
+          true, // Позволяем GridView занимать только необходимое пространство
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3, // 3 колонки
         childAspectRatio: 1.3, // Соотношение сторон

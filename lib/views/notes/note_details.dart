@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -17,7 +16,6 @@ import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utilities/helpers/ad_helper.dart';
-import 'package:mynotes/utilities/helpers/utilis-funs.dart';
 import 'package:mynotes/utilities/dialogs/delete_dialog.dart';
 import 'package:mynotes/views/categories/category_list.dart';
 import 'package:mynotes/views/shared/gallery.dart';

@@ -126,7 +126,7 @@ void main() async {
           login: (context) => const LoginView(),
           allNotes: (context) => const NotesAll(),
           userDetails: (context) => const UserDetails(),
-          userNotes: (context) => UserNotesView(),
+          userNotes: (context) => const UserNotesView(),
           register: (context) => const RegisterView(),
           forgotPassword: (context) => const ForgotPasswordView(),
           emailVerification: (context) => const VerifyEmailView(),
@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
     switch (currentIndex) {
       case 0:
         return AuthService().currentUser != null
-            ? FavoritesView()
+            ? const FavoritesView()
             : const LoginView();
       case 1:
         return const NotesAll();
@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
         }
       case 3:
         return AuthService().currentUser != null
-            ? UserDetails()
+            ? const UserDetails()
             : const LoginView();
       default:
         return const NotesAll();

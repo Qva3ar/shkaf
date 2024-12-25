@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:mynotes/services/cloud/cloud_storage_constants.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -65,10 +62,14 @@ class CloudNote {
       url: hit['url'],
       isFavorite: hit['isFavorite'] ?? false,
       telegramId: hit['telegramId'],
-      imagesUrls: (hit['imageUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
-      reports: (hit['reports'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
-      updatedAt:
-          hit['updated_at'] != null ? DateTime.fromMillisecondsSinceEpoch(hit['updated_at']) : null,
+      imagesUrls: (hit['imageUrls'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
+      reports:
+          (hit['reports'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
+      updatedAt: hit['updated_at'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(hit['updated_at'])
+          : null,
       createdAt: DateTime.fromMillisecondsSinceEpoch(hit['created_at']),
       shortAdd: hit['short_add'] ?? false,
     );

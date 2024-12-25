@@ -95,7 +95,11 @@ class _UserNotesViewState extends State<UserNotesView> {
 
     final filters = 'user_id:${AuthService().currentUser?.uid}';
     var query = SearchForHits(
-        indexName: 'notes', hitsPerPage: 20, page: _page, query: "", filters: filters);
+        indexName: 'notes',
+        hitsPerPage: 20,
+        page: _page,
+        query: "",
+        filters: filters);
 
     try {
       final response = await algoliaService.client.searchIndex(request: query);
@@ -129,7 +133,8 @@ class _UserNotesViewState extends State<UserNotesView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
-      stream: AuthService().authState, // Подключаем поток состояния аутентификации
+      stream:
+          AuthService().authState, // Подключаем поток состояния аутентификации
       builder: (context, authSnapshot) {
         final authState = authSnapshot.data;
 
@@ -158,7 +163,8 @@ class _UserNotesViewState extends State<UserNotesView> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     'Ваши объявления',
-                    style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
+                    style:
+                        AppTextStyles.s16w600.copyWith(color: AppColors.black),
                   ),
                 ),
               ),
@@ -174,7 +180,8 @@ class _UserNotesViewState extends State<UserNotesView> {
                       return Center(
                         child: Text(
                           'Нет данных для отображения',
-                          style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                          style: AppTextStyles.s14w500
+                              .copyWith(color: AppColors.grey),
                         ),
                       );
                     }
@@ -192,15 +199,14 @@ class _UserNotesViewState extends State<UserNotesView> {
                             ),
                           ),
                         );
-                        if (args.documentId != null) {
-                          setState(() {
-                            // Удаляем элемент
-                            _notes.removeWhere((note) => note.documentId == args.documentId);
+                        setState(() {
+                          // Удаляем элемент
+                          _notes.removeWhere(
+                              (note) => note.documentId == args.documentId);
 
-                            // Обновляем поток
-                            _streamController.add(_notes);
-                          });
-                        }
+                          // Обновляем поток
+                          _streamController.add(_notes);
+                        });
                       },
                       onTapFavorite: (note) async {
                         final currentUser = AuthService().currentUser;
@@ -210,20 +216,25 @@ class _UserNotesViewState extends State<UserNotesView> {
                           Navigator.of(context).pushNamed(login);
                           return; // Прерываем выполнение
                         }
-                        final updatedNote = note.copyWith(isFavorite: !note.isFavorite);
+                        final updatedNote =
+                            note.copyWith(isFavorite: !note.isFavorite);
 
                         // Добавляем или удаляем из избранного
                         if (updatedNote.isFavorite) {
-                          await favoritesService.addToFavorites(note.documentId);
+                          await favoritesService
+                              .addToFavorites(note.documentId);
                           favorites.add(note.documentId);
                         } else {
-                          await favoritesService.removeFromFavorites(note.documentId);
-                          favorites.removeWhere((item) => item == note.documentId);
+                          await favoritesService
+                              .removeFromFavorites(note.documentId);
+                          favorites
+                              .removeWhere((item) => item == note.documentId);
                         }
 
                         // Обновляем список
                         setState(() {
-                          final index = _notes.indexWhere((n) => n.documentId == note.documentId);
+                          final index = _notes.indexWhere(
+                              (n) => n.documentId == note.documentId);
                           if (index != -1) {
                             _notes[index] = updatedNote;
                             _streamController.add(_notes); // Обновляем поток
@@ -231,7 +242,8 @@ class _UserNotesViewState extends State<UserNotesView> {
                         });
                       },
                       onDeleteNote: (note) async {
-                        await _notesService.deleteNote(documentId: note.documentId);
+                        await _notesService.deleteNote(
+                            documentId: note.documentId);
                       },
                       scrollController: _scrollController,
                     );
