@@ -244,6 +244,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     Navigator.pop(context);
   }
 
+  void resetCategory() {
+    _notesService.setCategoryId(0);
+    _notesService.setMainCategoryId(0);
+
+    search();
+  }
+
   late List<CloudNote> _allNotes = []; // Declare a state variable
 
   void _loadBannerAd() {
@@ -368,9 +375,22 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                             getCategoryName(_notesService.categoryIdStream.value),
                             style: const TextStyle(
                               fontWeight: FontWeight.w500,
-                              fontSize: 14, // Размер текста
-                              color: Colors.grey, // Цвет текста
+                              fontSize: 14,
+                              color: Colors.grey,
                             ),
+                          )
+                        : Container(),
+                    _notesService.mainCategoryIdStream.value != 0
+                        ? Container(
+                            height: 18,
+                            child: IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: resetCategory,
+                                icon: const Icon(
+                                  Icons.clear,
+                                  size: 20,
+                                  color: AppColors.grey,
+                                )),
                           )
                         : Container(),
                   ],

@@ -102,7 +102,8 @@ class _LoginViewState extends State<LoginView> {
         Navigator.pop(context);
       }
     } catch (e) {
-      await showErrorDialog(context, 'Ошибка входа через Google: ${e.toString()}');
+      await showErrorDialog(
+          context, 'Ошибка входа через Google: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -122,7 +123,8 @@ class _LoginViewState extends State<LoginView> {
       }
       // Navigator.of(context).pushNamedAndRemoveUntil(allNotes, (route) => false);
     } catch (e) {
-      await showErrorDialog(context, 'Ошибка входа через Apple: ${e.toString()}');
+      await showErrorDialog(
+          context, 'Ошибка входа через Apple: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -179,7 +181,7 @@ class _LoginViewState extends State<LoginView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Войдите с помощью"),
+                    const Text("Войдите с помощью"),
                     GestureDetector(
                       onTap: _isLoading ? null : _signInWithGoogle,
                       child: Image.asset(

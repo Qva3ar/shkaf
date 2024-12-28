@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/app_colors.dart';
+import 'package:mynotes/constants/app_text_styles.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/helpers/utilis-funs.dart';
@@ -20,7 +22,8 @@ class _UserDetailsState extends State<UserDetails> {
       return true;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка при удалении аккаунта: ${e.toString()}')),
+        SnackBar(
+            content: Text('Ошибка при удалении аккаунта: ${e.toString()}')),
       );
       return false;
     }
@@ -61,6 +64,7 @@ class _UserDetailsState extends State<UserDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lightGrey,
       appBar: AppBar(
         title: const Text("Мой профиль"),
       ),
@@ -72,12 +76,16 @@ class _UserDetailsState extends State<UserDetails> {
           const SizedBox(
               height: 200,
               width: 200,
-              child: const CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/img_placeholder.jpeg'))),
+              child: CircleAvatar(
+                  backgroundImage:
+                      AssetImage('assets/images/img_placeholder.jpeg'))),
           const SizedBox(height: 20),
-          Text(
-            currentUser?.email ?? '',
-            style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              currentUser?.email ?? '',
+              style: AppTextStyles.s20w700,
+            ),
           ),
           const SizedBox(height: 30),
           Container(
@@ -90,7 +98,7 @@ class _UserDetailsState extends State<UserDetails> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => UserNotesView(),
+                    builder: (context) => const UserNotesView(),
                   ),
                 );
               },
@@ -101,9 +109,9 @@ class _UserDetailsState extends State<UserDetails> {
             color: Colors.white,
             width: double.infinity,
             child: ListTile(
-              leading: Icon(Icons.lock),
-              title: Text('Связаться с нами'),
-              trailing: Icon(Icons.create),
+              leading: const Icon(Icons.support_agent),
+              title: const Text('Связаться с нами'),
+              trailing: const Icon(Icons.create),
               onTap: () {
                 Utils.openSupportUrl();
               },
@@ -114,12 +122,13 @@ class _UserDetailsState extends State<UserDetails> {
             color: Colors.white,
             width: double.infinity,
             child: ListTile(
-              leading: Icon(Icons.support_agent),
-              title: Text('Выйти'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.logout),
+              title: const Text('Выйти'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 AuthService().logout();
-                Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/', (route) => false);
               },
             ),
           ),

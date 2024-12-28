@@ -31,7 +31,7 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                   color: AppColors.lightGrey,
                   child: ListTile(
                     title: Text('Все категории',
@@ -101,7 +101,7 @@ Widget featuredList(Function? fun, {FirebaseCloudStorage? notesService, bool isC
                           ),
                           children: (item['sub_categories'] as List?)!.map<Widget>((subcategory) {
                             return Container(
-                              padding: EdgeInsets.only(left: 18),
+                              padding: const EdgeInsets.only(left: 17),
                               height: 50,
                               child: ListTile(
                                   title: Text(subcategory['name']),

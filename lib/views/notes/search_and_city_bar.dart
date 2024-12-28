@@ -34,7 +34,7 @@ class _SearchAndCityBarState extends State<SearchAndCityBar> {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
+            SizedBox(
               width: 130,
               child: CityDropdown(
                 selectedCityId: widget.selectedCityId,

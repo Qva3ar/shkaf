@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/extensions/buildcontext/loc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mynotes/constants/app_colors.dart';
-import 'package:mynotes/constants/app_text_styles.dart';
-import 'package:mynotes/views/auth/login_view.dart';
-import 'package:mynotes/views/auth/widgets/email_text_field_widget.dart';
-import 'package:mynotes/views/auth/widgets/password_text_field_widget.dart';
 
 // void registerScreen(BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) {
 //   final _emailController = TextEditingController();
@@ -232,11 +223,14 @@ class _RegisterViewState extends State<RegisterView> {
 
   void _sendVerificationEmail() async {
     try {
-      await _authService.sendEmailVerification(); // Метод для отправки верификационного письма
+      await _authService
+          .sendEmailVerification(); // Метод для отправки верификационного письма
       Navigator.pushNamed(context, emailVerification);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.loc.errorSendingEmail)), // Уведомление об ошибке
+        SnackBar(
+            content:
+                Text(context.loc.errorSendingEmail)), // Уведомление об ошибке
       );
     }
   }
@@ -273,7 +267,9 @@ class _RegisterViewState extends State<RegisterView> {
               // ],
               TextFormField(
                 style: const TextStyle(
-                    fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold),
                 controller: _email,
                 enableSuggestions: false,
                 autocorrect: false,

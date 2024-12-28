@@ -125,7 +125,7 @@ void main() async {
           login: (context) => LoginView(),
           allNotes: (context) => const NotesAll(),
           userDetails: (context) => const UserDetails(),
-          userNotes: (context) => UserNotesView(),
+          userNotes: (context) => const UserNotesView(),
           register: (context) => const RegisterView(),
           forgotPassword: (context) => const ForgotPasswordView(),
           emailVerification: (context) => const VerifyEmailView(),
@@ -208,6 +208,7 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           body: _getBody(state),
           bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: AppColors.white,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,
             onTap: (index) => _onTabSelected(index, state),

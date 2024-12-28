@@ -21,6 +21,7 @@ class SearchBarWidget extends StatefulWidget {
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -38,9 +39,15 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     super.dispose();
   }
 
+  void _clearText() {
+    _controller.clear();
+    widget.searchcb('');
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: _controller,
       focusNode: _focusNode,
       decoration: InputDecoration(
         isDense: true,
@@ -58,13 +65,18 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
         hintText: 'Поиск',
-        hintStyle: AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
+        hintStyle:
+            AppTextStyles.s17w400.copyWith(color: AppColors.unselectedTextGrey),
         filled: true,
         fillColor: AppColors.lightGrey,
         prefixIcon: const Icon(
           Icons.search_rounded,
           size: 25,
           color: AppColors.unselectedTextGrey,
+        ),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.clear, color: AppColors.unselectedTextGrey),
+          onPressed: _clearText,
         ),
       ),
       onChanged: widget.searchcb,
