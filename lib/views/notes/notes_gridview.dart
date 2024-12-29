@@ -49,7 +49,7 @@ class NotesGridView extends StatelessWidget {
             child: Container(
               width: 183,
               height: 257,
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 6),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(6),

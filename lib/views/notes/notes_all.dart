@@ -61,6 +61,9 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
 
   late List<String> favorites = [];
 
+  Timer? _searchDebounceTimer;
+  Timer? _scrollDebounceTimer;
+
   final algoliaService = AlgoliaService();
 
   @override
@@ -102,6 +105,13 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   Future<void> _performSearch({bool isRefresh = false}) async {
     if (_isLoading) return;
 
+    if (!isRefresh) {
+      if (_scrollDebounceTimer?.isActive ?? false) {
+        return;
+      }
+      _scrollDebounceTimer = Timer(const Duration(milliseconds: 1000), () {});
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -136,7 +146,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         page: _page,
         query: searchText,
         filters: filtersString);
-    print("page $query");
+    // print("page $query");
     // print("page $_page");
     // print("search text $searchText");
 
@@ -172,6 +182,23 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
         _hasMore = false;
       });
     }
+  }
+
+  void searchWithDebounce(String text) {
+    // Cancel any previous timer
+    if (_searchDebounceTimer?.isActive ?? false) {
+      _searchDebounceTimer!.cancel();
+    }
+
+    // Set the search text immediately
+    setState(() {
+      searchText = text;
+    });
+
+    // Start a new timer
+    _searchDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(isRefresh: true);
+    });
   }
 
   setSelectedCity(int id) async {
@@ -275,7 +302,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   void _onScroll() {
-    var nextPageTrigger = 0.8 * _scrollController.position.maxScrollExtent;
+    var nextPageTrigger = 0.7 * _scrollController.position.maxScrollExtent;
 
     if (_scrollController.position.pixels > nextPageTrigger) {
       _performSearch();
@@ -287,6 +314,8 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _streamController.close();
+    _searchDebounceTimer?.cancel();
+    _scrollDebounceTimer?.cancel();
     // client.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -327,12 +356,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
           body: Column(
             children: [
               SearchAndCityBar(
-                onSearch: (text) {
-                  setState(() {
-                    searchText = text;
-                  });
-                  _performSearch(isRefresh: true);
-                },
+                onSearch: searchWithDebounce,
                 selectedCityId: _notesService.selectedCityStream.value,
                 onCityChanged: (cityId) async {
                   setSelectedCity(cityId);
@@ -410,10 +434,12 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       }
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Center(
-                          child: Text(
-                            'Нет данных для отображения',
-                            style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
-                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  'Нет данных для отображения',
+                                  style: AppTextStyles.s14w500.copyWith(color: AppColors.grey),
+                                ),
                         );
                       }
 
