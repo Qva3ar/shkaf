@@ -16,6 +16,11 @@ class DynamicContactButtons extends StatelessWidget {
 
   // Метод для открытия ссылки
   Future<void> openUrl(String urlString) async {
+    // Проверяем, начинается ли URL с "http://" или "https://"
+    if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
+      urlString = 'https://$urlString'; // Добавляем "https://" по умолчанию
+    }
+
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
@@ -24,7 +29,9 @@ class DynamicContactButtons extends StatelessWidget {
 
   // Метод для открытия Telegram
   Future<void> openTelegram(String telegramId) async {
-    final String url = 'https://t.me/$telegramId';
+    final String sanitizedTelegramId =
+        telegramId.startsWith('@') ? telegramId.substring(1) : telegramId;
+    final String url = 'https://t.me/$sanitizedTelegramId';
     await openUrl(url);
   }
 

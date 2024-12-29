@@ -420,9 +420,9 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                       final notes = snapshot.data;
                       return NotesGridView(
                         notes: notes ?? [],
-                        onTap: (note) {
+                        onTap: (note) async {
                           _notesService.selectedNote.add(note);
-                          Navigator.push(
+                          final DetailsViewAuguments args = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => NoteDetailsView(
@@ -430,6 +430,14 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
                               ),
                             ),
                           );
+
+                          setState(() {
+                            // Удаляем элемент
+                            _notes.removeWhere((note) => note.documentId == args.documentId);
+
+                            // Обновляем поток
+                            _streamController.add(_notes);
+                          });
                         },
                         onTapFavorite: (note) async {
                           final updatedNote = note.copyWith(isFavorite: !note.isFavorite);

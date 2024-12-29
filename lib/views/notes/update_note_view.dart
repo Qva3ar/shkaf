@@ -106,6 +106,12 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
 
   saveNote() async {
     if (_formKey.currentState!.validate()) {
+      if (_phoneController.text.isEmpty &&
+          _urlController.text.isEmpty &&
+          _telegramIdController.text.isEmpty) {
+        showSnackbar(context, "Заполните хотя бы одно поле: телефон, URL или Telegram ID");
+        return;
+      }
       late List<String> imageUrls;
       setState(() {
         isSaving = true;
@@ -144,8 +150,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
               shortAdd: shortAdd,
               views: _note?.views ?? 0,
             )
-            .catchError((error, stackTrace) =>
-                {showSnackbar(context, error.toString())});
+            .catchError((error, stackTrace) => {showSnackbar(context, error.toString())});
       } else {
         try {
           await _notesService.createNewNote(
@@ -153,12 +158,9 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
             text: _textController.text,
             desc: _descController.text,
             url: _urlController.text.isNotEmpty ? _urlController.text : null,
-            telegramId: _telegramIdController.text.isNotEmpty
-                ? _telegramIdController.text
-                : null,
+            telegramId: _telegramIdController.text.isNotEmpty ? _telegramIdController.text : null,
             price: int.tryParse(_priceController.text) ?? 0,
-            phone:
-                _phoneController.text.isNotEmpty ? _phoneController.text : null,
+            phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
             categoryId: categoryId ?? 0,
             mainCategoryId: mainCategoryId ?? 0,
             cityId: cityId ?? 0,
@@ -179,8 +181,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   }
 
   Future<List<String>> uploadFilesWEB(List<XFile> images) async {
-    var imageUrls =
-        await Future.wait(images.map((image) => uploadFileWEB(image)));
+    var imageUrls = await Future.wait(images.map((image) => uploadFileWEB(image)));
 
     return imageUrls;
   }
@@ -302,22 +303,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
     // return widgetNote;
   }
 
-  void _deleteNoteIfTextIsEmpty() {
-    final note = _note;
-    if (_textController.text.isEmpty && note != null) {
-      // _notesService.deleteNote(documentId: note.documentId);
-    }
-  }
-
-  void _saveNoteIfTextNotEmpty() async {
-    final note = _note;
-    final text = _textController.text;
-    if (note != null && text.isNotEmpty) {
-      // await _notesService.updateNote(
-      //     documentId: note.documentId, text: text, imageUrls: imagesUrls);
-    }
-  }
-
   selectCategory(id, isMain, mainCatId) {
     _note?.categoryId = id;
 
@@ -326,8 +311,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       _note = _note;
       mainCategoryId = mainCatId;
     });
-    _categoryController.text =
-        "${getMainCategoryName(mainCatId)} ${getCategoryName(id)}";
+    _categoryController.text = "${getMainCategoryName(mainCatId)} ${getCategoryName(id)}";
     Navigator.pop(context);
   }
 
@@ -343,8 +327,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
 
   @override
   void dispose() {
-    _deleteNoteIfTextIsEmpty();
-    _saveNoteIfTextNotEmpty();
     _textController.dispose();
     _descController.dispose();
     _phoneController.dispose();
@@ -353,7 +335,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   }
 
   showModal() {
-    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -365,7 +346,6 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
   }
 
   showCitiesModal() {
-    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -384,9 +364,9 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
       backgroundColor: AppColors.lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(
-          context.loc.note,
-        ),
+        title: const Text(
+            // context.loc.note,
+            "Объявляние"),
         actions: const [],
       ),
       body: Stack(children: [
@@ -394,193 +374,192 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-              child: Column(
-                children: [
-                  imagesUrls.isEmpty
-                      ? Image.asset('assets/images/img_placeholder.jpeg')
-                      : CarouselSlider.builder(
-                          itemCount: imagesUrls.length,
-                          options: CarouselOptions(
-                            enableInfiniteScroll: false,
-                            height: 200,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 0.8,
+            child: GestureDetector(
+              onTap: () {
+                // Only unfocus if we tap on an empty area
+                if (!FocusManager.instance.primaryFocus!.hasPrimaryFocus) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
+              },
+              // Make sure gestures are only detected on empty areas
+              behavior: HitTestBehavior.translucent,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+                child: Column(
+                  children: [
+                    imagesUrls.isEmpty
+                        ? Image.asset('assets/images/img_placeholder.jpeg')
+                        : CarouselSlider.builder(
+                            itemCount: imagesUrls.length,
+                            options: CarouselOptions(
+                              enableInfiniteScroll: false,
+                              height: 200,
+                              aspectRatio: 16 / 9,
+                              viewportFraction: 0.8,
+                            ),
+                            itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
+                                Builder(
+                                  builder: (BuildContext context) {
+                                    return SizedBox(
+                                        width: MediaQuery.of(context).size.width,
+                                        // margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                        // decoration:BoxDecoration(color: Colors.amber),
+                                        child: isNewImages && !kIsWeb
+                                            ? Image.file(File(imagesUrls[itemIndex]))
+                                            : kIsWeb
+                                                ? Image.network(imagesUrls[itemIndex])
+                                                : Image.network(imagesUrls[itemIndex]));
+                                  },
+                                )),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.violetLight,
+                        ),
+                        onPressed: () {
+                          openImages();
+                        },
+                        child: const Text("Выберите до 4 фото")),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: Icon(Icons.error, size: 12),
                           ),
-                          itemBuilder: (BuildContext context, int itemIndex,
-                                  int pageViewIndex) =>
-                              Builder(
-                                builder: (BuildContext context) {
-                                  return SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      // margin: EdgeInsets.symmetric(horizontal: 5.0),
-                                      // decoration:BoxDecoration(color: Colors.amber),
-                                      child: isNewImages && !kIsWeb
-                                          ? Image.file(
-                                              File(imagesUrls[itemIndex]))
-                                          : kIsWeb
-                                              ? Image.network(
-                                                  imagesUrls[itemIndex])
-                                              : Image.network(
-                                                  imagesUrls[itemIndex]));
-                                },
-                              )),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.violetLight,
+                          TextSpan(
+                            style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
+                            text: " Слова в заголовке будут использованы для поиска",
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        openImages();
-                      },
-                      child: const Text("Выберите до 4 фото")),
-                  const SizedBox(height: 10),
-                  RichText(
-                    text: const TextSpan(
+                    ),
+                    const SizedBox(height: 5),
+                    TextFormField(
+                      maxLength: 45,
+                      onChanged: (text) => setState(() {}),
+                      controller: _textController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: titleValidator,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: getInputDecoration("Заголовок"),
+                    ),
+
+                    AppInheritedWidget(
+                        shortState: this,
+                        child: SwitchShortAdds(
+                          initialValue: _note?.shortAdd ?? false,
+                        )),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        maxLength: 1000,
+                        onChanged: (text) => setState(() {}),
+                        validator: descValidator,
+                        controller: _descController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 5,
+                        decoration: getInputDecoration("Oписание")),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        maxLength: 10,
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        decoration: getInputDecoration("Цена")),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        controller: _urlController,
+                        keyboardType: TextInputType.text,
+                        decoration: getInputDecoration("Url")),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        controller: _telegramIdController,
+                        keyboardType: TextInputType.text,
+                        decoration: getInputDecoration("@Telegram username")),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: getInputDecoration("Номер телефона"),
+                    ),
+                    const SizedBox(height: 15),
+                    // getCategoryName(_note?.categoryId ?? 0)
+                    // TextFormField(
+                    //     // focusNode: focusNode,
+                    //     onChanged: (text) => setState(() {}),
+                    //     controller: _categoryController,
+                    //     validator: catValidator,
+                    //     decoration: getSelectDecorations(
+                    //         "Категория", "Выбрать", showModal)),
+                    Stack(
                       children: [
-                        WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: Icon(Icons.error, size: 12),
-                        ),
-                        TextSpan(
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 95, 95, 95)),
-                          text:
-                              " Слова в заголовке будут использованы для поиска",
-                        ),
+                        TextFormField(
+                            enabled: false,
+                            onChanged: (text) => setState(() {}),
+                            controller: _categoryController,
+                            validator: catValidator,
+                            decoration: getSelectDecorations("Категория", "Выбрать", showModal)),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
+
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0, right: 6),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(100, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                              child: const Text("Выбрать"),
+                              onPressed: () {
+                                showModal();
+                              },
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  TextFormField(
-                    maxLength: 45,
-                    onChanged: (text) => setState(() {}),
-                    controller: _textController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: titleValidator,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: getInputDecoration("Заголовок"),
-                  ),
+                    const SizedBox(height: 15),
+                    Stack(
+                      children: [
+                        TextFormField(
+                            enabled: false,
+                            onChanged: (text) => setState(() {}),
+                            controller: _cityController,
+                            validator: cityValidator,
+                            decoration: getSelectDecorations('Город', "Выбрать", showModal)),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd, // <-- SEE HERE
 
-                  AppInheritedWidget(
-                      shortState: this,
-                      child: SwitchShortAdds(
-                        initialValue: _note?.shortAdd ?? false,
-                      )),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                      maxLength: 1000,
-                      onChanged: (text) => setState(() {}),
-                      validator: descValidator,
-                      controller: _descController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 5,
-                      decoration: getInputDecoration("Oписание")),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                      maxLength: 10,
-                      controller: _priceController,
-                      keyboardType: TextInputType.number,
-                      decoration: getInputDecoration("Цена")),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                      controller: _urlController,
-                      keyboardType: TextInputType.text,
-                      decoration: getInputDecoration("Url")),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                      controller: _telegramIdController,
-                      keyboardType: TextInputType.text,
-                      decoration: getInputDecoration("@Telegram username")),
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: getInputDecoration("Номер телефона"),
-                  ),
-                  const SizedBox(height: 15),
-                  // getCategoryName(_note?.categoryId ?? 0)
-                  // TextFormField(
-                  //     // focusNode: focusNode,
-                  //     onChanged: (text) => setState(() {}),
-                  //     controller: _categoryController,
-                  //     validator: catValidator,
-                  //     decoration: getSelectDecorations(
-                  //         "Категория", "Выбрать", showModal)),
-                  Stack(
-                    children: [
-                      TextFormField(
-                          enabled: false,
-                          onChanged: (text) => setState(() {}),
-                          controller: _categoryController,
-                          validator: catValidator,
-                          decoration: getSelectDecorations(
-                              "Категория", "Выбрать", showModal)),
-                      Align(
-                        alignment:
-                            AlignmentDirectional.centerEnd, // <-- SEE HERE
-
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(100, 40),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0, right: 6),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(100, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
                               ),
+                              child: const Text("Выбрать"),
+                              onPressed: () {
+                                showCitiesModal();
+                              },
                             ),
-                            child: const Text("Выбрать"),
-                            onPressed: () {
-                              showModal();
-                            },
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  Stack(
-                    children: [
-                      TextFormField(
-                          enabled: false,
-                          onChanged: (text) => setState(() {}),
-                          controller: _cityController,
-                          validator: cityValidator,
-                          decoration: getSelectDecorations(
-                              'Город', "Выбрать", showModal)),
-                      Align(
-                        alignment:
-                            AlignmentDirectional.centerEnd, // <-- SEE HERE
+                        )
+                      ],
+                    ),
 
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(100, 40),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: const Text("Выбрать"),
-                            onPressed: () {
-                              showCitiesModal();
-                            },
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       showModal();
-                  //     },
-                  //     child: Text("Изменить"))
-                  const SizedBox(height: 40),
-                ],
+                    // ElevatedButton(
+                    //     onPressed: () {
+                    //       showModal();
+                    //     },
+                    //     child: Text("Изменить"))
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ),
@@ -615,8 +594,7 @@ InputDecoration getInputDecoration(String title) {
         borderSide: BorderSide(color: Colors.blueAccent, width: 1.0),
       ),
       enabledBorder: const OutlineInputBorder(
-        borderSide:
-            BorderSide(color: Color.fromARGB(255, 171, 171, 171), width: 1.0),
+        borderSide: BorderSide(color: Color.fromARGB(255, 171, 171, 171), width: 1.0),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -665,8 +643,7 @@ showSnackbar(context, message) {
       padding: const EdgeInsets.all(16),
       height: 90,
       decoration: const BoxDecoration(
-          color: Color(0xFFC72C41),
-          borderRadius: BorderRadius.all(Radius.circular(20))),
+          color: Color(0xFFC72C41), borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Text(message),
     ),
   );
@@ -675,8 +652,7 @@ showSnackbar(context, message) {
 
 class SwitchShortAdds extends StatefulWidget {
   final bool initialValue;
-  const SwitchShortAdds({required this.initialValue, Key? key})
-      : super(key: key);
+  const SwitchShortAdds({required this.initialValue, Key? key}) : super(key: key);
 
   @override
   State<SwitchShortAdds> createState() => _SwitchShortAddsState();
@@ -720,8 +696,7 @@ class _SwitchShortAddsState extends State<SwitchShortAdds> {
 class AppInheritedWidget extends InheritedWidget {
   final _CreateUpdateNoteViewState shortState;
 
-  const AppInheritedWidget(
-      {Key? key, required Widget child, required this.shortState})
+  const AppInheritedWidget({Key? key, required Widget child, required this.shortState})
       : super(key: key, child: child);
 
   @override
