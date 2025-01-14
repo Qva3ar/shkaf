@@ -24,6 +24,7 @@ import 'package:mynotes/views/dialogs/platform_dialog.dart';
 import 'package:mynotes/views/notes/note_details.dart';
 import 'package:mynotes/views/notes/notes_gridview.dart';
 import 'package:mynotes/views/notes/search_and_city_bar.dart';
+import 'package:mynotes/views/notes/update_note_view.dart';
 import '../../helpers/utils.dart';
 import '../../utilities/widgets/categories_bottom_sheet.dart';
 
@@ -103,7 +104,7 @@ class _NotesViewState extends State<NotesAll> with WidgetsBindingObserver {
   }
 
   Future<void> _performSearch({bool isRefresh = false}) async {
-    if (_isLoading) return;
+    if (_isLoading || (!_hasMore && !isRefresh)) return;
 
     if (!isRefresh) {
       if (_scrollDebounceTimer?.isActive ?? false) {

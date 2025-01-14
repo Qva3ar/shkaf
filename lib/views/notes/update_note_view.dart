@@ -280,7 +280,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
         _descController.text = widgetNote.desc;
         _telegramIdController.text = widgetNote.telegramId ?? '';
         _priceController.text = widgetNote.price.toString();
-        _phoneController.text = widgetNote.phone != "" ? widgetNote.phone! : "";
+        _phoneController.text = widgetNote.phone ?? "";
         _categoryController.text =
             '${getMainCategoryName(widgetNote.mainCategoryId ?? 0)} ${getCategoryName(widgetNote.categoryId ?? 0)}';
 
@@ -420,20 +420,7 @@ class _CreateUpdateNoteViewState extends State<UpdateNoteView> {
                         },
                         child: const Text("Выберите до 4 фото")),
                     const SizedBox(height: 10),
-                    RichText(
-                      text: const TextSpan(
-                        children: [
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.middle,
-                            child: Icon(Icons.error, size: 12),
-                          ),
-                          TextSpan(
-                            style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 95, 95, 95)),
-                            text: " Слова в заголовке будут использованы для поиска",
-                          ),
-                        ],
-                      ),
-                    ),
+
                     const SizedBox(height: 5),
                     TextFormField(
                       maxLength: 45,
